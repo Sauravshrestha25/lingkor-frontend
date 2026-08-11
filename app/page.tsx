@@ -1,18 +1,31 @@
+import Image from "next/image";
+
 export default function Page() {
   return (
-    <main className="min-h-screen flex flex-col">
-      <div className="h-1/2 flex flex-col items-center justify-center">
-        <img src="/logo.png" alt="logo" className="w-20 h-auto" />
-        {/* <h1 className="text-[5vw] font-semibold">Coming Soon</h1> */}
-      </div>
-      {/* <div className="h-2/3 w-full">
+    <main className="relative h-screen w-full overflow-hidden flex items-center justify-center text-white">
+      <div className="absolute inset-0">
         <video
-          src="/boudha.mp4"
-          autoPlay={true}
+          src="/boudha3.mp4"
+          autoPlay
           muted
-          className="w-full h-full object-cover"
+          loop
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover scale-[1.15]"
         />
-      </div> */}
+
+        <div className="absolute inset-0 bg-black/20" />
+      </div>
+
+      <div className="relative z-10 flex flex-col items-center">
+        <Image src="/logo-white.png" alt="logo" width={120} height={120} />
+
+        <h1 className="mt-2 text-[8vw] font-logo leading-none">Coming Soon</h1>
+
+        <div className="flex items-center gap-4">
+          <span>Under Construction by</span>
+          <img src="/webx-logo.jpg" alt="webx-logo" className="w-20 h-auto" />
+        </div>
+      </div>
     </main>
   );
 }
