@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Page() {
   return (
@@ -23,7 +24,9 @@ export default function Page() {
 
         <div className="flex items-center gap-4">
           <span>Under Construction by</span>
-          <img src="/webx-logo.jpg" alt="webx-logo" className="w-20 h-auto" />
+          <Link target="_blank" href={"https://webxnepal.com/"}>
+            <img src="/webx-logo.jpg" alt="webx-logo" className="w-20 h-auto" />
+          </Link>
         </div>
       </div>
     </main>
