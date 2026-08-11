@@ -15,7 +15,7 @@ export default function Page() {
           className="absolute inset-0 h-full w-full scale-110 object-cover sm:scale-125 lg:scale-140"
         />
 
-        <div className="absolute inset-0 bg-black/20" />
+        <div className="absolute inset-0 bg-[#cc9933]/90" />
       </div>
 
       <div className="relative z-10 mx-auto flex min-h-svh w-full max-w-7xl flex-col items-center justify-between px-4 sm:px-6 lg:px-8">
