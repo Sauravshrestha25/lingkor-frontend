@@ -63,9 +63,9 @@ jobs:
 
             echo "🔄 Restarting PM2..."
             if pm2 describe "lingkorboudha-frontend" >/dev/null 2>&1; then
-              pm2 restart "lingkor-boudha" --time
+              pm2 restart "lingkorboudha-frontend" --time
             else
-              pm2 start pnpm --name "lingkor-boudha" --time --cwd "$APP_DIR" -- start
+              pm2 start pnpm --name "lingkorboudha-frontend" --time --cwd "$APP_DIR" -- start
             fi
 
             pm2 save
