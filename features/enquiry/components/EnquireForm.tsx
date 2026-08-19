@@ -57,7 +57,12 @@ export default function EnquireForm() {
 
         <label className="block">
           <Label className="opacity-50">Email</Label>
-          <input name="email" type="email" required className={`${field} mt-3`} />
+          <input
+            name="email"
+            type="email"
+            required
+            className={`${field} mt-3`}
+          />
         </label>
 
         <label className="block">
@@ -72,7 +77,12 @@ export default function EnquireForm() {
 
         <label className="block">
           <Label className="opacity-50">Guests</Label>
-          <input name="guests" type="text" placeholder="2" className={`${field} mt-3`} />
+          <input
+            name="guests"
+            type="text"
+            placeholder="2"
+            className={`${field} mt-3`}
+          />
         </label>
 
         <label className="col-span-full block">
@@ -88,7 +98,7 @@ export default function EnquireForm() {
 
       <Button
         type="submit"
-        className="text-label mt-10 cursor-pointer border border-ink px-10 py-3 uppercase transition-colors duration-300 hover:bg-ink hover:text-canvas"
+        className="text-label text-space mt-10 cursor-pointer border border-ink px-10 py-3 uppercase transition-colors duration-300 bg-ink hover:bg-ink/80 hover:text-canvas"
       >
         Send enquiry
       </Button>

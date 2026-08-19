@@ -147,7 +147,7 @@ export default function Hero() {
             <Button asChild hoverScale={1.03} tapScale={0.97}>
               <a
                 href="#enquire"
-                className="text-label inline-block border border-space/50 px-8 py-4 uppercase transition-colors duration-500 ease-brand hover:bg-space hover:text-ink"
+                className="text-label text-ink inline-block border border-space/50 px-8 py-4 uppercase transition-colors duration-500 ease-brand bg-space hover:bg-space/80 hover:text-ink"
               >
                 Enquire about a stay
               </a>

@@ -24,6 +24,7 @@ import {
   unlockScroll,
 } from "../preloader";
 import { flightTo } from "../flight";
+import { claimIntro, finishIntro } from "../gate";
 import { IntroStage } from "./IntroStage";
 
 export default function Preloader() {
@@ -39,6 +40,7 @@ export default function Preloader() {
       .querySelector<HTMLElement>(".nav-logo")
       ?.style.setProperty("opacity", "1");
     unlockScroll(); // never leave the page unscrollable, whatever else fails
+    finishIntro(); // ...and never leave the page unanimated either
     sessionStorage.setItem(SESSION_KEY, "1");
     gsap.to(root.current, {
       opacity: 0,
@@ -51,11 +53,16 @@ export default function Preloader() {
   useLayoutEffect(() => {
     const navLogo = document.querySelector<HTMLElement>(".nav-logo");
 
+    // Claimed in a layout effect so it lands before any passive effect in the tree —
+    // the entrance primitives ask the gate from `useEffect`, which runs later.
+    claimIntro();
+
     const skip =
       (ONCE_PER_SESSION && sessionStorage.getItem(SESSION_KEY) === "1") ||
       window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (skip) {
       // Hide before paint, then unmount async so the photos are never fetched.
+      finishIntro();
       if (root.current) root.current.style.display = "none";
       const id = requestAnimationFrame(() => setDone(true));
       return () => cancelAnimationFrame(id);
@@ -72,7 +79,11 @@ export default function Preloader() {
       if (navLogo) navLogo.style.opacity = "1";
     };
     // Whatever happens to the timeline, the navbar logo cannot stay hidden.
-    const failsafe = window.setTimeout(revealNav, FAILSAFE_MS);
+    const failsafe = window.setTimeout(() => {
+      revealNav();
+      unlockScroll();
+      finishIntro();
+    }, FAILSAFE_MS);
 
     const ctx = gsap.context(() => {
       const pages = gsap.utils.toArray<HTMLElement>(".pl-page");
@@ -85,6 +96,7 @@ export default function Preloader() {
           sessionStorage.setItem(SESSION_KEY, "1");
           revealNav();
           unlockScroll();
+          finishIntro();
           setDone(true);
         },
       });

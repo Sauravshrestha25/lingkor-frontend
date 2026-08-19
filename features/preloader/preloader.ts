@@ -29,7 +29,18 @@ export const QUOTES: ({ text: string; source: string } | null)[] = [
 ];
 
 export const SESSION_KEY = "lb-preloaded";
-export const ONCE_PER_SESSION = false; // flip to true to skip the loader on refreshes
+/**
+ * Every page load, by request.
+ *
+ * `true` plays it once per tab session — the arrival ritual earns its ~7s on first
+ * contact and is a toll booth on every refresh after. That is the setting to ship with;
+ * this is the setting to develop against, and to demo with.
+ *
+ * Soft navigation is unaffected either way: the preloader is mounted in the root layout
+ * (`app/layout.tsx`), which client navigation does not remount, so moving between routes
+ * never replays it. This flag only governs hard loads.
+ */
+export const ONCE_PER_SESSION = false;
 export const MIN_MS = 300; // floor before the timeline starts — frame 1 is on screen for it
 export const MAX_MS = 5000; // ceiling: start anyway, even if the first frame never arrives
 export const FAILSAFE_MS = 25000; // last resort: never leave the navbar logo hidden

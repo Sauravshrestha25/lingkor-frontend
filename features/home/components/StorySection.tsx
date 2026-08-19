@@ -2,94 +2,86 @@
 
 import { useEffect, useRef } from "react";
 import { gsap, reduced } from "@/lib/gsap";
-import { Photo } from "@/components/media/Photo";
+import { Photo, LineArt } from "@/components/media/Photo";
 import { Label } from "@/components/ui";
 import { STORY } from "../data/copy";
 
 /**
- * The road south — five beats, choreographed.
+ * The road south — the caravan comes down the margin while the story passes.
  *
- * Rebuilt against the motion-design framework, which named what was wrong with both
- * previous versions of this section.
+ * **Why this is not a carousel.** It was one, three times, and each one was wrong for a
+ * reason that had nothing to do with how it was built: the page already runs drag rails
+ * for spaces, for rooms and for voices. A fourth made the story read as more inventory.
+ * The beats are a sequence you move *through*, not a set you pick from — so they are set
+ * as ordinary scroll, and the only thing that animates is the journey itself.
  *
- * **Personality: Premium.** Chosen once and applied throughout — 350–600ms, zero
- * overshoot, decelerating entrances. Nothing on this site bounces, and a single
- * bouncing element here would read as a different brand. The signature curve is the
- * site's own `--ease-brand`, cubic-bezier(0.22, 1, 0.36, 1), rather than Premium's
- * generic (0.4, 0, 0.2, 1): the framework's rule is *one* curve for 80% of animations,
- * and this site already had one.
+ * **The commissioned drawing is the mechanism.** `caravan-ink` is a yak train switching
+ * back down from a fort, each animal larger than the one above it — the artist already
+ * drew the descent, and drew it at 592×1600, which is a margin. It is held sticky and
+ * unclipped from the top down as the section scrolls, so the caravan arrives at the
+ * bottom of its own path at the moment beat 05 arrives at the door in Boudha. One
+ * continuous move, tied to the reader's own scrolling, with nothing taken over.
  *
- * **Three layers, which is what was missing.** The framework is explicit that flat
- * animation means missing layers, and both earlier builds had only the first:
+ * Note the clip runs top-to-bottom, matching the direction of travel in the drawing.
+ * Every other reveal on this site opens upward; this one would fight the picture.
  *
- *   Primary   the photograph arrives — position + opacity, 600ms, decelerating
- *   Secondary number, title and line follow in a 90ms stagger, 420ms each
- *   Ambient   the giant ghost numeral drifts counter to the image, continuously
- *
- * **Counter-motion.** The ambient numeral moves *against* the photograph at roughly a
- * quarter of its rate. The framework calls for this explicitly — hero one way, ambient
- * the other at 20–30% — and it is what stops a page of parallax reading as one sheet
- * of glass sliding about.
- *
- * **Stagger budget.** 90ms between elements, four elements, 270ms total — inside the
- * 400ms "standard" budget and well inside the 500ms hard ceiling.
- *
- * **1/3 rule.** Each beat owns its own trigger and animates alone, so no more than one
- * of five is ever in motion. Travel is 40px, nowhere near a third of the viewport.
- *
- * **Emotion: calm, elegance.** The brief asks for "peaceful, meditative", "like a
- * dream". That maps to long, controlled, decelerating motion with gentle curves — not
- * to speed, and not to the reader having to drag anything.
+ * **The beats are deliberately uneven.** Equal cards in a column is a list, and a list
+ * is what the last version failed at horizontally. Widths and indents come from
+ * `SHAPE` — a wide plate, two narrow ones held in from opposite sides, then the door at
+ * full width. Nothing shares an edge with the beat above it.
  */
+
+/** Per-beat frame: width of the plate, indent from the column's left, crop shape. */
+const SHAPE = [
+  { w: "lg:w-[64%]", x: "lg:ml-0", ratio: "aspect-[5/4]" },
+  { w: "lg:w-[38%]", x: "lg:ml-[44%]", ratio: "aspect-[3/4]" },
+  { w: "lg:w-[52%]", x: "lg:ml-[8%]", ratio: "aspect-[4/3]" },
+  { w: "lg:w-[36%]", x: "lg:ml-[52%]", ratio: "aspect-[3/4]" },
+  { w: "lg:w-[80%]", x: "lg:ml-0", ratio: "aspect-[16/10]" },
+] as const;
+
 export function StorySection() {
   const root = useRef<HTMLElement>(null);
+  const trail = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const el = root.current;
-    if (!el) return;
-
-    if (reduced()) {
-      gsap.set(el.querySelectorAll("[data-beat] > *"), { opacity: 1, y: 0 });
-      return;
-    }
+    if (!el || reduced()) return;
 
     const ctx = gsap.context(() => {
-      gsap.utils.toArray<HTMLElement>("[data-beat]").forEach((beat) => {
-        const frame = beat.querySelector("[data-frame]");
-        const lines = beat.querySelectorAll("[data-copy]");
-
-        // Primary → secondary, on one timeline so the order can never drift.
-        const tl = gsap.timeline({
-          scrollTrigger: { trigger: beat, start: "top 78%", once: true },
-        });
-
-        tl.fromTo(
-          frame,
-          { yPercent: 6, autoAlpha: 0 },
-          { yPercent: 0, autoAlpha: 1, duration: 0.6, ease: "brand" },
-        ).fromTo(
-          lines,
-          { y: 24, autoAlpha: 0 },
-          { y: 0, autoAlpha: 1, duration: 0.42, ease: "brand", stagger: 0.09 },
-          // Overlapped, not queued: the copy starts while the frame is still settling,
-          // which is what makes it read as one arrival rather than two.
-          0.18,
-        );
-
-        // Ambient: the numeral drifts against the frame, continuously, at a quarter
-        // of the rate. Scrubbed, so it is tied to the reader rather than looping.
+      // The descent. Scrubbed rather than played, so the caravan moves at exactly the
+      // reader's pace — it is their scrolling that walks it down, not a timer.
+      if (trail.current) {
         gsap.fromTo(
-          beat.querySelector("[data-ghost]"),
-          { yPercent: -12 },
+          trail.current,
+          { clipPath: "inset(0% 0% 100% 0%)" },
           {
-            yPercent: 12,
+            clipPath: "inset(0% 0% 0% 0%)",
             ease: "none",
             scrollTrigger: {
-              trigger: beat,
-              start: "top bottom",
-              end: "bottom top",
-              scrub: true,
+              trigger: el,
+              start: "top 62%",
+              // Ends on the last beat rather than the section's foot, so the caravan
+              // completes against the door and not against empty margin.
+              endTrigger: "[data-beat]:last-child",
+              end: "bottom 78%",
+              scrub: 0.6,
             },
+          },
+        );
+      }
+
+      // Secondary layer: each plate opens as it arrives. Same language as the About
+      // section — a frame unclipping, never a fade-and-rise.
+      gsap.utils.toArray<HTMLElement>("[data-plate]").forEach((plate) => {
+        gsap.fromTo(
+          plate,
+          { clipPath: "inset(100% 0% 0% 0%)" },
+          {
+            clipPath: "inset(0% 0% 0% 0%)",
+            duration: 1.4,
+            ease: "power3.out",
+            scrollTrigger: { trigger: plate, start: "top 85%", once: true },
           },
         );
       });
@@ -99,74 +91,81 @@ export function StorySection() {
   }, []);
 
   return (
-    <section ref={root} id="story" className="w-full overflow-hidden bg-canvas py-24 lg:py-32">
+    <section id="story" ref={root} className="w-full bg-canvas py-24 lg:py-32">
       <div className="mx-auto w-full shell-max shell-px">
-        <div data-beat className="mb-20 lg:mb-32">
-          <Label data-copy className="opacity-65">The road south</Label>
-          <h2
-            data-copy
-            className="font-display mt-6 max-w-[18ch] text-[clamp(2rem,5vw,4.5rem)] leading-[1.02]"
-          >
-            The road south, and then a door
+        <div>
+          <Label className="opacity-65">The road south</Label>
+          {/*
+            The measure is in `em`, so it is a multiple of *this heading's own size* and
+            holds the same three-or-four words per line at every width. It was `22ch` on
+            a parent, which broke the line after every single word: `ch` is the width of
+            the zero glyph, Hasweny's is narrow, and the parent resolved it against body
+            type while the heading rendered several times larger.
+          */}
+          <h2 className="font-display mt-6 max-w-[13em] text-section">
+            Everything here came down the same road
           </h2>
         </div>
 
-        {STORY.map((beat, i) => {
-          const flip = i % 2 === 1;
-          return (
+        <div className="mt-20 lg:mt-28 lg:grid lg:grid-cols-12 lg:gap-12">
+          {/* ── The descent, in the margin ──────────────────────────────────
+              Sticky, so it holds while the beats move past it. `self-start` is
+              what makes that work in a grid: a stretched track item is already
+              the height of the row and has nowhere to stick to. */}
+          <div className="lg:col-span-3 lg:self-start lg:sticky lg:top-[14vh]">
             <div
-              key={beat.n}
-              data-beat
-              className={`relative mb-24 lg:mb-40 lg:grid lg:grid-cols-12 lg:items-center lg:gap-12 ${
-                flip ? "" : ""
-              }`}
+              ref={trail}
+              aria-hidden="true"
+              className="mx-auto w-[42%] sm:w-[30%] lg:mx-0 lg:w-full"
             >
-              {/* Ambient — the third layer. Hidden from assistive tech: the number is
-                  already announced beside the title. */}
-              <span
-                data-ghost
-                aria-hidden="true"
-                className={`font-display pointer-events-none absolute top-1/2 -z-0 select-none text-[28vw] leading-none text-ink/[0.05] lg:text-[16vw] ${
-                  flip ? "left-0" : "right-0"
-                }`}
-              >
-                {beat.n}
-              </span>
-
-              <div
-                data-frame
-                className={`relative z-10 ${
-                  flip ? "lg:col-span-7 lg:col-start-6" : "lg:col-span-7"
-                }`}
-              >
-                <Photo
-                  src={beat.photo}
-                  alt={beat.alt}
-                  sizes="(max-width: 1024px) 100vw, 58vw"
-                  loading={i < 2 ? "eager" : "lazy"}
-                  className="aspect-[4/3] w-full"
-                />
-              </div>
-
-              <div
-                className={`relative z-10 mt-8 lg:mt-0 ${
-                  flip ? "lg:col-span-4 lg:col-start-1 lg:row-start-1" : "lg:col-span-4 lg:col-start-9"
-                }`}
-              >
-                <Label data-copy className="opacity-40">{beat.n}</Label>
-                <h3
-                  data-copy
-                  className="font-display mt-4 text-[clamp(1.75rem,3vw,2.75rem)] leading-none"
-                >
-                  {beat.title}
-                </h3>
-                <p data-copy className="text-body mt-5 max-w-[38ch] opacity-75">
-                  {beat.line}
-                </p>
-              </div>
+              <LineArt
+                name="caravan"
+                tone="ink"
+                className="h-auto w-full opacity-70"
+              />
             </div>
-          );
-        })}
+          </div>
+
+          {/* ── The beats ──────────────────────────────────────────────────── */}
+          <div className="mt-16 lg:col-span-8 lg:col-start-5 lg:mt-0">
+            {STORY.map((beat, i) => {
+              const s = SHAPE[i];
+              return (
+                <article
+                  key={beat.n}
+                  data-beat
+                  className={i > 0 ? "mt-20 lg:mt-28" : ""}
+                >
+                  <div className={`${s.w} ${s.x}`}>
+                    <div data-plate>
+                      <Photo
+                        src={beat.photo}
+                        alt={beat.alt}
+                        sizes="(max-width: 1024px) 100vw, 45vw"
+                        loading={i < 2 ? "eager" : "lazy"}
+                        className={`${s.ratio} w-full`}
+                      />
+                    </div>
+
+                    <div className="mt-6 flex gap-5">
+                      <Label className="shrink-0 pt-1.5 opacity-40">
+                        {beat.n}
+                      </Label>
+                      <div>
+                        <h3 className="font-display text-sub">
+                          {beat.title}
+                        </h3>
+                        <p className="text-body mt-3 max-w-[34ch] opacity-75">
+                          {beat.line}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        </div>
       </div>
     </section>
   );

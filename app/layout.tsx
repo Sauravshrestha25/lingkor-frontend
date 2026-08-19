@@ -4,6 +4,7 @@ import { Barlow_Condensed } from "next/font/google";
 import localfont from "next/font/local";
 import "./globals.css";
 import Navbar from "@/features/navigation/components/Navbar";
+import Preloader from "@/features/preloader/components/Preloader";
 import SmoothScroll from "@/components/SmoothScroll";
 import WebxSignature from "@/components/WebxSignature";
 
@@ -43,6 +44,13 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body className="flex min-h-svh flex-col bg-canvas text-ink">
         <WebxSignature />
         <SmoothScroll />
+        {/* Sitewide, and mounted in the layout on purpose.
+            The root layout is not re-rendered by client navigation, so the intro cannot
+            replay when you come back to a route you have already visited — which is
+            exactly what happened while it lived in `page.tsx`. It plays once per
+            session (see ONCE_PER_SESSION) and holds the entrance animations until it is
+            done (see features/preloader/gate.ts). */}
+        <Preloader />
         <Navbar />
         {children}
       </body>

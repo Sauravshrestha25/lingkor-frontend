@@ -87,7 +87,7 @@ export default function SpacesPage() {
                 </Rise>
 
                 <Rise delay={100}>
-                  <h2 className="font-display mt-6 text-[clamp(2.5rem,5vw,4.5rem)] leading-none">
+                  <h2 className="font-display mt-6 text-section">
                     {space.name}
                   </h2>
                 </Rise>

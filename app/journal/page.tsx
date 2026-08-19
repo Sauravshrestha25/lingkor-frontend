@@ -45,7 +45,7 @@ export default function JournalPage() {
                     </Label>
                   </div>
                   <div className="lg:col-span-8 lg:col-start-5">
-                    <h2 className="font-display text-[clamp(2rem,4vw,3.5rem)] leading-none transition-transform duration-700 ease-out group-hover:translate-x-2">
+                    <h2 className="font-display text-section transition-transform duration-700 ease-out group-hover:translate-x-2">
                       {lead.title}
                     </h2>
                     <p className="text-body mt-6 max-w-[56ch] opacity-75">
@@ -72,7 +72,7 @@ export default function JournalPage() {
                     <Label className="opacity-50">
                       {post.kicker} · {formatDate(post.date)}
                     </Label>
-                    <h2 className="font-display mt-4 text-[clamp(1.5rem,2.4vw,2.125rem)] leading-none transition-transform duration-700 ease-out group-hover:translate-x-2">
+                    <h2 className="font-display mt-4 text-sub transition-transform duration-700 ease-out group-hover:translate-x-2">
                       {post.title}
                     </h2>
                     <p className="text-body mt-4 opacity-70">{post.excerpt}</p>

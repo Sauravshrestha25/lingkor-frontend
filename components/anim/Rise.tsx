@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { gsap, reduced } from "../../lib/gsap";
+import { afterIntro } from "@/features/preloader/gate";
 
 /**
  * The house reveal: 28px rise, 1.1s, on entry. Replaces the CSS/IntersectionObserver
@@ -31,22 +32,28 @@ export function Rise({
       return;
     }
 
-    const tween = gsap.fromTo(
-      el,
-      { opacity: 0, y },
-      {
-        opacity: 1,
-        y: 0,
-        duration: 1.1,
-        delay: delay / 1000,
-        ease: "power3.out",
-        scrollTrigger: { trigger: el, start: "top 88%", once: true },
-      },
-    );
+    // Held until the intro has finished, otherwise anything above the fold reveals
+    // itself behind the preloader and is over before the curtain lifts.
+    let tween: gsap.core.Tween | undefined;
+    const stopWaiting = afterIntro(() => {
+      tween = gsap.fromTo(
+        el,
+        { opacity: 0, y },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 1.1,
+          delay: delay / 1000,
+          ease: "power3.out",
+          scrollTrigger: { trigger: el, start: "top 88%", once: true },
+        },
+      );
+    });
 
     return () => {
-      tween.scrollTrigger?.kill();
-      tween.kill();
+      stopWaiting();
+      tween?.scrollTrigger?.kill();
+      tween?.kill();
     };
   }, [delay, y]);
 

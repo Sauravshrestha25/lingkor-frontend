@@ -266,7 +266,7 @@ export default function KoraCircle() {
 
             <div className="lg:col-span-5 lg:col-start-8">
               <Label className="opacity-60">Where it stands</Label>
-              <h2 className="font-display mt-8 text-[clamp(2.5rem,5vw,4.5rem)] leading-[1.02]">
+              <h2 className="font-display mt-8 text-section">
                 The kora begins
                 <br />
                 outside our door

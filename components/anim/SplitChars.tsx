@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { gsap, reduced } from "../../lib/gsap";
+import { afterIntro } from "@/features/preloader/gate";
 
 /**
  * Display type revealed one character at a time.
@@ -35,7 +36,10 @@ export function SplitChars({
       return;
     }
 
-    const tween = gsap.fromTo(
+    // Same hold as Rise — see `afterIntro`.
+    let tween: gsap.core.Tween | undefined;
+    const stopWaiting = afterIntro(() => {
+      tween = gsap.fromTo(
       chars,
       { yPercent: 110, opacity: 0 },
       {
@@ -47,11 +51,13 @@ export function SplitChars({
         stagger,
         scrollTrigger: { trigger: el, start: "top 85%", once: true },
       },
-    );
+      );
+    });
 
     return () => {
-      tween.scrollTrigger?.kill();
-      tween.kill();
+      stopWaiting();
+      tween?.scrollTrigger?.kill();
+      tween?.kill();
     };
   }, [delay, stagger]);
 

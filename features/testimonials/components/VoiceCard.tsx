@@ -5,46 +5,39 @@ import { Portrait } from "./Portrait";
 import { Stars } from "./Stars";
 
 /**
- * One testimonial, on its own element colour.
+ * One testimonial, on white.
  *
- * The cards used to be uniform off-white with the element showing only in the stars and
- * the room label — a rail of five identical panels. They now cycle the five grounds in
- * the order the spaces are introduced, so the rail carries the palette the same way the
- * rest of the page does and no two adjacent cards repeat a colour.
+ * The cards used to take the five element colours as their grounds. They are white now,
+ * which puts the weight on the portrait and the words instead of on a rail of coloured
+ * panels — and it means one type colour and one contrast ratio rather than a per-colour
+ * judgement (`onTint`) that had to be made in the data.
  *
- * Type colour comes from `onTint` rather than being computed from the ground, because
- * the answer is not derivable from lightness alone: white on the ochre measures 2.25:1
- * and ink on it 6.60:1, so the choice is a contrast judgement per colour, made once, in
- * the data.
+ * The element has not left, it has moved: it is the stars, so the palette still runs
+ * through the rail without owning the card. Namkha's own colour IS the page ground, so
+ * that one card's stars would vanish; it falls back to earth — see `starTint`.
+ *
+ * Every card carries a hairline, because white on the off-white ground is a difference
+ * too slight to hold an edge on its own.
  *
  * `transition-[opacity,transform]` rather than `transition-all`: the rail writes
  * `opacity` and `transform` inline on every frame of the drag, and transitioning
  * everything would drag unrelated properties into that per-frame work.
  */
 export function VoiceCard({ voice }: { voice: Voice }) {
-  const white = voice.onTint === "white";
+  const starTint = blendsWithGround(voice.tint)
+    ? "var(--color-earth)"
+    : voice.tint;
 
   return (
     <figure
-      className={`w-[82vw] shrink-0 transition-[opacity,transform] duration-500 ease-out sm:w-[54vw] lg:w-[30vw] ${
-        // Namkha's off-white is the page ground too, so that one card has no edge of
-        // its own — see `blendsWithGround`.
-        blendsWithGround(voice.tint) ? "ring-1 ring-inset ring-ink/12" : ""
-      }`}
-      style={{
-        backgroundColor: voice.tint,
-        color: white ? "var(--color-space)" : "var(--color-ink)",
-      }}
+      className="w-[82vw] shrink-0 bg-white ring-1 ring-inset ring-ink/12 transition-[opacity,transform] duration-500 ease-out sm:w-[54vw] lg:w-[30vw]"
+      style={{ color: "var(--color-ink)" }}
     >
       <Portrait voice={voice} />
 
       <div className="flex flex-col p-6 lg:p-7">
-        {/* Stars take the type colour, not the element: on a card whose ground *is*
-            the element, an element-coloured star is invisible. */}
-        <Stars
-          rating={voice.rating}
-          tint={white ? "var(--color-space)" : "var(--color-ink)"}
-        />
+        {/* The one place the element still shows. */}
+        <Stars rating={voice.rating} tint={starTint} />
 
         {/* Full strength, not 90%: on slate and fire the ground is dark enough
             that a 10% fade costs more contrast than the card can spare. */}

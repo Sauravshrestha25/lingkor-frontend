@@ -100,7 +100,7 @@ export default function AboutPage() {
           </Rise>
           <div className="mt-12 grid grid-cols-1 gap-12 border-t border-ink/15 pt-12 lg:grid-cols-2 lg:gap-20">
             <Rise>
-              <h2 className="font-display text-[clamp(2rem,3.4vw,3rem)] leading-none">
+              <h2 className="font-display text-section">
                 Mustang Inn
               </h2>
               <Label className="mt-4 block opacity-50">The welcome room</Label>
@@ -110,7 +110,7 @@ export default function AboutPage() {
               </p>
             </Rise>
             <Rise delay={140}>
-              <h2 className="font-display text-[clamp(2rem,3.4vw,3rem)] leading-none">
+              <h2 className="font-display text-section">
                 Lingkor Boutique
               </h2>
               <Label className="mt-4 block opacity-50">The shop</Label>

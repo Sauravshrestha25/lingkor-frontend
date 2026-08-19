@@ -104,7 +104,7 @@ export default function MustangPage() {
                   />
                   <div className="mt-6 border-t border-space/20 pt-5">
                     <div className="flex items-baseline justify-between gap-4">
-                      <h2 className="font-display text-[clamp(1.75rem,2.6vw,2.25rem)] leading-none">
+                      <h2 className="font-display text-sub">
                         {p.name}
                       </h2>
                       <Label className="shrink-0 opacity-40">{p.note}</Label>

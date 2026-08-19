@@ -74,7 +74,7 @@ export default function SpacesCarousel({ spaces }: { spaces: Space[] }) {
                   >
                     <CloudMotif className="pointer-events-none absolute -top-2 right-4 w-32 opacity-20 transition-transform duration-1400 ease-brand group-hover:-translate-x-3 lg:w-44" />
 
-                    <StarFrame>
+                    <StarFrame className="text-space">
                       <Photo
                         src={space.image}
                         alt=""
@@ -92,7 +92,7 @@ export default function SpacesCarousel({ spaces }: { spaces: Space[] }) {
                       </Label>
                     </div>
 
-                    <h3 className="font-display relative mt-4 text-[clamp(1.875rem,3.2vw,2.75rem)] leading-none">
+                    <h3 className="font-display relative mt-4 text-sub">
                       {space.name}
                     </h3>
 

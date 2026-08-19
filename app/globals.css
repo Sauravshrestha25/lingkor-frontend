@@ -77,9 +77,28 @@
   --font-body: var(--font-yagpo);
   --font-tibetan: var(--font-yagpo);
 
-  --text-display: clamp(2.75rem, 6vw, 6rem);
+  --text-display: clamp(2.75rem, 2rem + 3.4vw, 6rem);
   --text-display--line-height: 1.02;
   --text-display--letter-spacing: 0.005em;
+
+  /*
+   * The two sizes every heading on the site is one of.
+   *
+   * Before these existed, each section invented its own clamp inline: eight different
+   * scales and three different line-heights across ten headings that are all doing the
+   * same job, so no two section titles on the page matched. `--text-section` is the
+   * name of a section; `--text-sub` is the name of a thing inside one — a card, a room,
+   * a beat. There is no third size.
+   *
+   * Both middle terms are `rem + vw`, for the reason spelled out under `--text-body`:
+   * the root is itself `max(1rem, 1.1111vw)`, so a bare `vw` middle term stops winning
+   * above 1440px and the clamp sits on one end for every width past it. Every one of
+   * the inline clamps these replace had that bug.
+   */
+  --text-section: clamp(2.25rem, 1.5rem + 2.4vw, 3.5rem);
+  --text-section--line-height: 1.04;
+  --text-sub: clamp(1.375rem, 1.1rem + 0.9vw, 1.875rem);
+  --text-sub--line-height: 1.1;
   /*
    * The middle term is rem-based on purpose. A raw `vw` here is dead: the root font
    * size is itself `max(1rem, 1.1111vw)`, so above 1440 `1rem` grows faster than any
@@ -148,8 +167,78 @@ html.lenis body {
   scroll-behavior: auto !important;
 }
 
+/*
+ * ── The wall ───────────────────────────────────────────────────────────────
+ *
+ * Every off-white surface on the site is a plaster wall rather than a flat fill.
+ *
+ * The plate is `wall-grain.webp`: the client's photograph of a wall, high-passed down
+ * to its grain alone and levelled so it sits at ~95% of white. Because it carries no
+ * colour and no low-frequency shape, `multiply` lets it darken whatever is beneath it
+ * by a couple of percent without shifting the hue — which is why the same one plate
+ * works over the canvas here and would work over any of the five element colours.
+ *
+ * The plate is encoded **lossless** (83 KB) despite being 512px of near-flat grey.
+ * Lossy webp does not blur this kind of grain away — it substitutes its own: at q90 the
+ * decoded plate measured *higher* local contrast than the source, because the codec had
+ * replaced fine tooth with 8×8 block noise. Inside a 240px tile that noise repeats on a
+ * grid, which is the one artefact this whole plate exists to avoid.
+ *
+ * It is applied by *decorating the existing `bg-canvas` utility* rather than by adding
+ * a class to each of the eighteen files that already use it. Two reasons: the texture
+ * is a property of the brand's off-white, not a decision each section should get to
+ * make differently; and adding it here means no section can be forgotten and go flat.
+ *
+ * Written in the base layer on purpose. Tailwind's own `bg-canvas` lives in the
+ * utilities layer, which is ordered after base, so its `background-color` still wins —
+ * this rule only contributes the image, the tile size, and the blend.
+ *
+ * `background-attachment` is deliberately left at `scroll`: `fixed` would make the
+ * grain slide underneath the content as the page moves, which reads as a bug rather
+ * than as a wall.
+ */
+@layer base {
+  body,
+  .bg-canvas {
+    /*
+     * Two layers, painted top-down: a wash of the brand off-white, then the grain
+     * under it. The wash is what keeps this a *wall* and not a photograph of one — the
+     * plate alone reads slightly grey and slightly loud, and laying the canvas colour
+     * back over it at partial alpha pulls the whole surface to the brand off-white
+     * while leaving the tooth showing through.
+     *
+     * `color-mix` rather than a second hex, so the wash is derived from the one
+     * `--color-canvas` token and cannot drift away from it.
+     *
+     * The wash and the plate have to be tuned *against each other*, because they
+     * multiply: what reaches the eye is the plate's darkening times what the wash lets
+     * through. The first build stacked a 2.6% plate under a 62% wash and the result was
+     * about 1% — a texture that was, correctly, described as gobbled up. The plate now
+     * darkens ~8% on average and the wash passes 65% of it, landing near 5%.
+     */
+    background-image:
+      linear-gradient(
+        color-mix(in srgb, var(--color-canvas) 35%, transparent),
+        color-mix(in srgb, var(--color-canvas) 35%, transparent)
+      ),
+      url("/images/art/wall-grain.webp");
+    /*
+     * 240px, not 360px. The tile has to be small enough that its own repeat is finer
+     * than the eye's pattern-finding — at 360 the first build showed a visible grid of
+     * soft blobs across any empty area of the page. Shrinking the tile shrinks the
+     * grain with it, which is the right direction anyway: this should read as the
+     * tooth of a wall, not as a print texture.
+     */
+    background-size: auto, 240px;
+    background-repeat: repeat;
+    /* The wash sits over the grain normally; the grain multiplies into the colour
+       beneath. Two layers, so two blend modes, in the same order as the images. */
+    background-blend-mode: normal, multiply;
+  }
+}
+
 body {
-  background: var(--color-canvas);
+  background-color: var(--color-canvas);
   color: var(--color-ink);
   font-family: var(--font-body);
 

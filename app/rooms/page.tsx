@@ -37,7 +37,7 @@ export default function RoomsPage() {
                   />
                   <div className="mt-6 border-t border-ink/15 pt-5">
                     <div className="flex items-baseline justify-between gap-4">
-                      <h2 className="font-display text-[clamp(1.5rem,2.2vw,2rem)] leading-none">
+                      <h2 className="font-display text-sub">
                         {room.name}
                       </h2>
                       <Label className="shrink-0 opacity-40">{room.size}</Label>

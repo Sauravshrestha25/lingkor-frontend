@@ -1,9 +1,9 @@
 import Hero from "@/features/hero/components/Hero";
-import Preloader from "@/features/preloader/components/Preloader";
 import Footer from "@/features/navigation/components/Footer";
 import KoraCircle from "@/features/kora/components/KoraCircle";
 import { AboutSection } from "@/features/home/components/AboutSection";
 import { StatementSection } from "@/features/home/components/StatementSection";
+import { PlaceBand } from "@/features/home/components/PlaceBand";
 import { StorySection } from "@/features/home/components/StorySection";
 import { SpacesSection } from "@/features/home/components/SpacesSection";
 import { RoomsSection } from "@/features/home/components/RoomsSection";
@@ -13,11 +13,11 @@ import { EnquireSection } from "@/features/home/components/EnquireSection";
 export default function Page() {
   return (
     <main className="w-full">
-      {/* <Preloader /> */}
       <Hero />
       <AboutSection />
       <StatementSection />
       <StorySection />
+      <PlaceBand />
       <SpacesSection />
       <RoomsSection />
       <KoraCircle />

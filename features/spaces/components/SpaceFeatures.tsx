@@ -126,7 +126,7 @@ export function SpaceFeatures({
                     {String(i + 1).padStart(2, "0")} /{" "}
                     {String(features.length).padStart(2, "0")}
                   </Label>
-                  <h3 className="font-display mt-4 text-[clamp(2rem,4vw,3.5rem)] leading-[1.05]">
+                  <h3 className="font-display mt-4 text-section">
                     {f.title}
                   </h3>
                   <p className="text-body mt-4 max-w-[46ch] opacity-80">{f.line}</p>
@@ -152,7 +152,7 @@ export function SpaceFeatures({
                 {String(i + 1).padStart(2, "0")} /{" "}
                 {String(features.length).padStart(2, "0")}
               </Label>
-              <h3 className="font-display mt-4 text-[clamp(1.75rem,6vw,2.5rem)] leading-[1.05]">
+              <h3 className="font-display mt-4 text-section">
                 {f.title}
               </h3>
               <p className="text-body mt-4 opacity-80">{f.line}</p>

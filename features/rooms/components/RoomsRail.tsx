@@ -5,6 +5,7 @@ import { Photo } from "@/components/media/Photo";
 import { ROOMS } from "../data/rooms";
 import { Button } from "@/components/shared/button";
 import { Label } from "@/components/ui";
+import { StarFrame } from "@/components/StarFrame";
 
 /**
  * The rooms, as a rail you drag. Transport and proximity focus come from
@@ -25,18 +26,22 @@ export default function RoomsRail() {
             key={room.id}
             className="group w-[78vw] shrink-0 transition-[opacity,transform] duration-500 ease-out sm:w-[46vw] lg:w-[30vw]"
           >
-            <Photo
-              src={`/images/rooms/${room.id}.webp`}
-              alt={`${room.name} — ${room.note}`}
-              sizes="(max-width: 640px) 78vw, (max-width: 1024px) 46vw, 30vw"
-              loading={i < 2 ? "eager" : "lazy"}
-              className="aspect-[4/5]"
-              imgClassName="transition-transform duration-[1200ms] ease-out group-hover:scale-[1.03]"
-            />
+            {/* Same frame the spaces cards carry, so a room and a space read as two
+                views of one house rather than two components. */}
+            <StarFrame>
+              <Photo
+                src={`/images/rooms/${room.id}.webp`}
+                alt={`${room.name} — ${room.note}`}
+                sizes="(max-width: 640px) 78vw, (max-width: 1024px) 46vw, 30vw"
+                loading={i < 2 ? "eager" : "lazy"}
+                className="aspect-[4/5]"
+                imgClassName="transition-transform duration-[1200ms] ease-out group-hover:scale-[1.03]"
+              />
+            </StarFrame>
 
             <div className="mt-6 flex items-baseline justify-between border-t border-ink/15 pt-5">
               <div>
-                <h3 className="font-display text-[clamp(1.5rem,2.2vw,2rem)] leading-none">
+                <h3 className="font-display text-sub">
                   {room.name}
                 </h3>
                 <Label className="mt-3 block opacity-50">{room.note}</Label>

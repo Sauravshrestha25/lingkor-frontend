@@ -193,6 +193,27 @@ hotel homepage has until these land.
 | Booking route (engine / OTA / enquiry only?) | hero CTA + `/contact` | enquiry form only |
 | Real testimonials | `features/testimonials/data/voices.ts` | fabricated — see below |
 | Luri + Namkha renders | `features/spaces` | those two pages have no feature run |
+| Licence for the engraved rose | `public/images/art/fiore-rose.webp` | **provenance unknown — see below** |
+
+### ⚠️ The engraved rose
+
+`Fiore_Pattern-scaled.png` was added to `public/images/art/` and is now used as a
+watermark behind the enquiry form (`EnquireSection`). Two things about it are unresolved
+and both need an answer before this site is public:
+
+1. **Where it came from.** The `-scaled` suffix is what WordPress appends to a media
+   upload, so this is a file lifted off a WordPress site rather than an original or a
+   stock download. The reference site used while designing this page was
+   `rosefamily.com.ua` — a rose-branded studio. If the drawing is theirs, it is their
+   brand mark sitting on a competitor's commercial site, which is a legal problem and
+   not a design one.
+2. **Whether it belongs.** Every other drawing here — caravan, stupa, panorama, knot —
+   was commissioned in a Tibetan idiom. This is a Victorian engraving of *Rosa canina*,
+   a European hedgerow rose that does not grow in Mustang and carries none of the
+   building's references. It is held at 13% opacity partly for that reason.
+
+If it turns out to be licensed, delete this note. If not, the same slot would take a
+commissioned drawing in the existing set's hand at no cost to the layout.
 
 The hero CTA reads **"Enquire about a stay"** rather than "Book" on purpose: there is no
 engine, no rates and no availability behind it, and a button that cannot do what it says
