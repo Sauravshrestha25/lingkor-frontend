@@ -9,7 +9,7 @@ export function EnquireSection() {
     {/* ── Enquire ─────────────────────────────────────────────────────── */}
     <section
       id="enquire"
-      className="relative w-full overflow-hidden bg-canvas py-32 lg:py-44"
+      className="relative w-full overflow-hidden bg-canvas section-y"
     >
       {/*
         The engraved rose, as ground rather than as an illustration.

@@ -13,7 +13,7 @@ export function VoicesSection() {
         ⚠️ Every quote below is PLACEHOLDER. The hotel has not opened, so there
         are no guests and no reviews — see CONTENT.md. Fabricated testimonials
         must not ship; drop real ones into VOICES and nothing else changes. */}
-    <section id="voices" className="w-full bg-canvas py-32 text-ink lg:py-44">
+    <section id="voices" className="w-full bg-canvas text-ink section-y">
       <div className="mx-auto mb-16 w-full shell-max shell-px">
         <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
           <div>

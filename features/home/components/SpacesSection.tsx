@@ -18,7 +18,7 @@ import { Label } from "@/components/ui";
 export function SpacesSection() {
   return (
     <>
-      <section className="w-full bg-canvas pt-32 pb-14 lg:pt-40">
+      <section className="w-full bg-canvas pt-[var(--space-section)] pb-14">
         <div className="mx-auto w-full shell-max shell-px">
           <Rise>
             <Label className="opacity-60">Five elements, five rooms</Label>

@@ -91,7 +91,7 @@ export function StorySection() {
   }, []);
 
   return (
-    <section id="story" ref={root} className="w-full bg-canvas py-24 lg:py-32">
+    <section id="story" ref={root} className="w-full bg-canvas section-y">
       <div className="mx-auto w-full shell-max shell-px">
         <div>
           <Label className="opacity-65">The road south</Label>

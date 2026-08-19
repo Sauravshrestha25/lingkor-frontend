@@ -51,3 +51,18 @@ export const STORY = [
     alt: "The hotel from above, terraces and garden",
   },
 ];
+
+/**
+ * The caravan story — the client's own words, from the concept brief.
+ *
+ * Restored to the homepage as the journey divider. It is *also* told on `/about`; that
+ * duplication is deliberate and known, not an oversight. If it ever needs resolving,
+ * the homepage is the one with the reveal built around it.
+ *
+ * Two facts in here are load-bearing and should not be smoothed away by a future edit:
+ * the route runs down the Kali Gandaki through Kagbeni, Jomsom and Thak Khola, and the
+ * traders went home *before* the winter — the road closes, which is what beat 01 of the
+ * road south means by "for most of the year the top of it is closed".
+ */
+export const JOURNEY =
+  "Each autumn, before the roads and the jeeps, the traders of Lo gathered their caravans of yaks and mules. They carried salt from Tibet and barley from Mustang down the Kali Gandaki — through Kagbeni, Jomsom, Thak Khola — to the courtyards below the great stupa. They traded for wool, and climbed home before the winter.";

@@ -4,6 +4,7 @@ import KoraCircle from "@/features/kora/components/KoraCircle";
 import { AboutSection } from "@/features/home/components/AboutSection";
 import { StatementSection } from "@/features/home/components/StatementSection";
 import { PlaceBand } from "@/features/home/components/PlaceBand";
+import { JourneyDivider } from "@/features/home/components/JourneyDivider";
 import { StorySection } from "@/features/home/components/StorySection";
 import { SpacesSection } from "@/features/home/components/SpacesSection";
 import { RoomsSection } from "@/features/home/components/RoomsSection";
@@ -16,6 +17,7 @@ export default function Page() {
       <Hero />
       <AboutSection />
       <StatementSection />
+      <JourneyDivider />
       <StorySection />
       <PlaceBand />
       <SpacesSection />

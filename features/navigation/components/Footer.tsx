@@ -50,7 +50,7 @@ export default function Footer() {
 
           <div>
             <Label className="opacity-65">The five spaces</Label>
-            <ul className="mt-6 space-y-2">
+            <ul className="mt-6 space-y-6">
               {SPACES.map((s) => (
                 <li key={s.slug}>
                   <Link
@@ -58,9 +58,7 @@ export default function Footer() {
                     className="text-body opacity-75 transition-opacity duration-300 hover:opacity-100"
                   >
                     {s.name}
-                    <span className="text-label ml-2 uppercase opacity-65">
-                      {s.role}
-                    </span>
+                    <span className="text-body ml-2 opacity-65">{s.role}</span>
                   </Link>
                 </li>
               ))}
@@ -69,7 +67,7 @@ export default function Footer() {
 
           <div>
             <Label className="opacity-65">Explore</Label>
-            <ul className="mt-6 space-y-2">
+            <ul className="mt-6 space-y-6">
               {NAV.map((p) => (
                 <li key={p.href}>
                   <Link
@@ -86,7 +84,7 @@ export default function Footer() {
           <div>
             <Label className="opacity-65">Find us</Label>
             {/* TODO: street address — none supplied. See CONTENT.md. */}
-            <address className="text-body mt-6 space-y-2 not-italic opacity-75">
+            <address className="text-body mt-6 space-y-6 not-italic opacity-75">
               <p>{CONTACT.address}</p>
               <p>
                 <a href={CONTACT.phoneHref} className="hover:opacity-100">

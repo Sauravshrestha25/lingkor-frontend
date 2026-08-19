@@ -84,7 +84,7 @@ export function AboutSection() {
     <section
       id="about"
       ref={root}
-      className="relative w-full overflow-hidden bg-canvas py-24 lg:py-32"
+      className="relative w-full overflow-hidden bg-canvas section-y"
     >
       <div className="mx-auto w-full shell-max shell-px">
         <div className="lg:grid lg:grid-cols-12 lg:gap-12">
@@ -183,14 +183,6 @@ export function AboutSection() {
 
         Behind everything: the content above carries `relative`, this carries `z-0`.
       */}
-      <span
-        data-ghost
-        aria-hidden="true"
-        className="pointer-events-none absolute bottom-[0.18em] left-[4%]  select-none whitespace-nowrap text-[26vw] font-title leading-none text-transparent lg:text-[19vw]"
-        style={{ WebkitTextStroke: "1px rgb(28 26 23 / 0.14)" }}
-      >
-        LINGKOR
-      </span>
     </section>
   );
 }

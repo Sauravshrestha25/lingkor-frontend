@@ -6,16 +6,20 @@ import { Label } from "@/components/ui";
 
 const TO = "phuntsokg8808@gmail.com";
 
-const field =
-  "peer w-full border-b border-ink/25 bg-transparent py-3 text-body outline-none transition-colors duration-300 placeholder:text-ink/30 focus:border-ink";
-
-/**
- * There is no booking engine and no backend (REQUIREMENTS.md §8) — so submitting
- * builds a `mailto:` with the form's contents pre-filled into the body and hands the
- * visitor to their own mail client. That is a real, working path today; it is not a
- * simulation of one. Replace `onSubmit` with a real POST once there's somewhere to
- * send it, and the fields below don't need to change.
+/*
+ * `leading-[1.25]`, not the body line-height, and a small asymmetric pad.
+ *
+ * `text-body` carries `line-height: 1.65`, which is right for a paragraph and wrong for
+ * a single-line control: at 25px type that is 8px of half-leading above and below the
+ * glyphs, and with `py-3` on top of it the typed text sat **26px** clear of the rule it
+ * is supposed to be written on. A field should read as writing on a line.
+ *
+ * Slightly more above than below (`pt-2.5` / `pb-1.5`) so the gap to the label overhead
+ * stays open while the text closes down onto the rule.
  */
+const field =
+  "peer w-full border-b border-ink/25 bg-transparent pt-2.5 pb-1.5 text-body leading-[1.25] outline-none transition-colors duration-300 placeholder:text-ink/30 focus:border-ink";
+
 export default function EnquireForm() {
   const [sent, setSent] = useState(false);
 
@@ -48,7 +52,7 @@ export default function EnquireForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="w-full max-w-[38rem]">
+    <form onSubmit={onSubmit} className="w-full max-w-152">
       <div className="grid grid-cols-1 gap-x-8 gap-y-8 sm:grid-cols-2">
         <label className="block">
           <Label className="opacity-50">Name</Label>

@@ -6,7 +6,7 @@ export function RoomsSection() {
   return (
     <>
       {/* ── Rooms ───────────────────────────────────────────────────────── */}
-      <section id="rooms" className="w-full bg-canvas py-24 lg:py-32">
+      <section id="rooms" className="w-full bg-canvas section-y">
         <div className="mx-auto mb-16 w-full shell-max shell-px">
           <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
             <div>

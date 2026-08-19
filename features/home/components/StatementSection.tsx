@@ -44,6 +44,14 @@ export function StatementSection() {
       ref={root}
       className="relative w-full bg-canvas pt-24 lg:pt-[9.8rem]"
     >
+      <span
+        data-ghost
+        aria-hidden="true"
+        className="pointer-events-none absolute top-[0.18em] left-[4%]  select-none whitespace-nowrap text-[26vw] font-title leading-none text-transparent lg:text-[19vw]"
+        style={{ WebkitTextStroke: "1px rgb(28 26 23 / 0.14)" }}
+      >
+        LINGKOR
+      </span>
       <div className="mx-auto w-full shell-max shell-px">
         {/* Subject and sentence share a baseline. */}
         <div className="lg:flex lg:items-start">

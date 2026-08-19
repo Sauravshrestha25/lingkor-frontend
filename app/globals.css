@@ -100,6 +100,16 @@
   --text-sub: clamp(1.375rem, 1.1rem + 0.9vw, 1.875rem);
   --text-sub--line-height: 1.1;
   /*
+   * Reading size — one step above body, well below a heading. There is exactly one
+   * passage on the site set at it: the caravan story in the journey divider, which is
+   * scrubbed word by word and so has to be large enough that the ink-in is legible per
+   * word, without becoming a heading. Set at `--text-sub` first, it rendered at 44px on
+   * a wide display — identical to the beat titles beside it, which made a paragraph
+   * look like a stack of headings.
+   */
+  --text-lead: clamp(1.125rem, 1rem + 0.45vw, 1.25rem);
+  --text-lead--line-height: 1.6;
+  /*
    * The middle term is rem-based on purpose. A raw `vw` here is dead: the root font
    * size is itself `max(1rem, 1.1111vw)`, so above 1440 `1rem` grows faster than any
    * plausible vw figure and the clamp pins to its floor at every width — this token
@@ -112,6 +122,10 @@
   --text-label: 0.6875rem;
   --text-label--line-height: 1.2;
   --text-label--letter-spacing: 0.2em;
+
+  /* See the "Vertical rhythm" note below for why these are px/vw and not rem. */
+  --space-section: clamp(72px, 5.6vw, 128px);
+  --space-divider: clamp(40px, 3vw, 72px);
 
   --ease-brand: cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -218,8 +232,8 @@ html.lenis body {
      */
     background-image:
       linear-gradient(
-        color-mix(in srgb, var(--color-canvas) 35%, transparent),
-        color-mix(in srgb, var(--color-canvas) 35%, transparent)
+        color-mix(in srgb, var(--color-canvas) 60%, transparent),
+        color-mix(in srgb, var(--color-canvas) 60%, transparent)
       ),
       url("/images/art/wall-grain.webp");
     /*
@@ -279,6 +293,31 @@ body {
    is that the design grows with the screen instead of stopping and banking the
    surplus into margin. What keeps a 2560px display from looking bare is that the type
    and spacing grew with it, not that the content was fenced in. */
+/* ── Vertical rhythm ────────────────────────────────────────────────────────
+   Section padding, in units that do **not** track the root font size.
+
+   This is the fix for a real defect, not a preference. `html` is deliberately
+   `font-size: max(1rem, 1.1111vw)` so that type stays proportional at any zoom — which
+   means at a 2133px viewport the root is 23.7px, and every rem on the page is 48%
+   larger than authored. That is right for text and wrong for space: `lg:py-44` was
+   written as 11rem = 176px and was actually painting **261px** top and bottom, so on a
+   large monitor sections were separated by half a screen of nothing.
+
+   Expressed in px and vw, these are immune to that. The middle term still scales the
+   gap with the viewport; the cap stops it running away.
+
+       --space-section   between full sections
+       --space-divider   above and below a divider, which should feel like a pause
+                         rather than a section in its own right
+   ───────────────────────────────────────────────────────────────────────────── */
+@utility section-y {
+  padding-block: var(--space-section);
+}
+
+@utility divider-y {
+  padding-block: var(--space-divider);
+}
+
 @utility shell-max {
   width: 100%;
   margin-inline: auto;
@@ -355,7 +394,14 @@ body::-webkit-scrollbar {
    * animate a glyph up through a fixed-height `overflow-hidden` wrapper; trimming that
    * wrapper to cap height clips the letters mid-reveal.
    */
-  :where(*):not([data-notrim], [data-notrim] *) {
+  /*
+   * Form controls are exempt. A control's box is sized by the browser from its font,
+   * padding and intrinsic metrics, and trimming its line box to cap height fights that
+   * — the glyphs shift inside a box whose height does not move with them, so the text
+   * ends up floating off its own underline. The rule exists to close up gaps around
+   * *typography*; an input's box is chrome, not typography.
+   */
+  :where(*):not([data-notrim], [data-notrim] *, input, textarea, select) {
     text-box-trim: trim-both;
   }
 }
