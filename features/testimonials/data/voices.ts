@@ -1,7 +1,7 @@
 import type { Voice } from "../types";
 
 /**
- * ⚠️ PLACEHOLDER. Every quote, every name and every face below is fabricated.
+ * ⚠️ PLACEHOLDER. Every quote and every guest name below is fabricated.
  *
  * The hotel has not opened. There are no guests, no stays and no reviews, so there is
  * no such thing as a real Lingkor testimonial yet. This data exists so the section can
@@ -13,17 +13,12 @@ import type { Voice } from "../types";
  * 1. **The quotes.** Invented endorsements are deceptive advertising under the FTC's
  *    endorsement rules in the US and equivalent consumer-protection law in the UK, EU
  *    and elsewhere. It does not matter that the sentiment is plausible.
- * 2. **The faces.** These are real, identifiable people photographed by Unsplash
- *    contributors. The Unsplash licence covers commercial *use* of the image, but it
- *    does not grant the depicted person's likeness rights, and it explicitly does not
- *    cover using someone's face to imply they endorse a product. A stranger appearing
- *    to recommend a hotel they have never visited is the exact case that rule exists
- *    for — and it is a claim against us by the person in the photograph, quite apart
- *    from the advertising-standards problem.
+ * 2. **The pictures.** No guest portraits exist yet. The cards therefore use the
+ *    client's own photographs of rooms and places, never documentary pictures of
+ *    identifiable people presented as hotel guests.
  *
- * Real quotes drop into the same shape. Set `image` to a guest's own photograph, taken
- * with their permission, or drop `image` entirely and the card falls back to the
- * wordmark tile. See CONTENT.md.
+ * Real quotes drop into the same shape. A consented guest portrait can replace the
+ * atmospheric image later; dropping `image` entirely uses the wordmark tile.
  */
 /*
  * `onTint` is "ink" on every card, and that is a measurement rather than a default.
@@ -49,8 +44,8 @@ export const VOICES: Voice[] = [
     room: "Ghegu",
     tint: "var(--color-earth)",
     onTint: "ink",
-    image:
-      "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=1200&h=750&fit=crop&crop=faces",
+    image: "/images/spaces/arrival.webp",
+    imageAlt: "The welcoming entrance hall at Lingkor",
   },
   {
     quote:
@@ -60,8 +55,8 @@ export const VOICES: Voice[] = [
     rating: 5,
     tint: "var(--color-water)",
     onTint: "ink",
-    image:
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1200&h=750&fit=crop&crop=faces",
+    image: "/images/boudhanath.webp",
+    imageAlt: "Evening movement around the Boudhanath stupa",
   },
   {
     quote:
@@ -72,8 +67,8 @@ export const VOICES: Voice[] = [
     room: "Netsang",
     tint: "var(--color-wind)",
     onTint: "ink",
-    image:
-      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=1200&h=750&fit=crop&crop=faces",
+    image: "/images/mustang/_ECS0971-mod.webp",
+    imageAlt: "Painted bands of colour on a carved wall in Mustang",
   },
   {
     quote:
@@ -84,8 +79,8 @@ export const VOICES: Voice[] = [
     room: "Menthang",
     tint: "var(--color-fire)",
     onTint: "ink",
-    image:
-      "https://images.unsplash.com/photo-1552058544-f2b08422138a?w=1200&h=750&fit=crop&crop=faces",
+    image: "/images/spaces/gallery/menthang-2.webp",
+    imageAlt: "Treatment beds in the turquoise Menthang spa",
   },
   {
     quote:
@@ -96,7 +91,7 @@ export const VOICES: Voice[] = [
     room: "Luri",
     tint: "var(--color-space)",
     onTint: "ink",
-    image:
-      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=1200&h=750&fit=crop&crop=faces",
+    image: "/images/spaces/luri.webp",
+    imageAlt: "The warm red interior of the Luri rooftop café",
   },
 ];

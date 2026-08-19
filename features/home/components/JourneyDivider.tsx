@@ -29,7 +29,7 @@ export function JourneyDivider() {
       <LineArt
         name="panorama"
         tone="terracotta"
-        className="pointer-events-none absolute w-full  bottom-20 left-10  z-0  max-w-none opacity-60 lg:w-344"
+        className="pointer-events-none absolute w-full  bottom-20   z-0  max-w-none opacity-60 "
       />
     </section>
   );

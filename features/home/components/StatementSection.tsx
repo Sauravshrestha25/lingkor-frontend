@@ -26,8 +26,8 @@ export function StatementSection() {
         },
       });
 
-      tl.to(leftRef.current, { y: -400, duration: 0.5, ease: "none" }, 0.1);
-      tl.to(rightRef.current, { y: 500, duration: 0.5, ease: "none" }, 0.1);
+      tl.to(leftRef.current, { y: -200, duration: 0.5, ease: "none" }, 0.1);
+      tl.to(rightRef.current, { y: 200, duration: 0.5, ease: "none" }, 0.1);
 
       return () => {
         tl.scrollTrigger?.kill();
@@ -47,7 +47,7 @@ export function StatementSection() {
       <span
         data-ghost
         aria-hidden="true"
-        className="pointer-events-none absolute top-[0.18em] left-[4%]  select-none whitespace-nowrap text-[26vw] font-title leading-none text-transparent lg:text-[19vw]"
+        className="pointer-events-none absolute -top-12 left-[4%]  select-none whitespace-nowrap text-[26vw] font-title leading-none text-transparent lg:text-[19vw]"
         style={{ WebkitTextStroke: "1px rgb(28 26 23 / 0.14)" }}
       >
         LINGKOR
@@ -60,10 +60,10 @@ export function StatementSection() {
             alt="Lingkor"
             width={431}
             height={255}
-            className="h-auto w-32 text-ink lg:ml-[25.5%] lg:w-[6.6%] lg:shrink-0 lg:translate-y-[0.15em]"
+            className="h-auto w-32 text-ink lg:ml-[15.5%] lg:w-[6.6%] lg:shrink-0 lg:translate-y-[0.15em]"
           />
 
-          <h2 className="mt-6 font-display text-[clamp(1.5rem,2.29vw,3rem)] uppercase leading-[1.2] lg:mt-0 lg:ml-[2.94rem] lg:w-[38.8%]">
+          <h2 className="mt-6 font-display text-[clamp(1.5rem,2.29vw,3rem)] uppercase leading-[1.2] lg:mt-0 lg:ml-[0.94rem] lg:w-[60%]">
             takes the whole of Mustang — its colours, its rooms, its quiet — and
             sets it down four hundred kilometres south of itself.
           </h2>
@@ -80,7 +80,7 @@ export function StatementSection() {
           </div>
 
           <Photo
-            src="/images/spaces/menthang.webp"
+            src="/images/spaces/gallery/menthang-2.webp"
             alt="Treatment beds in the turquoise calm of the spa"
             sizes="(max-width: 1024px) 100vw, 27vw"
             className="aspect-5/7 w-full lg:ml-[55.7%] lg:w-[26.4%]"
@@ -103,10 +103,11 @@ export function StatementSection() {
 
           <div ref={leftRef} className="mt-16 lg:mt-[7.8rem]">
             <Photo
-              src="/images/spaces/netsang.webp"
-              alt="The dining room, laid along a wall of windows"
+              src="/images/spaces/gallery/netsang-2.webp"
+              alt="A table laid for a meal in the ochre dining room"
               sizes="(max-width: 1024px) 100vw, 46vw"
               className="aspect-5/7 w-full lg:w-[45.4%]"
+              imgClassName="object-[52%_center]"
             />
 
             <div className="mt-6 lg:w-[45.4%]">

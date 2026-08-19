@@ -14,9 +14,8 @@ export type Voice = {
   tint: string;
   /** Type colour for that ground. Same rule as `Space.displayOnField`. */
   onTint: "white" | "ink";
-  /**
-   * A real photograph, once one exists and the guest has agreed to it being used.
-   * Absent for now, so the card falls back to a wordmark tile.
-   */
+  /** A guest portrait or an atmospheric photograph accompanying the quote. */
   image?: string;
+  /** Describes the photograph independently from the placeholder guest name. */
+  imageAlt?: string;
 };

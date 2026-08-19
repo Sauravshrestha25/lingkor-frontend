@@ -32,14 +32,12 @@ export default function RoomsPage() {
                     src={`/images/rooms/${room.id}.webp`}
                     alt={`${room.name} — ${room.note}`}
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    className="aspect-[4/5] w-full"
+                    className="aspect-4/5 w-full"
                     strength={6}
                   />
                   <div className="mt-6 border-t border-ink/15 pt-5">
                     <div className="flex items-baseline justify-between gap-4">
-                      <h2 className="font-display text-sub">
-                        {room.name}
-                      </h2>
+                      <h2 className="font-display text-sub">{room.name}</h2>
                       <Label className="shrink-0 opacity-40">{room.size}</Label>
                     </div>
                     <Label className="mt-3 block opacity-50">{room.note}</Label>
@@ -53,8 +51,8 @@ export default function RoomsPage() {
               See CONTENT.md. */}
           <Rise delay={200} className="mt-24 border-t border-ink/15 pt-12">
             <p className="text-body max-w-[46ch] opacity-70">
-              Rates depend on the season and the length of the stay. Write to us with
-              your dates and we will send them.
+              Rates depend on the season and the length of the stay. Write to us
+              with your dates and we will send them.
             </p>
             <div className="mt-8">
               <TextLink href="/contact">Ask about a room</TextLink>

@@ -4,32 +4,6 @@ import { useEffect, useRef } from "react";
 import { gsap, reduced } from "@/lib/gsap";
 import { Photo } from "@/components/media/Photo";
 
-/**
- * About us — built to the rosefamily.com.ua section the client pointed at.
- *
- * Reproduced from that layout: a large two-line display quote with the second line
- * indented; a giant outlined word behind the body copy, stroke only, read as texture
- * before it is read as a word; bracketed `[ 01 ]` and `[ About us ]` markers set left
- * of what they label; a narrow body column with a small frame anchoring it; and further
- * images scattered below at unequal sizes and offsets.
- *
- * **Not reproduced: the photograph laid over the headline.** The reference does that,
- * and the first build copied it with an absolutely-positioned frame. It did not
- * survive translation. Their overlapped line is a flourish whose sense survives being
- * half-covered; ours ate the end of *"you will not want to leave"* — the payoff of the
- * client's own sentence — and then carried on down over the body copy as well. A
- * 12-column grid instead: nothing can overlap anything at any width, and the asymmetry
- * that makes the reference work (narrow measure, tall image, unequal columns) is all
- * still there.
- *
- * Motion: frames unclip upward rather than fading — the frame opens and the picture is
- * already there. The ghost word drifts slower than the page, so the layers separate on
- * scroll, and the quote lines rise from behind their own masks.
- *
- * One further departure: the reference alternates roman and italic inside the quote.
- * Italiana ships one weight and no italic, and faux-slanting a high-contrast display
- * face shears its thin strokes to nothing, so the lines are distinguished by indent.
- */
 export function AboutSection() {
   const root = useRef<HTMLElement>(null);
 
@@ -143,10 +117,11 @@ export function AboutSection() {
             className="mt-12 w-full lg:col-span-5 lg:col-start-8 lg:mt-0"
           >
             <Photo
-              src="/images/spaces/exterior.webp"
-              alt="The hotel from above, its terraces and garden"
+              src="/images/spaces/arrival.webp"
+              alt="The warm entrance hall at Lingkor, with the garden door beyond"
               sizes="(max-width: 1024px) 100vw, 40vw"
               className="aspect-3/4 w-full"
+              imgClassName="object-[52%_center]"
             />
           </div>
         </div>
@@ -155,10 +130,11 @@ export function AboutSection() {
         <div className="mt-16 grid grid-cols-1 gap-8 sm:grid-cols-12 lg:mt-24">
           <div data-reveal className="sm:col-span-5 sm:col-start-2">
             <Photo
-              src="/images/spaces/lobby.webp"
-              alt="The lobby seating, looking towards the wellness centre"
+              src="/images/mustang/_DSF5358.webp"
+              alt="A narrow sunlit passage between earthen walls in Mustang"
               sizes="(max-width: 640px) 100vw, 40vw"
               className="aspect-4/3 w-full"
+              imgClassName="object-[50%_58%]"
             />
           </div>
           <div data-reveal className="sm:col-span-3 sm:col-start-9 sm:mt-20">

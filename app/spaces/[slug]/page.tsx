@@ -81,12 +81,15 @@ export default async function SpacePage({ params }: Params) {
             />
             {/* Bottom-weighted, matching the homepage hero: the type needs ground to
                 sit on, and a full scrim would flatten the render. */}
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/25 to-ink/40" />
+            <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-ink/80 via-ink/25 to-ink/40" />
           </>
         ) : (
           // The two colourless areas have no render on purpose — the flat field does
           // the work the photograph would have done.
-          <div className="absolute inset-0" style={{ backgroundColor: space.field }} />
+          <div
+            className="absolute inset-0"
+            style={{ backgroundColor: space.field }}
+          />
         )}
 
         {/* Over a photograph the type is always light, because the scrim guarantees a
@@ -94,7 +97,10 @@ export default async function SpacePage({ params }: Params) {
             the Boutique sit on the off-white ground, where light type is invisible. */}
         <div
           className="absolute inset-0 flex flex-col justify-end shell-px pb-[max(2.5rem,env(safe-area-inset-bottom))]"
-          style={{ color: space.image || white ? "var(--color-space)" : "var(--color-ink)" }}
+          style={{
+            color:
+              space.image || white ? "var(--color-space)" : "var(--color-ink)",
+          }}
         >
           <div className="mx-auto w-full shell-max">
             <Rise>
@@ -142,7 +148,7 @@ export default async function SpacePage({ params }: Params) {
                   `clamp(1.25rem,2.1vw,1.875rem)` this ran 1.76x the body size at
                   desktop, which read as two unrelated blocks rather than a lead and
                   its continuation. This holds ~1.3x at every width. */}
-              <p className="text-[clamp(1.125rem,1.6vw,1.5rem)] leading-[1.5]">
+              <p className="text-[clamp(1.125rem,1.6vw,1.5rem)] leading-normal">
                 {lead}
               </p>
             </Rise>
@@ -212,7 +218,7 @@ export default async function SpacePage({ params }: Params) {
                         src={img}
                         alt={`${space.name} — ${space.role}`}
                         sizes="(max-width: 1024px) 100vw, 76vw"
-                        className={`aspect-[16/9] w-full lg:w-[76%] ${
+                        className={`aspect-video w-full lg:w-[76%] ${
                           i % 2 === 0 ? "lg:ml-auto" : "lg:mr-auto"
                         }`}
                       />
@@ -236,7 +242,7 @@ export default async function SpacePage({ params }: Params) {
                     src={src}
                     alt={`${space.name} — ${space.role}`}
                     sizes="(max-width: 640px) 100vw, 46vw"
-                    className="aspect-[4/3] w-full"
+                    className="aspect-4/3 w-full"
                   />
                 </Rise>
               ))}
@@ -250,7 +256,10 @@ export default async function SpacePage({ params }: Params) {
         className="relative w-full overflow-hidden py-24 lg:py-32"
         style={{
           backgroundColor: next.field,
-          color: next.displayOnField === "white" ? "var(--color-space)" : "var(--color-ink)",
+          color:
+            next.displayOnField === "white"
+              ? "var(--color-space)"
+              : "var(--color-ink)",
         }}
       >
         <CloudMotif className="pointer-events-none absolute -right-12 -top-6 w-56 opacity-15 lg:w-80" />

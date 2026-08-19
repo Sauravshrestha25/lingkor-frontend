@@ -67,7 +67,7 @@ export default function SpacesPage() {
                   <LineArt
                     name="caravan"
                     tone="terracotta"
-                    className="h-[22rem] w-auto opacity-60 lg:h-[30rem]"
+                    className="h-88 w-auto opacity-60 lg:h-120"
                   />
                 </Rise>
               )}
@@ -98,7 +98,9 @@ export default function SpacesPage() {
 
                 <Rise delay={260}>
                   <Label className="mt-10 block opacity-60">
-                    {space.element ? `${space.element} · ${space.hue}` : space.hue}
+                    {space.element
+                      ? `${space.element} · ${space.hue}`
+                      : space.hue}
                   </Label>
                 </Rise>
 

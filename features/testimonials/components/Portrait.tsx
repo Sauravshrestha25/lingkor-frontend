@@ -5,12 +5,10 @@ import type { Voice } from "../types";
 /**
  * The portrait block on a testimonial card.
  *
- * ⚠️ No guest photography exists — the hotel has not opened. Two things were
- * deliberately *not* done here: inventing a face, and reusing the client's Mustang
- * photographs of real, identifiable people. Those are documentary photographs of
- * Mustangi residents; presenting them as paying guests endorsing a hotel would use
- * someone's likeness in advertising without their consent, which is a worse problem
- * than the fabricated quote it would illustrate.
+ * ⚠️ No guest photography exists — the hotel has not opened. Until consented guest
+ * portraits exist, cards use atmospheric photographs of the place rather than faces.
+ * That keeps the layout photographic without making a stranger appear to endorse the
+ * hotel.
  *
  * So the fallback is a wordmark on the space's own element colour: a real image block
  * at the right proportion, unmistakably not a photograph of a person. Set `image` on a
@@ -22,7 +20,7 @@ export function Portrait({ voice }: { voice: Voice }) {
       <div className="relative aspect-[16/10] w-full overflow-hidden">
         <Image
           src={voice.image}
-          alt={voice.name}
+          alt={voice.imageAlt ?? voice.name}
           fill
           sizes="(max-width: 640px) 82vw, (max-width: 1024px) 54vw, 30vw"
           draggable={false}
