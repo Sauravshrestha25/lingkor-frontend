@@ -1,36 +1,51 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { Geist, Geist_Mono, Alex_Brush } from "next/font/google";
+import { Barlow_Condensed } from "next/font/google";
+import localfont from "next/font/local";
 import "./globals.css";
+import Navbar from "@/features/navigation/components/Navbar";
+import SmoothScroll from "@/components/SmoothScroll";
+import WebxSignature from "@/components/WebxSignature";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const barlow = Barlow_Condensed({
+  variable: "--font-barlow",
+  weight: ["300", "400"],
   subsets: ["latin"],
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-const alexBrush = Alex_Brush({
-  variable: "--font-alex-brush",
+const yagpo = localfont({
+  src: "../public/fonts/YagpoTibetanUni-x3jnj.ttf",
   weight: "400",
-  subsets: ["latin"],
+  style: "normal",
+  variable: "--font-yagpo",
+});
+
+const hasweny = localfont({
+  src: "../public/fonts/Hasweny-XGe69.otf",
+  weight: "400",
+  style: "normal",
+  variable: "--font-hasweny",
 });
 
 export const metadata: Metadata = {
-  title: "Lingkor",
-  description: "Coming Soon",
+  title: "Lingkor — Boudha",
+  description:
+    "Rest in the spirit of Mustang. A hotel beneath the stupa, in Boudha, Kathmandu.",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${alexBrush.variable} h-full antialiased`}
+      className={`${hasweny.variable} ${yagpo.variable} ${barlow.variable}`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="flex min-h-svh flex-col bg-canvas text-ink">
+        <WebxSignature />
+        <SmoothScroll />
+        <Navbar />
+        {children}
+      </body>
     </html>
   );
 }

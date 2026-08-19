@@ -1,9 +1,312 @@
 @import "tailwindcss";
 
 @theme {
-  --font-logo: var(--font-alex-brush);
+  /*
+   * Ground + ink.
+   *
+   * The brief is explicit about the page ground: "should feel very spacious, off white
+   * background". `#F0EDE6` is the brand's own documented off-white — sampled straight
+   * out of `4. Colors/LINGKOR-Colors per area.pdf`, where it is the Namkha panel.
+   *
+   * This was `#E1DFDC`, taken from `Colors.psd`. That is a light warm *grey* rather
+   * than an off-white, and against it the whole page sat a shade heavier and greyer
+   * than the brief asks for.
+   *
+   * ⚠️ It is the same value as `--color-space`, and that is not an accident to be
+   * tidied away: Namkha *is* the off-white, and Space is the element that contains the
+   * other four rather than sitting beside them. Where a Namkha panel meets this ground
+   * the two genuinely are one colour, so those panels carry a hairline instead of a
+   * colour difference — see `SpacesCarousel` and `/spaces`.
+   */
+  --color-canvas: #f0ede6;
+  --color-sand: #cecaaf;
+  --color-ink: #1c1a17;
+
+  /* The five elements. One colour owns one section; never two in a viewport. */
+  --color-earth: #cc9636;
+  --color-water: #539b8f;
+  /* Deviation from client brand doc — see REQUIREMENTS.md §3, "Ghegu colour". */
+  --color-wind: #6e7f91;
+  --color-fire: #c66020;
+  --color-space: #f0ede6;
+
+  /* Animate UI / shadcn semantic tokens, mapped onto the Lingkor palette. */
+  --color-background: #f0ede6;
+  --color-foreground: #1c1a17;
+  --color-card: #f0ede6;
+  --color-card-foreground: #1c1a17;
+  --color-popover: #f0ede6;
+  --color-popover-foreground: #1c1a17;
+  --color-primary: #1c1a17;
+  --color-primary-foreground: #f0ede6;
+  --color-secondary: #cecaaf;
+  --color-secondary-foreground: #1c1a17;
+  --color-muted: #cecaaf;
+  --color-muted-foreground: #6e675f;
+  --color-accent: #cc9636;
+  --color-accent-foreground: #1c1a17;
+  --color-destructive: #c66020;
+  --color-border: color-mix(in srgb, #1c1a17 20%, transparent);
+  --color-input: color-mix(in srgb, #1c1a17 25%, transparent);
+  --color-ring: #539b8f;
+
+  /*
+   * Three type roles. There is no fourth.
+   *
+   * ⚠️ `--font-display` briefly pointed at Barlow, which meant every heading on the
+   * site was set in the body face and the licensed Hasweny was referenced by nothing.
+   * Display is the brand face; body is Yagpo; `--font-title` is kept as an alias so
+   * anything already asking for it still resolves.
+   */
+  --font-display: var(--font-hasweny);
+  --font-title: var(--font-hasweny);
+
+  /*
+   * Yagpo, by choice. It carries full Latin (52/52) as well as the Tibetan block, so
+   * it genuinely sets the body text rather than falling back.
+   *
+   * ⚠️ It also has unusual vertical metrics — ascent 2048 / descent −2048 on an em of
+   * 2048, so its content area is a full **2.0em**, double a normal face. That is what
+   * puts apparent padding under labels and buttons: with a 1.2em line box on a 2.0em
+   * content area the half-leading goes negative, the baseline lands high in the box,
+   * and the unused descent sits underneath as dead space.
+   *
+   * The fix is `text-box` trimming (see `.text-trim` below and the `body` rule), not a
+   * different typeface.
+   */
+  --font-body: var(--font-yagpo);
+  --font-tibetan: var(--font-yagpo);
+
+  --text-display: clamp(2.75rem, 6vw, 6rem);
+  --text-display--line-height: 1.02;
+  --text-display--letter-spacing: 0.005em;
+  /*
+   * The middle term is rem-based on purpose. A raw `vw` here is dead: the root font
+   * size is itself `max(1rem, 1.1111vw)`, so above 1440 `1rem` grows faster than any
+   * plausible vw figure and the clamp pins to its floor at every width — this token
+   * used to resolve to exactly 1.0625rem from 390px to 2560px, with its fluid term
+   * never once winning. `1rem + 0.4vw` scales below 1440, where the root is fixed;
+   * above it, the root does the scaling.
+   */
+  --text-body: clamp(1.0625rem, 1rem + 0.4vw, 1rem);
+  --text-body--line-height: 1.65;
+  --text-label: 0.6875rem;
+  --text-label--line-height: 1.2;
+  --text-label--letter-spacing: 0.2em;
+
+  --ease-brand: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* On <html>, not <body>: `overflow-x: hidden` on the body turns the body into a
+   scroll container, which combined with a full-height html can leave the page
+   unable to scroll at all.
+
+   No `scroll-behavior: smooth` here — Lenis (components/SmoothScroll.tsx) owns the
+   easing for every scroll, wheel, drag and anchor jump. Native smooth-scroll would
+   run a second, independent animation over the same scrollTop and fight it, which is
+   exactly the stutter ScrollTrigger-pinned sections cannot tolerate. */
+html {
+  overflow-x: hidden;
+
+  /* ── rem-as-vw: the whole design scales like an SVG ──────────────────────
+     Every length in this codebase is a rem (Tailwind's spacing scale, the type
+     tokens, the shell below). Tie the root font size to the viewport and all of
+     them become proportions of the screen rather than fixed pixels.
+
+     1440px is the design width and 16px the design root, so 16/1440 = 1.1111vw.
+
+     Why this survives browser zoom: zoom shrinks the *CSS-pixel* viewport. Zoom to
+     200% on a 2560px screen and the viewport reports 1280px, so a vw-derived length
+     shrinks by exactly the factor it is magnified by — the proportions land
+     identically instead of reflowing into the mobile breakpoints.
+
+     `max()` floors it at 16px, which means the scaling only runs *upward*, above
+     1440. Below that the ordinary responsive breakpoints take over. That floor is
+     not decoration: scaling proportionally downward is what makes these techniques
+     fail, because at a 1024px viewport the root would compute to 11.4px and body
+     copy would render at about 12px.
+
+     No ceiling, per the brief — a 2560px display gets a 28px root, a 3840px one a
+     43px root. If 4K ever reads as a mockup rather than a page, the knob is one
+     function: `clamp(1rem, 1.1111vw, 1.75rem)`.
+
+     ⚠️ Accessibility cost, accepted knowingly. A visitor who has set their browser
+     font size to 20px because they cannot comfortably read 16px no longer gets it —
+     vw overrides the preference, and WCAG 1.4.4 (Resize Text) is not met by this
+     rule alone. Page zoom still works and still scales everything, so that route out
+     remains; the font-size preference specifically does not. Reverting is this one
+     declaration. */
+  font-size: max(1rem, 1.1111vw);
+}
+
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
 }
 
 body {
-  overflow-x: hidden;
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+
+  /*
+   * The edge half of the trim. `text-box-edge` *is* inherited, so declaring it once
+   * here defines "cap height to alphabetic baseline" for the whole document; the
+   * `text-box-trim` half is not inherited and is applied by the rule below.
+   */
+  text-box-edge: cap alphabetic;
+  font-weight: 300;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--color-ink);
+  color: var(--color-canvas);
+}
+
+/* ── The shell ──────────────────────────────────────────────────────────────
+   Every section used to be `max-w-[1600px] px-6 lg:px-12`: a hard cap and a hard
+   gutter. Past 1600px the cap stopped doing anything useful and just banked the
+   surplus into margin — on a 2560px display that is 480px of dead ground each side,
+   which is what "too much padding on large screens" is.
+
+   Both numbers are fluid now, so the layout keeps growing with the viewport instead
+   of stopping dead:
+
+     gutter    24px  →  64px   (matches the old 48px at ~1440)
+     content  1440px → 2112px
+
+   Two utilities rather than one, because the rails (RoomsRail, SpacesCarousel,
+   Testimonials) want the gutter but deliberately *not* the cap — their cards run off
+   the right edge to show there is more to drag.
+
+   The cap itself is gone now that the root font size is tied to the viewport (see
+   `html` above). 90rem *is* the viewport at every width where the scaling runs, so a
+   `max-width` could only ever be inert — and a cap would fight the whole point, which
+   is that the design grows with the screen instead of stopping and banking the
+   surplus into margin. What keeps a 2560px display from looking bare is that the type
+   and spacing grew with it, not that the content was fenced in. */
+@utility shell-max {
+  width: 100%;
+  margin-inline: auto;
+}
+
+@utility shell-px {
+  padding-inline: clamp(1.5rem, 3.2vw, 4rem);
+}
+
+/* The page scrollbar is hidden, not disabled — Lenis still drives the scroll, the
+   wheel/trackpad/keys all still work, only the OS chrome is gone. Firefox and IE get
+   the standard properties; WebKit needs its pseudo-element. */
+html {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
+/* The hero's scroll cue: a short mark falling down its own track, forever.
+   CSS rather than GSAP because it is ambient and never interacts with scroll — no
+   reason to hold a timeline open for it. Stopped entirely under reduced-motion by the
+   global rule further down, which is the correct outcome: it is decoration. */
+@keyframes hero-cue {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  35% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(300%);
+    opacity: 0;
+  }
+}
+.hero-cue {
+  animation: hero-cue 2.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+/*
+   Trim the half-leading off the type.
+
+   Yagpo's content area is 2.0em (ascent 2048 / descent −2048 on a 2048 em), so every
+   line box carries far more room above and below the glyphs than the letters need.
+   That surplus is what reads as unexplained padding under labels and buttons, and it
+   is worst on all-caps text, which has no descenders to occupy the space at all.
+
+   ⚠️ `text-box-trim` is **not inherited** — only `text-box-edge` is. Declaring the
+   shorthand on `body` alone therefore trims the body element and nothing inside it,
+   which is why the first attempt at this changed nothing on screen. It has to be set
+   on the elements that actually hold the text.
+
+   `:where()` keeps specificity at zero so component classes always win. Animation
+   wrappers are deliberately excluded: `SplitChars` and `SplitLines` rely on a span's
+   full line box for their overflow masks, and trimming those clips the glyphs
+   mid-reveal.
+ */
+@layer base {
+  /*
+   * Everything, rather than a list of tags. The tag list kept missing cases — the
+   * "Enquire about a stay" call to action is an `<a>`, which was not on it, and every
+   * new element would have needed adding by hand. The cause is the typeface, which
+   * applies to all of it, so the rule should too.
+   *
+   * Safe on elements with no text: `text-box-trim` only affects a box's first and last
+   * *line boxes*, so a wrapper `div` with no text of its own is untouched.
+   *
+   * `data-notrim` exempts the reveal masks. SplitChars, SplitLines and the About quote
+   * animate a glyph up through a fixed-height `overflow-hidden` wrapper; trimming that
+   * wrapper to cap height clips the letters mid-reveal.
+   */
+  :where(*):not([data-notrim], [data-notrim] *) {
+    text-box-trim: trim-both;
+  }
+}
+
+/*
+   Opt-in for the cases the selector above cannot reach — inline spans that are flex
+   items, such as the navbar's "Menu".
+ 
+   Even with the Yagpo bug fixed, Barlow Condensed reserves a 0.2em descent that
+   all-caps labels never use — MENU has nothing below the baseline, so that space sits
+   under the word as dead padding and makes every label look bottom-heavy in a flex row.
+ 
+   `text-box` trims the line box to the actual cap height and alphabetic baseline.
+   Browsers without support ignore the declaration entirely and get today's rendering,
+   so there is no fallback to write.
+ */
+@utility text-trim {
+  text-box: trim-both cap alphabetic;
+}
+
+/* Rooms rail (components/RoomsRail.tsx) is a native overflow-x with scroll-snap, so
+   dragging/flicking through it is free — the only thing to hide is the OS scrollbar. */
+.hide-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* The hero is a moving film with sound, GSAP drives every reveal/parallax/pin, and
+   SmoothScroll.tsx already skips creating Lenis under this query — so this block is
+   the fallback for anything that still runs (browser default anchor jumps, the
+   ink-in keyframe, any transition Tailwind emits) once GSAP has bailed out. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

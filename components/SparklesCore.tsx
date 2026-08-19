@@ -9,6 +9,14 @@ type ParticlesProps = {
   minSize?: number;
   maxSize?: number;
   speed?: number;
+  /**
+   * Must be a concrete colour — hex, `rgb()`, `hsl()` or a named colour.
+   *
+   * This ends up as `ctx.fillStyle`, and Canvas 2D does not resolve CSS custom
+   * properties: assigning `var(--color-ink)` is simply invalid, and the spec says an
+   * invalid assignment is *ignored*, so the previous fill silently stays in force. The
+   * particles keep drawing in the wrong colour with no error anywhere.
+   */
   particleColor?: string;
   particleDensity?: number;
 };

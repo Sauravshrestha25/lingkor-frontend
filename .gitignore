@@ -24,6 +24,10 @@
 .DS_Store
 *.pem
 
+# client source assets — 583MB of psd/ai/indd/raw photos. Reference only, never shipped.
+# Next serves everything under public/, so these must not live in the repo or the build.
+/public/images/Lingkor elements for website/
+
 # debug
 npm-debug.log*
 yarn-debug.log*
