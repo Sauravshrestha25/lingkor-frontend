@@ -3,11 +3,12 @@
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Draggable } from "gsap/Draggable";
+import { Observer } from "gsap/Observer";
 
 // One registration point. Importing the plugins in each component re-registers them
 // on every mount and makes the load order a guessing game.
 if (typeof window !== "undefined") {
-  gsap.registerPlugin(ScrollTrigger, Draggable);
+  gsap.registerPlugin(ScrollTrigger, Draggable, Observer);
 
   // The site's signature curve, registered by name so components ask for "brand"
   // rather than restating the bezier. Same value as `--ease-brand` in globals.css —
@@ -32,4 +33,4 @@ export const reduced = () =>
   typeof window !== "undefined" &&
   window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-export { gsap, ScrollTrigger, Draggable };
+export { gsap, ScrollTrigger, Draggable, Observer };
