@@ -18,9 +18,10 @@
    * the two genuinely are one colour, so those panels carry a hairline instead of a
    * colour difference — see `SpacesCarousel` and `/spaces`.
    */
-  --color-canvas: #f0ede6;
+  --color-canvas: #ffffff;
   --color-sand: #cecaaf;
   --color-ink: #1c1a17;
+  --color-midnight: #1b1b24;
 
   /* The five elements. One colour owns one section; never two in a viewport. */
   --color-earth: #cc9636;
@@ -49,6 +50,8 @@
   --color-border: color-mix(in srgb, #1c1a17 20%, transparent);
   --color-input: color-mix(in srgb, #1c1a17 25%, transparent);
   --color-ring: #539b8f;
+  --color-netsang: #f7f0e1;
+  --color-namkha: #ffffff;
 
   /*
    * Three type roles. There is no fourth.
@@ -76,8 +79,9 @@
    */
   --font-body: var(--font-yagpo);
   --font-tibetan: var(--font-yagpo);
+  --font-sub: var(--font-barlow);
 
-  --text-display: clamp(2.75rem, 2rem + 3.4vw, 6rem);
+  --text-display: clamp(2.75rem, 2rem + 3.4vw, 4rem);
   --text-display--line-height: 1.02;
   --text-display--letter-spacing: 0.005em;
 
@@ -232,8 +236,8 @@ html.lenis body {
      */
     background-image:
       linear-gradient(
-        color-mix(in srgb, var(--color-canvas) 60%, transparent),
-        color-mix(in srgb, var(--color-canvas) 60%, transparent)
+        color-mix(in srgb, var(--color-canvas) 100%, transparent),
+        color-mix(in srgb, var(--color-canvas) 100%, transparent)
       ),
       url("/images/art/wall-grain.webp");
     /*

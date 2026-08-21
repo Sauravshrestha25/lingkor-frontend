@@ -34,6 +34,11 @@ export type PhotoProps = {
   preload?: boolean;
   /** Defaults to lazy. `eager` for anything just below the fold. */
   loading?: "eager" | "lazy";
+  /**
+   * Overrides Next's default of 75. Only worth raising for a small frame that is
+   * looked at closely — at full-bleed sizes the extra bytes buy nothing visible.
+   */
+  quality?: number;
 };
 
 export function Photo({
@@ -44,6 +49,7 @@ export function Photo({
   imgClassName = "",
   preload = false,
   loading,
+  quality,
 }: PhotoProps) {
   const decorative = alt === "";
 
@@ -57,6 +63,7 @@ export function Photo({
         alt={alt}
         fill
         sizes={sizes}
+        quality={quality}
         preload={preload}
         // `preload` and `loading` are mutually exclusive per the Next 16 docs — set
         // one or the other, never both.

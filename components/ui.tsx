@@ -16,10 +16,7 @@ export function Label({
   style?: React.CSSProperties;
 }) {
   return (
-    <p
-      className={`text-label text-trim font-normal uppercase ${className}`}
-      style={style}
-    >
+    <p className={` ${className}`} style={style}>
       {children}
     </p>
   );

@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { Barlow_Condensed } from "next/font/google";
 import localfont from "next/font/local";
 import "./globals.css";
 import Navbar from "@/features/navigation/components/Navbar";
@@ -8,10 +7,20 @@ import Preloader from "@/features/preloader/components/Preloader";
 import SmoothScroll from "@/components/SmoothScroll";
 import WebxSignature from "@/components/WebxSignature";
 
-const barlow = Barlow_Condensed({
+const barlow = localfont({
   variable: "--font-barlow",
-  weight: ["300", "400"],
-  subsets: ["latin"],
+  src: [
+    {
+      path: "../public/fonts/BarlowCondensed-Light.ttf",
+      weight: "300",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/BarlowCondensed-Regular.ttf",
+      weight: "400",
+      style: "normal",
+    },
+  ],
   display: "swap",
 });
 

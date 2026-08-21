@@ -3,21 +3,8 @@
 import { useEffect } from "react";
 import Lenis from "lenis";
 import { gsap, ScrollTrigger, reduced } from "../lib/gsap";
+import { registerLenis } from "../lib/lenis";
 
-/**
- * Lenis drives the scroll; GSAP's ticker drives Lenis. Wiring it the other way — two
- * independent rAF loops — is what makes pinned sections judder, because ScrollTrigger
- * reads a scroll position that Lenis has already moved on from.
- *
- * Also owns every `href="#…"` click on the page. Lenis does not intercept anchor
- * navigation by itself: left alone, a nav link does a native instant jump, and
- * Lenis's next rAF tick fights it back toward wherever its own state last was — the
- * page stutters, and anything reading scrollY (the navbar's colour switch, any
- * ScrollTrigger) reads a value that is about to be overwritten. Routing every anchor
- * through `lenis.scrollTo` keeps one authority for "where the page actually is".
- *
- * Mounted once in the layout. Renders nothing.
- */
 export default function SmoothScroll() {
   useEffect(() => {
     if (reduced()) return;
@@ -26,8 +13,12 @@ export default function SmoothScroll() {
       duration: 1.1,
       // Long, soft tail — the site's whole argument is that nothing is in a hurry.
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      touchMultiplier: 1.6,
+      touchMultiplier: 4,
     });
+
+    // Published so that pinned, gesture-driven sections can hand the wheel back and
+    // forth instead of scrolling behind Lenis's back — see lib/lenis.ts.
+    registerLenis(lenis);
 
     lenis.on("scroll", ScrollTrigger.update);
 
@@ -53,6 +44,7 @@ export default function SmoothScroll() {
     return () => {
       document.removeEventListener("click", onClick);
       gsap.ticker.remove(raf);
+      registerLenis(null);
       lenis.destroy();
     };
   }, []);

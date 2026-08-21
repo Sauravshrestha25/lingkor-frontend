@@ -35,7 +35,7 @@ export function RevealParagraph({
         stagger: 0.5,
         scrollTrigger: {
           trigger: el,
-          start: "top 78%",
+          start: "top 85%",
           end: "bottom 55%",
           scrub: true,
         },

@@ -37,29 +37,9 @@ export function StarFrame({
   padded?: boolean;
 }) {
   return (
-    <div className={`relative text-earth ${className}`}>
-      {/* Top rule, in two halves, with the astroid between them. */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 z-10 flex items-center"
-      >
-        <span className="h-px flex-1 bg-current/85" />
-        <Astroid
-          className="mx-2 h-5 w-5 shrink-0"
-          // Filled rather than outlined — at this size the outline version reads as a
-          // smudge, and the mark is the one thing in the frame meant to be a shape.
-          fill="currentColor"
-          stroke="none"
-        />
-        <span className="h-px flex-1 bg-current/85" />
-      </div>
-
-      {/* The other three sides. Drawn separately so the top can carry the gap. */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 z-10 border-x border-b border-current/85"
-      />
-
+    <div
+      className={`relative text-amber-300 ${className} outline outline-offset-4 outline-amber-300`}
+    >
       <div className={padded ? "p-3 pt-6 lg:p-4 lg:pt-7" : ""}>{children}</div>
     </div>
   );
