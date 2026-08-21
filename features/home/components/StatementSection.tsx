@@ -63,8 +63,8 @@ export function StatementSection() {
             className="h-auto w-32 text-ink lg:ml-[15.5%] lg:w-[6.6%] lg:shrink-0 lg:translate-y-[0.15em]"
           />
 
-          <h2 className="mt-6 font-display text-[clamp(1.5rem,2.29vw,3rem)] uppercase leading-[1.2] lg:mt-0 lg:ml-[0.94rem] lg:w-[60%]">
-            takes the whole of Mustang — its colours, its rooms, its quiet — and
+          <h2 className="mt-6 font-tibetan text-[clamp(1.5rem,2.29vw,2rem)]  leading-[1.2] lg:mt-0 lg:ml-[0.94rem] lg:w-[60%]">
+            Takes the whole of Mustang — its colours, its rooms, its quiet — and
             sets it down four hundred kilometres south of itself.
           </h2>
         </div>

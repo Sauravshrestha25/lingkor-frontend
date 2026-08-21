@@ -57,7 +57,7 @@ export const SPACES: Space[] = [
     hue: "Off-white",
     line: "The sky. A celestial hall held open and unhurried, for spiritual teaching and yogic practice — the element that contains all the others.",
     image: "/images/spaces/namkha.webp",
-    field: "var(--color-space)",
+    field: "var(--color-namkha)",
     displayOnField: "ink",
   },
 ];

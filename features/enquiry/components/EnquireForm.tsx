@@ -17,11 +17,20 @@ const TO = "phuntsokg8808@gmail.com";
  * Slightly more above than below (`pt-2.5` / `pb-1.5`) so the gap to the label overhead
  * stays open while the text closes down onto the rule.
  */
-const field =
-  "peer w-full border-b border-ink/25 bg-transparent pt-2.5 pb-1.5 text-body leading-[1.25] outline-none transition-colors duration-300 placeholder:text-ink/30 focus:border-ink";
+const fieldBase =
+  "peer w-full border-b bg-transparent pt-2.5 pb-1.5 text-body leading-[1.25] outline-none transition-colors duration-300 placeholder:text-xs";
 
-export default function EnquireForm() {
+export default function EnquireForm({
+  tone = "light",
+}: {
+  tone?: "light" | "dark";
+}) {
   const [sent, setSent] = useState(false);
+  const field = `${fieldBase} ${
+    tone === "dark"
+      ? "border-space/30 text-space placeholder:text-space/35 focus:border-space"
+      : "border-ink/25 text-ink placeholder:text-ink/30 focus:border-ink"
+  }`;
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -102,16 +111,14 @@ export default function EnquireForm() {
 
       <Button
         type="submit"
-        className="text-label text-space mt-10 cursor-pointer border border-ink px-10 py-3 uppercase transition-colors duration-300 bg-ink hover:bg-ink/80 hover:text-canvas"
+        className={`text-label mt-10 cursor-pointer border px-10 py-3 uppercase transition-colors duration-300 ${
+          tone === "dark"
+            ? "border-space bg-space/80 text-midnight hover:bg-space/80"
+            : "border-ink bg-ink text-space hover:bg-ink/80 hover:text-canvas"
+        }`}
       >
         Send enquiry
       </Button>
-
-      <p className="text-label mt-4 uppercase opacity-40" aria-live="polite">
-        {sent
-          ? "Opening your mail client — send it from there."
-          : "Opens as an email. We answer every one ourselves."}
-      </p>
     </form>
   );
 }

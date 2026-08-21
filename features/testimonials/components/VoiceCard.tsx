@@ -41,17 +41,19 @@ export function VoiceCard({ voice }: { voice: Voice }) {
 
         {/* Full strength, not 90%: on slate and fire the ground is dark enough
             that a 10% fade costs more contrast than the card can spare. */}
-        <blockquote className="text-body mt-4 min-h-[5rem]">
+        <blockquote className=" text-sm mt-4 min-h-20">
           {voice.quote}
         </blockquote>
 
         <figcaption className="mt-5 border-t border-current/20 pt-4">
           <div className="flex items-baseline justify-between gap-4">
-            <p className="font-display text-[clamp(1.25rem,1.7vw,1.5rem)] leading-none">
+            <p className="font-display text-[clamp(1.25rem,1.7vw,1.2rem)] leading-none">
               {voice.name}
             </p>
             {voice.room && (
-              <Label className="shrink-0 opacity-70">{voice.room}</Label>
+              <Label className="shrink-0 text-[clamp(0.5rem, 0.9rem, 1rem)] opacity-70">
+                {voice.room}
+              </Label>
             )}
           </div>
           <Label className="mt-2 block opacity-60">{voice.from}</Label>

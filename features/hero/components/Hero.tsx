@@ -117,13 +117,13 @@ export default function Hero() {
           dark stupa at night; on a bright interior it reads as a grey veil over the
           whole room. This keeps the ceiling clear and puts the weight where the type
           sits. */}
-      <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-ink/30 via-ink/40 to-ink/30" />
+      <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-ink/50 via-ink/55 to-ink/50" />
 
       <div className="h-screen w-full flex flex-col items-center justify-center space-y-3 px-6 text-center text-space">
         <div className="flex flex-col items-center justify-center">
           <Rise>
-            <p className="text-label uppercase opacity-70 pb-8">
-              Boudhanath · Kathmandu
+            <p className="text-xl font-sub uppercase  pb-8">
+              Mustang to Boudha
             </p>
           </Rise>
 
@@ -131,7 +131,7 @@ export default function Hero() {
           <SplitChars
             lines={["Rest in the Spirit", "of Mustang"]}
             delay={220}
-            className="font-hasweny mt-8 text-[clamp(2.75rem,7.5vw,7rem)] leading-[0.95]"
+            className="font-display mt-8 text-[clamp(2.75rem,7.5vw,7rem)] uppercase leading-[0.95]"
           />
 
           {/* The one commercial action on the page, and it is above the fold.
@@ -163,7 +163,7 @@ export default function Hero() {
         aria-label="Scroll to the next section"
         className="group absolute bottom-[max(2rem,env(safe-area-inset-bottom))] left-1/2 flex -translate-x-1/2 flex-col items-center gap-3 text-space"
       >
-        <span className="text-label uppercase opacity-60 transition-opacity duration-300 group-hover:opacity-100">
+        <span className="text-xl font-sub uppercase  transition-opacity duration-300 group-hover:opacity-100">
           Scroll
         </span>
         <span

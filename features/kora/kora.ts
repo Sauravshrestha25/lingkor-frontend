@@ -10,18 +10,17 @@
  * clock values are not confirmed.
  *
  * `sky` and `ink` reference the palette tokens where the moment *is* a brand colour —
- * midday is the page ground, night type is the off-white. The four raw hexes below are
- * deliberately not tokens: `#2A2A33` pre-dawn, `#D8A66B` low gold, `#2C1B10` its type,
- * `#1B1B24` night. Those are stages of daylight, not brand values, and promoting them
- * to `@theme` would imply the rest of the site could use them — which it must not.
+ * the walk starts on the white page ground and ends at the shared midnight colour.
+ * The two raw hexes below are deliberately not tokens: `#D8A66B` low gold and
+ * `#2C1B10` its type. Those are stages of daylight, not reusable brand values.
  */
 export const HOURS = [
   {
     time: "05:30",
     label: "First kora",
     line: "The circle starts before the shops do. Butter lamps, and a thousand feet going the same way.",
-    sky: "#2A2A33",
-    ink: "var(--color-space)",
+    sky: "var(--color-canvas)",
+    ink: "var(--color-ink)",
     lamps: 1,
   },
   {
@@ -44,7 +43,7 @@ export const HOURS = [
     time: "19:30",
     label: "Evening kora",
     line: "The circle fills again. Lamps lit the whole way round, and the dome holds the light.",
-    sky: "#1B1B24",
+    sky: "var(--color-midnight)",
     ink: "var(--color-space)",
     lamps: 1,
   },
