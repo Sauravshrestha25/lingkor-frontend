@@ -42,7 +42,7 @@ export function StatementSection() {
     <section
       id="statement"
       ref={root}
-      className="relative w-full bg-canvas pt-24 lg:pt-[9.8rem]"
+      className="home-knot-gutters relative w-full bg-canvas pt-24 lg:pt-[9.8rem]"
     >
       <span
         data-ghost
@@ -52,7 +52,7 @@ export function StatementSection() {
       >
         LINGKOR
       </span>
-      <div className="mx-auto w-full shell-max shell-px">
+      <div className="relative z-10 mx-auto w-full shell-max shell-px">
         {/* Subject and sentence share a baseline. */}
         <div className="lg:flex lg:items-start">
           <Image

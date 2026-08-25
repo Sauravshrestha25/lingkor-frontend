@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { gsap } from "@/lib/gsap";
+import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { playBell, unlockBell } from "@/lib/bell";
 import { Label } from "@/components/ui";
+import { fadeOutSiteSound, restoreSiteSound } from "@/features/preloader/audio";
 import { CIRC, HOURS } from "../kora";
 import { KoraRing } from "./KoraRing";
 
@@ -70,24 +71,16 @@ export default function KoraCircle() {
       { ok: "(min-width: 1024px) and (prefers-reduced-motion: no-preference)" },
       (ctx) => {
         if (!ctx.conditions?.ok) return;
-
-        // The hour we last announced. Kept in the closure rather than in state so a
-        // scrub tick that changes nothing costs nothing.
         let lastHour = -1;
 
         const tl = gsap.timeline({
           scrollTrigger: {
             trigger: section,
             start: "top top",
-            // Pinned. The section used to travel past at natural scroll speed, which
-            // squeezed a whole day into the second or so it took to cross the
-            // viewport — four skies in a couple of hundred pixels, which is the jump.
-            // Held in place, the same timeline gets two and a bit screens of scroll to
-            // spend, so dawn takes as long as dawn should.
+
             end: "+=240%",
             pin: true,
-            // Sets the pin one tick early; without it the section visibly hitches as
-            // it latches, which is exactly the artefact we are here to remove.
+
             anticipatePin: 1,
             scrub: 0.6,
             invalidateOnRefresh: true,
@@ -101,25 +94,11 @@ export default function KoraCircle() {
               lastHour = i;
               setActive(i);
 
-              // A bell at every station, the first one included.
-              //
-              // Gated on `isActive` rather than on "not the first change": the trigger
-              // fires once when it initialises, with the section still far down the
-              // page, and skipping that by counting changes also swallowed the bell
-              // for station one. `isActive` is true only while the scroll head is
-              // actually inside the pinned range, which is exactly the condition we
-              // meant — arrival, not initialisation.
-              //
-              // No mute check — `playBell` already returns early when muted, and a
-              // second copy of that rule is one more thing to drift. It also no-ops
-              // while the audio context is locked, i.e. before the visitor has
-              // interacted with the page at all.
               if (self.isActive) playBell(i);
             },
           },
         });
 
-        // The circuit draws itself in — walked into existence rather than just spun.
         tl.fromTo(
           pathRef.current,
           { strokeDashoffset: CIRC },
@@ -127,7 +106,6 @@ export default function KoraCircle() {
           0,
         );
 
-        // Three tiers, three speeds, opposing directions.
         tl.fromTo(
           ringSlowRef.current,
           { rotation: 0 },
@@ -162,25 +140,13 @@ export default function KoraCircle() {
             0.5,
           );
 
-        // The light. Each hour's sky is a stop on the same scrubbed timeline, so the
-        // colour is continuous rather than snapping between four states.
-        //
-        // The section already renders at the FIRST hour (see the inline style below),
-        // so the tweens start at the second — hour one is where you arrive, not
-        // somewhere the timeline has to travel to. Previously its tween was squeezed
-        // into the entry and never landed: the sky was still mid-way between canvas
-        // and night when the section came on screen.
-        //
-        // The stops are spaced 1.25 apart so the last finishes at 3.6 of the timeline s 4.0,
-        // over a range that ends when the section bottom reaches the viewport bottom. So
-        // night arrives while the section is still fully on screen, instead of at the
-        // exact moment it leaves.
         gsap.set(lampsRef.current, { opacity: HOURS[0].lamps });
-        // Both ends must be concrete for the tween to cross between them, so the
-        // starting state is resolved too rather than left as the inline `var()`.
+
         gsap.set(skyRef.current, {
           backgroundColor: resolveVar(HOURS[0].sky),
           color: resolveVar(HOURS[0].ink),
+          "--knot-tone": HOURS[0].knotTone,
+          "--knot-opacity": HOURS[0].knotOpacity,
         });
 
         HOURS.slice(1).forEach((h, i) => {
@@ -190,6 +156,9 @@ export default function KoraCircle() {
             {
               backgroundColor: resolveVar(h.sky),
               color: resolveVar(h.ink),
+
+              "--knot-tone": h.knotTone,
+              "--knot-opacity": h.knotOpacity,
               ease: "none",
               duration: 1.1,
             },
@@ -212,6 +181,43 @@ export default function KoraCircle() {
     return () => mm.revert();
   }, []);
 
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+
+    const mm = gsap.matchMedia();
+
+    mm.add(
+      {
+        pinned:
+          "(min-width: 1024px) and (prefers-reduced-motion: no-preference)",
+      },
+      (ctx) => {
+        const pinned = Boolean(ctx.conditions?.pinned);
+        const trigger = ScrollTrigger.create({
+          trigger: section,
+          start: pinned ? "top top" : "top 65%",
+          end: pinned ? "+=240%" : "bottom 35%",
+          invalidateOnRefresh: true,
+          onEnter: () => fadeOutSiteSound(),
+          onEnterBack: () => fadeOutSiteSound(),
+          onLeave: () => restoreSiteSound(),
+          onLeaveBack: () => restoreSiteSound(),
+        });
+
+        return () => {
+          restoreSiteSound(600);
+          trigger.kill();
+        };
+      },
+    );
+
+    return () => {
+      restoreSiteSound(600);
+      mm.revert();
+    };
+  }, []);
+
   function strike(i: number) {
     setHeld(i);
     setActive(i);
@@ -223,23 +229,25 @@ export default function KoraCircle() {
   const current = HOURS[active];
 
   return (
-    <section id="boudha" ref={sectionRef} className="w-full">
-      {/* The sky. GSAP repaints this element's background and text colour across the
-          scroll; the static fallback is plain canvas. */}
+    <section
+      id="boudha"
+      ref={sectionRef}
+      className="w-full border-t border-[#a8a8a8]/20  "
+    >
       <div
         ref={skyRef}
-        // No `transition-colors` here. GSAP writes backgroundColor every scroll frame,
-        // and a CSS transition on the same property makes the browser animate toward
-        // each of those frames in turn — a second, lagging animation fighting the
-        // scrub. That was most of the "glitchy" feel.
-        // Pinned at lg, so it fills the frame it is held in. Below that the pin never
-        // runs and the section keeps its ordinary flow height.
-        className="flex w-full items-center py-32 lg:min-h-svh lg:py-0"
-        // The first hour is the resting state, so it is also the static fallback for
-        // mobile, reduced-motion and no-JS.
-        style={{ backgroundColor: HOURS[0].sky, color: HOURS[0].ink }}
+        className="home-knot-gutters flex w-full items-center py-32 lg:min-h-svh lg:py-0"
+        style={
+          {
+            backgroundColor: HOURS[0].sky,
+            color: HOURS[0].ink,
+            "--knot-tone": HOURS[0].knotTone,
+            "--knot-opacity": HOURS[0].knotOpacity,
+          } as React.CSSProperties
+        }
       >
-        <div className="mx-auto w-full shell-max shell-px">
+        <div aria-hidden="true" className="home-knot-border-t" />
+        <div className="relative z-10 mx-auto w-full shell-max shell-px">
           <div className="grid grid-cols-1 items-center gap-20 lg:grid-cols-12 lg:gap-16">
             <div className="lg:col-span-6">
               <KoraRing
@@ -305,6 +313,7 @@ export default function KoraCircle() {
             </div>
           </div>
         </div>
+        <div aria-hidden="true" className="home-knot-border-b" />
       </div>
     </section>
   );

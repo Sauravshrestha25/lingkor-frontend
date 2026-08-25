@@ -91,8 +91,12 @@ export function StorySection() {
   }, []);
 
   return (
-    <section id="story" ref={root} className="w-full bg-canvas section-y">
-      <div className="mx-auto w-full shell-max shell-px">
+    <section
+      id="story"
+      ref={root}
+      className="home-knot-gutters w-full bg-canvas section-y"
+    >
+      <div className="relative z-10 mx-auto w-full shell-max shell-px">
         <div>
           <Label className="opacity-65">The road south</Label>
           {/*

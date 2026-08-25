@@ -63,15 +63,25 @@ export function SpacesSection() {
 
         gsap.to(target, {
           clipPath:
-            direction > 0
-              ? "inset(0% 0% 100% 0%)"
-              : "inset(0% 0% 0% 0%)",
-          duration: 1.9,
+            direction > 0 ? "inset(0% 0% 100% 0%)" : "inset(0% 0% 0% 0%)",
+          // 1.9s was most of the reason this felt like work: a panel took nearly two
+          // seconds, and nothing could be asked of it until that finished.
+          duration: 1.05,
           ease: "power4.inOut",
           overwrite: true,
           onComplete: () => {
             current = next;
             animating = false;
+            // Release the gesture lock here as well as on `onStop`.
+            //
+            // It used to be released *only* when Observer reported that movement had
+            // stopped (0.18s after the last event). Nobody scrolls that way: keep the
+            // wheel or trackpad moving and `onStop` never fires, so every gesture
+            // after the first was dropped and the section only advanced if you came
+            // to a complete halt and started again — once per panel. Freeing it when
+            // the wipe lands means a sustained scroll advances at the animation's own
+            // cadence, and a single flick still moves exactly one panel.
+            gestureActive = false;
 
             if (queuedDirection !== null) {
               const queued = queuedDirection;
@@ -160,7 +170,11 @@ export function SpacesSection() {
 
   return (
     <section ref={root} aria-label="The hotel is a circuit">
-      <div ref={stage} className="relative h-svh min-h-160 overflow-hidden">
+      <div
+        ref={stage}
+        className="relative home-knot-gutters border border-b border-[#a8a8a8]/20 home-knot-gutters-over h-svh min-h-160 overflow-hidden"
+      >
+        <div aria-hidden="true" className="home-knot-border-b" />
         {SPACES.map((space, index) => {
           const textColor =
             space.id === "namkha" ? "var(--color-ink)" : space.field;

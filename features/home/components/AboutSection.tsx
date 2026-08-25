@@ -62,9 +62,9 @@ export function AboutSection() {
     <section
       id="about"
       ref={root}
-      className="relative w-full overflow-hidden bg-netsang "
+      className="home-knot-gutters relative w-full overflow-hidden bg-netsang "
     >
-      <div className="mx-auto text-center w-full shell-max shell-px">
+      <div className="relative z-10 mx-auto text-center w-full pb-[calc(var(--shell-gutter)+2rem)] shell-max shell-px">
         <blockquote className="font-display flex flex-col justify-center text-[clamp(1.75rem,4.4vw,3.75rem)] h-[60vh] text-center max-w-5xl py-12  mx-auto w-full leading-[1.08]">
           <span data-notrim className="block overflow-hidden ">
             <span data-line className="block">
@@ -72,6 +72,7 @@ export function AboutSection() {
             </span>
           </span>
         </blockquote>
+        <div aria-hidden="true" className="home-knot-border-row mb-14" />
         <div className="max-w-4xl w-full mx-auto pb-12">
           <p className="text-2xl font-sub font-black uppercase ">About us</p>
 
@@ -121,13 +122,14 @@ export function AboutSection() {
           </div>
           <div data-reveal className="lg:col-span-3">
             <Photo
-              src="/images/spaces/garden.webp"
+              src="/images/mustang/_DSF6291.webp"
               alt="The garden and terraces, from above"
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 24vw"
               className="h-80 w-full sm:h-96 lg:h-[32rem]"
             />
           </div>
         </div>
+        <div aria-hidden="true" className="home-knot-border-row mt-10" />
       </div>
     </section>
   );

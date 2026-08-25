@@ -9,9 +9,9 @@ export function EnquireSection() {
       {/* ── Enquire ─────────────────────────────────────────────────────── */}
       <section
         id="enquire"
-        className="relative w-full overflow-hidden bg-midnight text-space section-y"
+        className="home-knot-gutters relative w-full overflow-hidden bg-midnight text-space section-y"
       >
-        <Image
+        {/* <Image
           src="/images/art/fiore-rose.webp"
           alt=""
           aria-hidden="true"
@@ -19,9 +19,9 @@ export function EnquireSection() {
           height={560}
           loading="lazy"
           className="pointer-events-none absolute -bottom-[6%] -left-[7%] hidden w-[34vw] max-w-[420px] -rotate-6 select-none opacity-[0.13] invert sm:block"
-        />
+        /> */}
 
-        <div className="relative mx-auto w-full shell-max shell-px">
+        <div className="relative z-10 mx-auto w-full shell-max shell-px">
           <div className="grid grid-cols-1 gap-16 lg:grid-cols-12">
             <div className="lg:col-span-5">
               <Rise>

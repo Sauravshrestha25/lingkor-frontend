@@ -130,6 +130,23 @@
   /* See the "Vertical rhythm" note below for why these are px/vw and not rem. */
   --space-section: clamp(72px, 5.6vw, 128px);
   --space-divider: clamp(40px, 3vw, 72px);
+  /*
+   * Two separate jobs, and they used to share one variable — which is why widening the
+   * section padding also fattened the knot band down the edges.
+   *
+   * `--shell-pad` is the horizontal padding of every section (`shell-px`).
+   * `--shell-gutter` is the width of the ornamental knot band (`home-knot-gutters`).
+   *
+   * The padding must stay the LARGER of the two, or content sits on top of the
+   * ornament: 4.8vw against 2.72vw leaves the band comfortably clear of the text.
+   *
+   * In both, the middle term is the one that governs — the rem floor only binds on
+   * small screens, and the rem ceiling never binds at all, because the root font size
+   * is itself `max(1rem, 1.1111vw)` and outruns any plausible vw above 1440. Read them
+   * as "4.8% of the viewport" and "2.72% of the viewport".
+   */
+  --shell-pad: clamp(2.25rem, 4.8vw, 6rem);
+  --shell-gutter: clamp(1.275rem, 2.72vw, 3.4rem);
 
   --ease-brand: cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -328,7 +345,137 @@ body {
 }
 
 @utility shell-px {
-  padding-inline: clamp(1.5rem, 3.2vw, 4rem);
+  padding-inline: var(--shell-pad);
+}
+
+@utility knot-px {
+  padding-inline: var(--shell-gutter);
+}
+
+/*
+ * Dark knot on a light ground by default: `invert(0)` on the source PNG leaves it as
+ * the black silhouette `brightness(0)` produces. `.bg-midnight` below sets the same
+ * two variables rather than overriding `filter`/`opacity` outright, so anything that
+ * *tweens* `--knot-tone` — the kora section's day-to-night scrub — crosses smoothly
+ * between the two instead of the pseudo-element having no property to animate.
+ */
+.home-knot-gutters {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  --knot-tone: 0;
+  --knot-opacity: 0.5;
+  --knot-size: clamp(18rem, 22vw, 28rem);
+  --knot-phase: top;
+}
+
+.home-knot-gutters::before,
+.home-knot-gutters::after {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 0;
+  display: none;
+  width: var(--shell-gutter);
+  background-image: url("/images/art/knot-white.png");
+  background-position: center var(--knot-phase);
+  background-repeat: repeat-y;
+  background-size: var(--knot-size) auto;
+  filter: brightness(0) invert(var(--knot-tone));
+  opacity: var(--knot-opacity);
+}
+
+.home-knot-gutters:has(> .home-knot-border-b) {
+  --knot-phase: bottom;
+}
+
+.home-knot-gutters::before {
+  left: 0;
+}
+
+.home-knot-gutters::after {
+  right: 0;
+  transform: scaleX(-1);
+}
+
+@media (min-width: 768px) {
+  .home-knot-gutters::before,
+  .home-knot-gutters::after {
+    display: block;
+  }
+}
+
+.home-knot-border-t,
+.home-knot-border-b {
+  pointer-events: none;
+  position: absolute;
+  left: var(--shell-gutter);
+  right: var(--shell-gutter);
+  z-index: 0;
+  display: none;
+  height: var(--shell-gutter);
+  background-image: url("/images/art/knot-horizontal.png");
+  background-position: var(--knot-border-phase, left) center;
+  background-repeat: repeat-x;
+  background-size: auto var(--knot-size, clamp(18rem, 22vw, 28rem));
+  filter: brightness(0) invert(var(--knot-tone, 0));
+  opacity: var(--knot-opacity, 0.5);
+}
+
+.home-knot-border-t {
+  top: 0;
+}
+
+.home-knot-border-b {
+  bottom: 0;
+}
+
+.home-knot-border-row {
+  pointer-events: none;
+  position: relative;
+  z-index: 20;
+  display: none;
+  height: var(--shell-gutter);
+  width: calc(100vw - (var(--shell-gutter) * 2));
+  margin-left: calc(50% - 50vw + var(--shell-gutter));
+  background-image: url("/images/art/knot-horizontal.png");
+  background-position: var(--knot-border-phase, left) center;
+  background-repeat: repeat-x;
+  background-size: auto var(--knot-size, clamp(18rem, 22vw, 28rem));
+  filter: brightness(0) invert(var(--knot-tone, 0));
+  opacity: var(--knot-opacity, 0.5);
+}
+
+@media (min-width: 768px) {
+  .home-knot-border-t,
+  .home-knot-border-b,
+  .home-knot-border-row {
+    display: block;
+  }
+}
+
+/*
+ * For sections that paint their own full-bleed layers on top of the band.
+ *
+ * The band sits at `z-index: 0`, which works everywhere the section background is the
+ * section's own. The spaces circuit is not that: every panel is `position: absolute;
+ * inset: 0` with its own colour field and a z-index of 1–5, so it covers the ornament
+ * completely. Raising the band above them is the only way it shows there — and it reads
+ * correctly, because those panels are flat colour fields, so the knot lands on them the
+ * way it would on a painted wall.
+ */
+.home-knot-gutters-over::before,
+.home-knot-gutters-over::after,
+.home-knot-gutters-over > .home-knot-border-t,
+.home-knot-gutters-over > .home-knot-border-b {
+  z-index: 20;
+}
+
+.home-knot-gutters.bg-midnight {
+  --knot-tone: 1;
+  --knot-opacity: 0.7;
 }
 
 /* The page scrollbar is hidden, not disabled — Lenis still drives the scroll, the

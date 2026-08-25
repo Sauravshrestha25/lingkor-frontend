@@ -7,7 +7,7 @@ export function JourneyDivider() {
   return (
     <section
       id="journey"
-      className="relative min-h-screen w-full overflow-hidden py-20 bg-netsang"
+      className="home-knot-gutters relative min-h-screen w-full overflow-hidden py-20 bg-netsang"
     >
       <div className="relative z-10 mx-auto w-full pt-6 shell-max shell-px md:pt-8">
         <div className="flex w-full flex-col items-center text-center">
@@ -18,7 +18,7 @@ export function JourneyDivider() {
           </Rise>
           <RevealParagraph
             text={JOURNEY}
-            className="text-lead mt-6 max-w-[58ch]"
+            className="text-body mt-6 max-w-[58ch]"
           />
 
           <Rise delay={200} className="mt-16">
@@ -28,11 +28,14 @@ export function JourneyDivider() {
           </Rise>
         </div>
       </div>
-      <LineArt
-        name="panorama"
-        tone="terracotta"
-        className="pointer-events-none absolute w-full  bottom-10   z-0  max-w-none opacity-60 "
-      />
+      <div aria-hidden="true" className="home-knot-border-b" />
+      <div className="pointer-events-none absolute bottom-10 left-[calc(var(--shell-gutter)*2)] right-[calc(var(--shell-gutter)*2)] z-0">
+        <LineArt
+          name="panorama"
+          tone="terracotta"
+          className="h-auto w-full opacity-60"
+        />
+      </div>
     </section>
   );
 }

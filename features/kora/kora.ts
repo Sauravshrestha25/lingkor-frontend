@@ -13,6 +13,14 @@
  * the walk starts on the white page ground and ends at the shared midnight colour.
  * The two raw hexes below are deliberately not tokens: `#D8A66B` low gold and
  * `#2C1B10` its type. Those are stages of daylight, not reusable brand values.
+ *
+ * `knotTone`/`knotOpacity` do for the ornamental edge band what `sky`/`ink` do for the
+ * background: a stop the section-wide tween crosses through. The band is a black knot
+ * at 0 and a white one at 1 — see `--knot-tone` in `globals.css`, which drives an
+ * `invert()` on the same PNG rather than swapping images, so the two ends of the
+ * gradient are one continuous filter value instead of a hard cut. Only the last hour
+ * needs the light knot; the gold stage is still light enough underneath for the dark
+ * one to read.
  */
 export const HOURS = [
   {
@@ -22,6 +30,8 @@ export const HOURS = [
     sky: "var(--color-canvas)",
     ink: "var(--color-ink)",
     lamps: 1,
+    knotTone: 0,
+    knotOpacity: 0.5,
   },
   {
     time: "11:00",
@@ -30,6 +40,8 @@ export const HOURS = [
     sky: "var(--color-canvas)",
     ink: "var(--color-ink)",
     lamps: 0,
+    knotTone: 0,
+    knotOpacity: 0.5,
   },
   {
     time: "17:45",
@@ -38,6 +50,8 @@ export const HOURS = [
     sky: "#D8A66B",
     ink: "#2C1B10",
     lamps: 0.4,
+    knotTone: 0,
+    knotOpacity: 0.5,
   },
   {
     time: "19:30",
@@ -46,6 +60,8 @@ export const HOURS = [
     sky: "var(--color-midnight)",
     ink: "var(--color-space)",
     lamps: 1,
+    knotTone: 1,
+    knotOpacity: 0.7,
   },
 ];
 
