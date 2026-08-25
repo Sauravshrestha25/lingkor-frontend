@@ -172,9 +172,8 @@ export function SpacesSection() {
     <section ref={root} aria-label="The hotel is a circuit">
       <div
         ref={stage}
-        className="relative home-knot-gutters border border-b border-[#a8a8a8]/20 home-knot-gutters-over h-svh min-h-160 overflow-hidden"
+        className="relative home-knot-gutters  home-knot-gutters-over h-svh min-h-160 overflow-hidden"
       >
-        <div aria-hidden="true" className="home-knot-border-b" />
         {SPACES.map((space, index) => {
           const textColor =
             space.id === "namkha" ? "var(--color-ink)" : space.field;

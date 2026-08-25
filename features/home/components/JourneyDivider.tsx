@@ -28,7 +28,6 @@ export function JourneyDivider() {
           </Rise>
         </div>
       </div>
-      <div aria-hidden="true" className="home-knot-border-b" />
       <div className="pointer-events-none absolute bottom-10 left-[calc(var(--shell-gutter)*2)] right-[calc(var(--shell-gutter)*2)] z-0">
         <LineArt
           name="panorama"

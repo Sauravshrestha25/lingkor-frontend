@@ -229,11 +229,7 @@ export default function KoraCircle() {
   const current = HOURS[active];
 
   return (
-    <section
-      id="boudha"
-      ref={sectionRef}
-      className="w-full border-t border-[#a8a8a8]/20  "
-    >
+    <section id="boudha" ref={sectionRef} className="w-full   ">
       <div
         ref={skyRef}
         className="home-knot-gutters flex w-full items-center py-32 lg:min-h-svh lg:py-0"
@@ -246,7 +242,6 @@ export default function KoraCircle() {
           } as React.CSSProperties
         }
       >
-        <div aria-hidden="true" className="home-knot-border-t" />
         <div className="relative z-10 mx-auto w-full shell-max shell-px">
           <div className="grid grid-cols-1 items-center gap-20 lg:grid-cols-12 lg:gap-16">
             <div className="lg:col-span-6">
@@ -313,7 +308,6 @@ export default function KoraCircle() {
             </div>
           </div>
         </div>
-        <div aria-hidden="true" className="home-knot-border-b" />
       </div>
     </section>
   );

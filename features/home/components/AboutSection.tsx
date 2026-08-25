@@ -72,7 +72,6 @@ export function AboutSection() {
             </span>
           </span>
         </blockquote>
-        <div aria-hidden="true" className="home-knot-border-row mb-14" />
         <div className="max-w-4xl w-full mx-auto pb-12">
           <p className="text-2xl font-sub font-black uppercase ">About us</p>
 
@@ -129,7 +128,6 @@ export function AboutSection() {
             />
           </div>
         </div>
-        <div aria-hidden="true" className="home-knot-border-row mt-10" />
       </div>
     </section>
   );
