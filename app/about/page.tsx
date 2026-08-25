@@ -100,23 +100,20 @@ export default function AboutPage() {
           </Rise>
           <div className="mt-12 grid grid-cols-1 gap-12 border-t border-ink/15 pt-12 lg:grid-cols-2 lg:gap-20">
             <Rise>
-              <h2 className="font-display text-section">
-                Mustang Inn
-              </h2>
+              <h2 className="font-display text-section">Mustang Inn</h2>
               <Label className="mt-4 block opacity-50">The welcome room</Label>
               <p className="text-body mt-6 max-w-[40ch] opacity-80">
-                In the front building, in traditional Mustangi style: butter tea and
-                chang for anyone just off the road, the way the caravans were met.
+                In the front building, in traditional Mustangi style: butter tea
+                and chang for anyone just off the road, the way the caravans
+                were met.
               </p>
             </Rise>
             <Rise delay={140}>
-              <h2 className="font-display text-section">
-                Lingkor Boutique
-              </h2>
+              <h2 className="font-display text-section">Lingkor Boutique</h2>
               <Label className="mt-4 block opacity-50">The shop</Label>
               <p className="text-body mt-6 max-w-[40ch] opacity-80">
-                Weaving, wool and the crafts of Lo — the goods that came down this
-                road in the first place.
+                Weaving, wool and the crafts of Lo — the goods that came down
+                this road in the first place.
               </p>
             </Rise>
           </div>

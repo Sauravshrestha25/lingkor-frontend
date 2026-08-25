@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { gsap, reduced } from "@/lib/gsap";
 import { NavOverlay } from "./NavOverlay";
 import { Button } from "@/components/shared/button";
-import { isBellMuted, isBellMutedOnServer, subscribeBell } from "@/lib/bell";
+import { getLenis } from "@/lib/lenis";
 
 export default function Navbar() {
   const [past, setPast] = useState(false);
@@ -24,15 +24,6 @@ export default function Navbar() {
   const headerRef = useRef<HTMLElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
 
-  // Read the mute preference as an external store: the server has no localStorage,
-  // so it renders "on", and the client reconciles on hydration without an effect
-  // writing state back into the component.
-  const bellOff = useSyncExternalStore(
-    subscribeBell,
-    isBellMuted,
-    isBellMutedOnServer,
-  );
-
   // Navigating from inside the overlay must close it, or the new page arrives
   // underneath a full-screen menu that is still open. Adjusted during render rather
   // than in an effect — this is the "derive state from a changing value" case, and an
@@ -43,16 +34,17 @@ export default function Navbar() {
    * Whether the bar is currently sitting on top of something dark.
    *
    * The bar is transparent until the page scrolls, so its ink has to come from what is
-   * underneath it — and that differs by route. The homepage opens on the lobby
-   * photograph under a dark overlay and `/mustang` opens on `PageHeader tone="ink"`;
-   * every other route opens on canvas or sand. A single light colour for all of them
-   * would be invisible on five of the seven, so the two dark-topped routes are named
-   * rather than assumed.
+   * underneath it — and that differs by route. The homepage and individual space
+   * pages open on photographs under a dark overlay, while `/mustang` opens on an ink
+   * header. The remaining routes open on canvas or sand.
    *
    * If a future route opens dark, it goes in this list — or better, `PageHeader` grows
    * a way to declare it and this reads that instead of hard-coding paths.
    */
-  const darkTop = pathname === "/" || pathname === "/mustang";
+  const darkTop =
+    pathname === "/" ||
+    pathname === "/mustang" ||
+    pathname.startsWith("/spaces/");
 
   const [routeAtOpen, setRouteAtOpen] = useState(pathname);
   if (routeAtOpen !== pathname) {
@@ -64,23 +56,74 @@ export default function Navbar() {
   // going down and comes back the moment the visitor reverses direction.
   useEffect(() => {
     let last = window.scrollY;
-    const onScroll = () => {
-      const y = window.scrollY;
-      setPast(y > 12);
+    let hidden = false;
+    const onScroll = (scrollY?: number) => {
+      const y = scrollY ?? window.scrollY;
+      // 1px, not 12. The bar is transparent *only* while the page is genuinely at
+      // rest at the top; the first perceptible movement should already have made it
+      // solid, because the moment the hero starts sliding underneath it there is
+      // photograph behind the labels rather than sky.
+      setPast(y > 1);
       const el = headerRef.current;
+      // A no-movement echo, not a scroll. `lenis.stop()`/`.start()` — the pinned
+      // spaces circuit calls both on every panel gesture — each end in `reset()` then
+      // `emit()`, which fires a 'scroll' event carrying the position it was already
+      // at. That lands here as `y === last`, and `hide = y > last && ...` reads any
+      // non-decrease as "scrolling up": the bar popped visible the instant you
+      // entered the circuit, then could not hide again until you left it, because no
+      // further scroll events fire while the page is pinned. Bailing out on an exact
+      // repeat is what keeps the bar in whatever state it was actually left in.
+      if (y === last) return;
       if (el && !open) {
-        const hide = y > last && y > 400;
-        gsap.to(el, {
-          yPercent: hide ? -100 : 0,
-          duration: 0.5,
-          ease: "power3.out",
-          overwrite: true,
-        });
+        const hide = y > last && y > 80;
+        // Only on a change of state. This used to run on every scroll event — with
+        // Lenis emitting one per frame that is a fresh tween sixty times a second,
+        // each rewriting the header's inline style, which also kept interrupting the
+        // background transition so it never reached its target and sat frozen at a
+        // part-way blend.
+        if (hide !== hidden) {
+          hidden = hide;
+          gsap.to(el, {
+            yPercent: hide ? -100 : 0,
+            duration: 0.5,
+            ease: "power3.out",
+            overwrite: true,
+          });
+        }
       }
       last = y;
     };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+
+    /*
+     * Driven by Lenis where it exists, and by the native event otherwise.
+     *
+     * Lenis eases each wheel gesture over ~1.1s, writing a new scroll position every
+     * frame. The native `scroll` event does fire for those writes, but it arrives
+     * after the frame has painted and is subject to the browser's own coalescing — so
+     * the hero could be a hundred pixels up the screen while the bar was still
+     * transparent, and it only caught up once the easing settled. Subscribing to
+     * Lenis puts this on the same tick as the movement itself.
+     *
+     * The native listener stays as the fallback path: under `prefers-reduced-motion`
+     * SmoothScroll never starts, so there is no Lenis to subscribe to.
+     */
+    const lenis = getLenis();
+    const onLenisScroll = ({ scroll }: { scroll: number }) => onScroll(scroll);
+    const onNativeScroll = () => onScroll();
+    if (lenis) {
+      lenis.on("scroll", onLenisScroll);
+    } else {
+      window.addEventListener("scroll", onNativeScroll, { passive: true });
+    }
+    onScroll();
+
+    return () => {
+      if (lenis) {
+        lenis.off("scroll", onLenisScroll);
+      } else {
+        window.removeEventListener("scroll", onNativeScroll);
+      }
+    };
   }, [open]);
 
   // Overlay: panel wipes down, then the names rise in sequence.
@@ -159,7 +202,12 @@ export default function Navbar() {
           `bg-white` was unconditional, which put an opaque band across the top of the
           hero photograph — the one image on the site that is meant to run to the edge.
         */
-        className={`fixed inset-x-0 top-0 z-50 transition-[background-color,color,box-shadow] duration-500 ${
+        /*
+          No transition on the ground. Transparent-at-rest / solid-once-moving is a
+          binary state, and a fade only ever showed a half-opaque bar over the
+          photograph while it made its mind up. The shadow keeps its own transition.
+        */
+        className={`fixed inset-x-0 top-0 z-50 ${
           past || open
             ? "bg-white text-ink"
             : `bg-transparent ${darkTop ? "text-space" : "text-ink"}`
@@ -168,9 +216,7 @@ export default function Navbar() {
         {/* Three columns with the logo in the middle one, not a flex row with the
             logo first: the mark stays optically centred in the viewport no matter
             how wide the labels either side get. */}
-        <nav
-          className="mx-auto grid h-24 w-full shell-max grid-cols-[1fr_auto_1fr] items-center shell-px"
-        >
+        <nav className="mx-auto grid h-24 w-full shell-max grid-cols-[1fr_auto_1fr] items-center shell-px">
           <div className="flex items-center">
             <Button
               type="button"
@@ -180,7 +226,7 @@ export default function Navbar() {
               }}
               aria-expanded={open}
               aria-label={open ? "Close menu" : "Open menu"}
-              style={{ color: accent ?? undefined }}
+              style={{ color: open ? (accent ?? undefined) : undefined }}
               className="text-label flex cursor-pointer items-center gap-3 uppercase transition-colors duration-500"
             >
               <span className="relative block h-3 w-6">
@@ -228,7 +274,7 @@ export default function Navbar() {
                 setAccent(null);
                 setOpen(false);
               }}
-              style={{ color: accent ?? undefined }}
+              style={{ color: open ? (accent ?? undefined) : undefined }}
               className="text-label uppercase underline decoration-1 underline-offset-[6px] transition-[text-decoration-color,color] duration-500 hover:decoration-transparent"
             >
               Enquire
@@ -245,7 +291,6 @@ export default function Navbar() {
           if (!next) setAccent(null);
           setOpen(next);
         }}
-        bellOff={bellOff}
         onAccent={setAccent}
       />
     </>

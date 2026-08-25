@@ -1,27 +1,5 @@
-/**
- * The Tibetan cloud, as line art.
- *
- * The brief asks for "the tibetan clouds like on the cabinets". The client's own version
- * is in `6. Graphics/Tibetan cloud on door 1–2.jpg` — but those are photographs of paint
- * on a wooden door, so the wood grain, the knots and the whitewash come with them. What
- * is wanted is the *motif*, so it is redrawn here as a path: it takes `currentColor`,
- * scales without resampling, and weighs nothing.
- *
- * The form is the standard auspicious cloud: a scalloped head, a spiral curl tucked
- * under its leading edge, and a tail that streams away behind. Both painted doors follow
- * it, one cloud per door corner with the tail running into the middle of the panel.
- *
- * Geometry is generated rather than hand-typed so the spirals are true spirals, and every
- * number is rounded to 3 decimals — `Math.cos`/`Math.sin` disagree between Node and the
- * browser in their last bits, which is enough to trip React's hydration check on a path.
- */
-
 const r3 = (n: number) => Math.round(n * 1000) / 1000;
 
-/**
- * A logarithmic spiral, drawn as a polyline fine enough to read as a curve. Tibetan
- * cloud curls tighten as they turn inward, which an arc of constant radius cannot do.
- */
 function spiral(
   cx: number,
   cy: number,

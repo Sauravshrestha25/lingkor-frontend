@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { SparklesCore } from "@/components/SparklesCore";
-import { LineArt } from "@/components/media/Photo";
 import { Rise } from "@/components/anim";
 import { Label } from "@/components/ui";
 import { CONTACT, NAV, SPACES } from "@/lib/site";
@@ -10,13 +9,17 @@ import { CONTACT, NAV, SPACES } from "@/lib/site";
  * The close: the caravan drawing running the full width above the wordmark, then the
  * site's own map, then the fine print.
  *
- * Midnight closes the page, with the off-white space colour carrying all typography
- * and rules. Reduced opacities remain comfortably distinct against the dark ground.
+ * The homepage closes in midnight. Interior routes use the inverse white treatment.
  */
-export default function Footer() {
+export default function Footer({ dark = false }: { dark?: boolean }) {
+  const ground = dark ? "bg-midnight text-space" : "bg-white text-ink";
+  const rule = dark ? "border-space/20" : "border-ink/20";
+
   return (
-    <footer className="relative w-full overflow-hidden bg-midnight pt-24 pb-10 text-space">
-      <div className="mx-auto w-full shell-max shell-px">
+    <footer
+      className={`relative w-full overflow-hidden pt-24 pb-10 ${ground} ${dark ? "home-knot-gutters" : ""}`}
+    >
+      <div className="relative z-10 mx-auto w-full shell-max shell-px">
         {/* The line the whole site is built on, drawn once at the end. */}
         {/* <Rise className="flex justify-center">
           <LineArt
@@ -28,7 +31,7 @@ export default function Footer() {
 
         <Rise
           delay={120}
-          className="mt-20 grid grid-cols-2 gap-x-8 gap-y-14 border-t border-space/20 pt-16 md:grid-cols-4"
+          className={`mt-20 grid grid-cols-2 gap-x-8 gap-y-14 border-t pt-16 md:grid-cols-4 ${rule}`}
         >
           <div className="col-span-2 md:col-span-1">
             <Label className="">Lingkor</Label>
@@ -101,11 +104,13 @@ export default function Footer() {
             alt="Lingkor"
             width={1200}
             height={400}
-            className="h-auto w-full max-w-104 opacity-80"
+            className={`h-auto w-full max-w-104 opacity-80 ${dark ? "" : "invert"}`}
           />
         </div>
 
-        <div className="mt-8 flex flex-col gap-4 border-t border-space/20 text-xs font-body tracking-wide pt-8 sm:flex-row sm:items-center sm:justify-between">
+        <div
+          className={`mt-8 flex flex-col gap-4 border-t text-xs font-body tracking-wide pt-8 sm:flex-row sm:items-center sm:justify-between ${rule}`}
+        >
           <Label className="opacity-65">
             © {new Date().getFullYear()} Lingkor · Boudha, Kathmandu
           </Label>
@@ -128,18 +133,16 @@ export default function Footer() {
                 minSize={0.5}
                 maxSize={1.1}
                 speed={0.6}
-                particleColor="#F0EDE6"
+                particleColor={dark ? "#F0EDE6" : "#1C1A17"}
                 particleDensity={110}
               />
               <Image
-                src="/webx-white-logo.svg"
+                src={dark ? "/webx-white-logo.svg" : "/webx-logo.jpg"}
                 alt="WebX"
                 height={30}
                 width={60}
-                // No blend mode. `mix-blend-multiply` was knocking the white box out
-                // of the old JPEG against a light footer; multiplied against ink it
-                // renders #1A1815 — the logo becomes the background exactly. The SVG
-                // has real transparency, so it needs no blending at all.
+                // Use purpose-built artwork for each ground. Inverting the white SVG
+                // also inverted WebX's multicolour X, which changed the brand mark.
                 className="relative z-10 h-auto w-12"
               />
             </span>

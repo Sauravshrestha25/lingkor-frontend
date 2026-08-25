@@ -25,7 +25,7 @@ export default function Page() {
       <KoraCircle />
       {/* <VoicesSection /> */}
       <EnquireSection />
-      <Footer />
+      <Footer dark />
     </main>
   );
 }

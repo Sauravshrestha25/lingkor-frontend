@@ -2,8 +2,6 @@
 
 import { useState, type RefObject } from "react";
 import Link from "next/link";
-import { Button } from "@/components/shared/button";
-import { setBellMuted } from "@/lib/bell";
 import { NAV, SPACES } from "../nav";
 import { POSTS } from "@/lib/journal";
 import { MenuCursorPlate } from "./MenuCursorPlate";
@@ -37,14 +35,12 @@ export function NavOverlay({
   open,
   pathname,
   setOpen,
-  bellOff,
   onAccent,
 }: {
   overlayRef: RefObject<HTMLDivElement | null>;
   open: boolean;
   pathname: string;
   setOpen: (open: boolean) => void;
-  bellOff: boolean;
   /** Lifts the hovered space's colour to the header, which is a DOM sibling. */
   onAccent: (accent: string | null) => void;
 }) {
@@ -183,7 +179,7 @@ export function NavOverlay({
             borderColor: live ?? "color-mix(in srgb, #1c1a17 15%, transparent)",
           }}
         >
-          <div className="grid grid-cols-2 gap-x-8 gap-y-10 sm:grid-cols-4">
+          <div className="grid grid-cols-2 gap-x-8 gap-y-10 sm:grid-cols-3">
             <div className="col-span-2">
               <p className="text-label uppercase opacity-45">Elsewhere</p>
               <ul className="mt-4 flex flex-wrap gap-x-7 gap-y-3">
@@ -217,22 +213,6 @@ export function NavOverlay({
               <p className="text-label mt-4 uppercase opacity-70">
                 Boudha, Kathmandu
               </p>
-            </div>
-
-            <div>
-              <p className="text-label uppercase opacity-45">Sound</p>
-              {/* The site makes a sound when you reach for the lists. Anything
-                  that can make noise unprompted needs a way to stop it, in
-                  reach, not buried. */}
-              <Button
-                type="button"
-                onClick={() => setBellMuted(!bellOff)}
-                tabIndex={open ? 0 : -1}
-                aria-pressed={bellOff}
-                className="text-label mt-4 cursor-pointer uppercase opacity-70 underline decoration-1 underline-offset-[6px] transition-opacity duration-300 hover:opacity-100"
-              >
-                {bellOff ? "Bell — off" : "Bell — on"}
-              </Button>
             </div>
           </div>
         </div>
