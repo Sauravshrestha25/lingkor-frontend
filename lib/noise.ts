@@ -1,3 +1,4 @@
+// ping
 /**
  * A small deterministic 2D value-noise function — not Perlin- or simplex-grade, but
  * smooth, cheap, and dependency-free.
