@@ -26,6 +26,7 @@
  * anyway. Cleanup cannot tell a StrictMode rehearsal from a real unmount.
  */
 const EVENT = "lb:intro-finished";
+const CLAIM_EVENT = "lb:intro-claimed";
 
 let claimed = false;
 let finished = false;
@@ -42,6 +43,7 @@ export function claimIntro() {
   claimed = true;
   window.clearTimeout(safety);
   safety = window.setTimeout(finishIntro, NEVER_LONGER_THAN);
+  window.dispatchEvent(new Event(CLAIM_EVENT));
 }
 
 export function finishIntro() {
@@ -58,4 +60,26 @@ export function afterIntro(cb: () => void): () => void {
   }
   window.addEventListener(EVENT, cb, { once: true });
   return () => window.removeEventListener(EVENT, cb);
+}
+
+/**
+ * The `useSyncExternalStore` pair for "is the preloader currently up" — for chrome that
+ * has to stay off the screen while it runs (the sound toggle: a persistent control
+ * floating over the intro doubles the door's own With Sound / Silent Entry choice).
+ *
+ * Two events, not one: `finishIntro` already had `EVENT` to announce the close; without
+ * `CLAIM_EVENT` a subscriber mounted before `claimIntro()` runs would never learn the
+ * gate had shut, since nothing tells it "true" — only ever "false".
+ */
+export function isIntroActive() {
+  return claimed && !finished;
+}
+
+export function subscribeIntroActive(cb: () => void): () => void {
+  window.addEventListener(EVENT, cb);
+  window.addEventListener(CLAIM_EVENT, cb);
+  return () => {
+    window.removeEventListener(EVENT, cb);
+    window.removeEventListener(CLAIM_EVENT, cb);
+  };
 }

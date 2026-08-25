@@ -10,6 +10,7 @@ import {
   setSiteSoundMuted,
   subscribeSiteSound,
 } from "../audio";
+import { isIntroActive, subscribeIntroActive } from "../gate";
 
 export function SoundToggle() {
   const muted = useSyncExternalStore(
@@ -17,11 +18,25 @@ export function SoundToggle() {
     isSiteSoundMuted,
     isSiteSoundMutedOnServer,
   );
+  // Hidden for the run of the preloader — the entry screen already asks With Sound
+  // or Silent Entry, and a second, floating control saying the same thing over the
+  // cinematic that follows is a control fighting a choice already made.
+  //
+  // `() => false` as the server snapshot: SSR always says "not active" so this
+  // button is in the initial HTML, and `claimIntro()` — which runs in a layout
+  // effect, before paint — corrects it to hidden before anyone sees the flash.
+  const introActive = useSyncExternalStore(
+    subscribeIntroActive,
+    isIntroActive,
+    () => false,
+  );
   const Icon = muted ? VolumeX : Volume2;
 
   useEffect(() => {
     setBellMuted(muted);
   }, [muted]);
+
+  if (introActive) return null;
 
   return (
     <Button

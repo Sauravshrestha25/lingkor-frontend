@@ -373,10 +373,23 @@ export default function Preloader() {
     if (entryLeaving || entryMode) return;
     soundEnabled.current = mode === "sound";
     if (mode === "sound") {
+      // `startPreloaderSound` first: it is what flips `audioEnabled` on and creates
+      // the tracks. `setSiteSoundMuted` now bootstraps the whole graph itself when
+      // called while `audioEnabled` is still false (the master-control path — see
+      // its doc in audio.ts) — called in the other order, this "just unmute" call
+      // would have raced ahead and started the site-ambient track immediately,
+      // stepping on the preloader's own bell-timed handoff to it.
+      startPreloaderSound();
       setSiteSoundMuted(false);
       setBellMuted(false);
-      startPreloaderSound();
     } else {
+      // The graph never turns on for a silent entry, so nothing is actually playing
+      // — but the mute flag defaults to whatever localStorage/module state already
+      // held, which could read as "on". Setting it explicitly is what makes the
+      // master toggle read correctly the instant the door closes, not just once
+      // someone touches it.
+      setSiteSoundMuted(true);
+      setBellMuted(true);
       enterSilently();
     }
     setEntryMode(mode);
