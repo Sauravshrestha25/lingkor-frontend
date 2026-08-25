@@ -4,8 +4,14 @@ import localfont from "next/font/local";
 import "./globals.css";
 import Navbar from "@/features/navigation/components/Navbar";
 import Preloader from "@/features/preloader/components/Preloader";
+import { SoundToggle } from "@/features/preloader/components/SoundToggle";
 import SmoothScroll from "@/components/SmoothScroll";
 import WebxSignature from "@/components/WebxSignature";
+import {
+  TransitionProvider,
+  // PageTransitionOverlay,
+} from "@/features/transition";
+import { WhiteLogoPageTransition } from "@/features/transition/components/WhiteLogoPageTransition";
 
 const barlow = localfont({
   variable: "--font-barlow",
@@ -42,6 +48,16 @@ export const metadata: Metadata = {
   title: "Lingkor — Boudha",
   description:
     "Rest in the spirit of Mustang. A hotel beneath the stupa, in Boudha, Kathmandu.",
+  icons: {
+    icon: [
+      { url: "/Logo/logo.svg", type: "image/svg+xml" },
+      {
+        url: "/Logo/logo-white.svg",
+        type: "image/svg+xml",
+        media: "(prefers-color-scheme: dark)",
+      },
+    ],
+  },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
@@ -51,17 +67,16 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       className={`${hasweny.variable} ${yagpo.variable} ${barlow.variable}`}
     >
       <body className="flex min-h-svh flex-col bg-canvas text-ink">
-        <WebxSignature />
-        <SmoothScroll />
-        {/* Sitewide, and mounted in the layout on purpose.
-            The root layout is not re-rendered by client navigation, so the intro cannot
-            replay when you come back to a route you have already visited — which is
-            exactly what happened while it lived in `page.tsx`. It plays once per
-            session (see ONCE_PER_SESSION) and holds the entrance animations until it is
-            done (see features/preloader/gate.ts). */}
-        <Preloader />
-        <Navbar />
-        {children}
+        <TransitionProvider>
+          <WebxSignature />
+          <SmoothScroll />
+          <Preloader />
+          <SoundToggle />
+          {/* <PageTransitionOverlay /> */}
+          <WhiteLogoPageTransition />
+          <Navbar />
+          {children}
+        </TransitionProvider>
       </body>
     </html>
   );

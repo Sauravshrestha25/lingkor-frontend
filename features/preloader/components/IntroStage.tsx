@@ -48,7 +48,7 @@ export function IntroStage({
       <Button
         type="button"
         onClick={onSkip}
-        className="absolute bottom-6 right-5 z-10 cursor-pointer rounded-full bg-white px-5 py-2.5 font-inter text-xs font-medium uppercase tracking-[0.2em] text-ink shadow-lg transition-opacity hover:opacity-85 sm:bottom-8 sm:right-8"
+        className="absolute bottom-6 left-5 z-10 cursor-pointer rounded-full bg-white px-5 py-2.5 font-inter text-xs font-medium uppercase tracking-[0.2em] text-ink shadow-lg transition-opacity hover:opacity-85 sm:bottom-8 sm:left-8"
       >
         Skip
       </Button>

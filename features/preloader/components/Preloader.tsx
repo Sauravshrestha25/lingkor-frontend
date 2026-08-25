@@ -1,8 +1,8 @@
 "use client";
 
-
-import { useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
+import { playBell, setBellMuted, unlockBell } from "@/lib/bell";
 import {
   BOUDHA_HOLD,
   FADE,
@@ -23,22 +23,47 @@ import {
   lockScroll,
   unlockScroll,
 } from "../preloader";
+import {
+  enterSilently,
+  fadeOutPreloaderSound,
+  setSiteSoundMuted,
+  startPreloaderSound,
+  transitionToSiteSound,
+} from "../audio";
 import { flightTo } from "../flight";
 import { claimIntro, finishIntro } from "../gate";
+import { EntryStage } from "./EntryStage";
 import { IntroStage } from "./IntroStage";
+
+type EntryMode = "sound" | "silent";
+const PRELOADER_BELL_DECAY_SCALE = 0.42;
+const SITE_MUSIC_AFTER_BELL_MS = 2500;
+const EXTRA_PRELOADER_HOLD = 1;
+const ENTRY_FADE_MS = 1000;
 
 export default function Preloader() {
   const [done, setDone] = useState(false);
+  const [entryMode, setEntryMode] = useState<EntryMode | null>(null);
+  const [entryLeaving, setEntryLeaving] = useState(false);
+  const [showEntry, setShowEntry] = useState(true);
   const root = useRef<HTMLDivElement>(null);
   const timeline = useRef<gsap.core.Timeline | null>(null);
+  const soundEnabled = useRef(false);
+  const bellPlayed = useRef(false);
 
   // Skip: bail out via the Skip button or Escape. Deliberately NOT click-anywhere —
   // a stray click should not cost you the intro.
-  const skipIntro = () => {
+  const skipIntro = useCallback(() => {
     timeline.current?.kill();
     document
       .querySelector<HTMLElement>(".nav-logo")
       ?.style.setProperty("opacity", "1");
+    if (soundEnabled.current && !bellPlayed.current) {
+      bellPlayed.current = true;
+      fadeOutPreloaderSound(700);
+      playBell(0, PRELOADER_BELL_DECAY_SCALE);
+      transitionToSiteSound(SITE_MUSIC_AFTER_BELL_MS);
+    }
     unlockScroll(); // never leave the page unscrollable, whatever else fails
     finishIntro(); // ...and never leave the page unanimated either
     sessionStorage.setItem(SESSION_KEY, "1");
@@ -46,12 +71,15 @@ export default function Preloader() {
       opacity: 0,
       duration: 0.35,
       ease: "power2.out",
-      onComplete: () => setDone(true),
+      onComplete: () => {
+        setDone(true);
+      },
     });
-  };
+  }, []);
 
   useLayoutEffect(() => {
     const navLogo = document.querySelector<HTMLElement>(".nav-logo");
+    unlockBell();
 
     // Claimed in a layout effect so it lands before any passive effect in the tree —
     // the entrance primitives ask the gate from `useEffect`, which runs later.
@@ -63,7 +91,9 @@ export default function Preloader() {
     if (skip) {
       // Hide before paint, then unmount async so the photos are never fetched.
       finishIntro();
-      if (root.current) root.current.style.display = "none";
+      document
+        .querySelector<HTMLElement>("[data-entry-stage]")
+        ?.style.setProperty("display", "none");
       const id = requestAnimationFrame(() => setDone(true));
       return () => cancelAnimationFrame(id);
     }
@@ -72,6 +102,16 @@ export default function Preloader() {
     // The navbar logo is the flight's destination, so it stays hidden until it lands.
     if (navLogo) navLogo.style.opacity = "0";
 
+    return () => {
+      unlockScroll();
+      if (navLogo) navLogo.style.opacity = "1";
+    };
+  }, []);
+
+  useLayoutEffect(() => {
+    if (!entryMode) return;
+
+    const navLogo = document.querySelector<HTMLElement>(".nav-logo");
     const start = performance.now();
     let killed = false;
 
@@ -81,6 +121,12 @@ export default function Preloader() {
     // Whatever happens to the timeline, the navbar logo cannot stay hidden.
     const failsafe = window.setTimeout(() => {
       revealNav();
+      if (entryMode === "sound" && !bellPlayed.current) {
+        bellPlayed.current = true;
+        fadeOutPreloaderSound(700);
+        playBell(0, PRELOADER_BELL_DECAY_SCALE);
+        transitionToSiteSound(SITE_MUSIC_AFTER_BELL_MS);
+      }
       unlockScroll();
       finishIntro();
     }, FAILSAFE_MS);
@@ -140,6 +186,7 @@ export default function Preloader() {
       // Mustang frames get HOLD each; Boudha gets its own, longer beat.
       const boudhaAt = (PHOTOS.length - 1) * HOLD;
       const lockAt = boudhaAt + BOUDHA_HOLD;
+      const flightAt = lockAt + EXTRA_PRELOADER_HOLD;
 
       // Phase 2, in three beats over BOUDHA_HOLD:
       //   1. Boudha lands sharp and alone.
@@ -209,15 +256,32 @@ export default function Preloader() {
           { opacity: 1, duration: FILL_BEAT, ease: "power2.inOut" },
           fillAt,
         )
+        .call(
+          () => {
+            if (entryMode === "sound") fadeOutPreloaderSound();
+          },
+          [],
+          flightAt - 0.7,
+        )
         // Hand off to a real <img> at identical size/position so the flight can move
         // a normal element. Visually a no-op.
-        .set(".pl-flat", { opacity: 1 }, lockAt)
-        .set(".pl-mask-wrap", { opacity: 0 }, lockAt)
+        .set(".pl-flat", { opacity: 1 }, flightAt)
+        .set(".pl-mask-wrap", { opacity: 0 }, flightAt)
+        .call(
+          () => {
+            if (entryMode !== "sound" || bellPlayed.current) return;
+            bellPlayed.current = true;
+            playBell(0, PRELOADER_BELL_DECAY_SCALE);
+            transitionToSiteSound(SITE_MUSIC_AFTER_BELL_MS);
+          },
+          [],
+          flightAt,
+        )
         // Phase 3: photos fade to the hero while the logo flies into the navbar slot.
         .to(
           ".pl-bg, .pl-stack, .pl-blur",
           { opacity: 0, duration: 1.1, ease: "power2.inOut" },
-          lockAt,
+          flightAt,
         )
         .to(
           ".pl-flat",
@@ -301,15 +365,48 @@ export default function Preloader() {
       unlockScroll();
       revealNav();
     };
-  }, []);
+  }, [entryMode, skipIntro]);
 
   if (done) return null;
 
+  const enter = (mode: EntryMode) => {
+    if (entryLeaving || entryMode) return;
+    soundEnabled.current = mode === "sound";
+    if (mode === "sound") {
+      setSiteSoundMuted(false);
+      setBellMuted(false);
+      startPreloaderSound();
+    } else {
+      enterSilently();
+    }
+    setEntryMode(mode);
+    setEntryLeaving(true);
+    window.setTimeout(() => setShowEntry(false), ENTRY_FADE_MS);
+  };
+
+  if (!entryMode) {
+    return (
+      <EntryStage
+        leaving={entryLeaving}
+        onSound={() => enter("sound")}
+        onSilent={() => enter("silent")}
+      />
+    );
+  }
 
   return (
-    <IntroStage
-      root={root}
-      onSkip={skipIntro}
-    />
+    <>
+      <IntroStage
+        root={root}
+        onSkip={skipIntro}
+      />
+      {showEntry ? (
+        <EntryStage
+          leaving={entryLeaving}
+          onSound={() => enter("sound")}
+          onSilent={() => enter("silent")}
+        />
+      ) : null}
+    </>
   );
 }

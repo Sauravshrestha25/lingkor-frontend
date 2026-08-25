@@ -31,6 +31,7 @@ let master: GainNode | null = null;
 let last = 0;
 let muted = false;
 let unlocked = false;
+let listening = false;
 
 /** Read the stored preference once, on first import in the browser. */
 if (typeof window !== "undefined") {
@@ -69,9 +70,20 @@ export function setBellMuted(next: boolean) {
  * builds the context; until then `playBell` is a silent no-op rather than an error.
  */
 export function unlockBell() {
-  if (unlocked || typeof window === "undefined") return;
+  if (unlocked || listening || typeof window === "undefined") return;
+  listening = true;
+
+  const stop = () => {
+    listening = false;
+    window.removeEventListener("pointerdown", start);
+    window.removeEventListener("keydown", start);
+  };
+
   const start = () => {
-    if (unlocked) return;
+    if (unlocked) {
+      stop();
+      return;
+    }
     unlocked = true;
     try {
       const AC =
@@ -86,8 +98,7 @@ export function unlockBell() {
     } catch {
       ctx = null;
     }
-    window.removeEventListener("pointerdown", start);
-    window.removeEventListener("keydown", start);
+    stop();
   };
   window.addEventListener("pointerdown", start, { once: true });
   window.addEventListener("keydown", start, { once: true });
@@ -98,7 +109,7 @@ export function unlockBell() {
  * doesn't repeat one identical note — closer to passing a row of bells than to
  * clicking the same UI sound five times.
  */
-export function playBell(variant = 0) {
+export function playBell(variant = 0, decayScale = 1) {
   if (muted || !ctx || !master) return;
 
   const now = performance.now();
@@ -115,6 +126,7 @@ export function playBell(variant = 0) {
   for (const [ratio, gain, decay] of PARTIALS) {
     const osc = ctx.createOscillator();
     const env = ctx.createGain();
+    const scaledDecay = decay * decayScale;
 
     osc.type = "sine";
     osc.frequency.value = root * ratio;
@@ -125,11 +137,11 @@ export function playBell(variant = 0) {
     // decays asymptotically, which is what a struck metal body actually does.
     env.gain.setValueAtTime(0, t);
     env.gain.linearRampToValueAtTime(gain, t + 0.006);
-    env.gain.setTargetAtTime(0, t + 0.006, decay / 5);
+    env.gain.setTargetAtTime(0, t + 0.006, scaledDecay / 5);
 
     osc.connect(env);
     env.connect(master);
     osc.start(t);
-    osc.stop(t + decay);
+    osc.stop(t + scaledDecay);
   }
 }

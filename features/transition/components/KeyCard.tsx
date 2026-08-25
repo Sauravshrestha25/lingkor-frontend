@@ -1,0 +1,265 @@
+"use client";
+
+import React, { forwardRef } from "react";
+
+export interface KeyCardProps {
+  className?: string;
+}
+
+export const KeyCard = forwardRef<HTMLDivElement, KeyCardProps>(function KeyCard(
+  { className = "" },
+  ref,
+) {
+  return (
+    <div
+      ref={ref}
+      className={`key-card-stage relative w-[270px] h-[440px] sm:w-[310px] sm:h-[500px] md:w-[330px] md:h-[530px] select-none ${className}`}
+      style={{
+        perspective: "1400px",
+        transformStyle: "preserve-3d",
+      }}
+    >
+      {/* 3D Card Container (Rotated and flipped by GSAP) */}
+      <div
+        className="key-card-inner relative w-full h-full rounded-[22px]"
+        style={{
+          transformStyle: "preserve-3d",
+          boxShadow:
+            "0 30px 70px -15px rgba(0, 0, 0, 0.7), 0 0 50px -10px rgba(200, 150, 60, 0.25)",
+        }}
+      >
+        {/* ========================================================= */}
+        {/* FRONT FACE (SIDE 1: Handcrafted Mustang Mineral Stripes) */}
+        {/* ========================================================= */}
+        <div
+          className="key-card-front absolute inset-0 w-full h-full rounded-[22px] overflow-hidden border border-white/20"
+          style={{
+            backfaceVisibility: "hidden",
+            WebkitBackfaceVisibility: "hidden",
+            transform: "rotateY(0deg)",
+          }}
+        >
+          {/* Base Stripe Layer */}
+          <div className="absolute inset-0 flex w-full h-full">
+            {/* Stripe 1: Weathered Indigo / Slate Grey (22%) */}
+            <div
+              className="h-full w-[22%] relative overflow-hidden"
+              style={{
+                background:
+                  "linear-gradient(180deg, #343b42 0%, #2b3238 45%, #20252a 100%)",
+              }}
+            >
+              <div
+                className="absolute inset-0 opacity-40 mix-blend-overlay"
+                style={{
+                  backgroundImage:
+                    "linear-gradient(90deg, rgba(255,255,255,0.08) 0%, transparent 60%, rgba(0,0,0,0.25) 100%)",
+                }}
+              />
+            </div>
+
+            {/* Stripe 2: Earthy Terracotta Red / Cinnabar (27%) */}
+            <div
+              className="h-full w-[27%] relative overflow-hidden"
+              style={{
+                background:
+                  "linear-gradient(180deg, #aa4b34 0%, #983f2a 50%, #853320 100%)",
+              }}
+            >
+              <div
+                className="absolute inset-0 opacity-30 mix-blend-color-burn"
+                style={{
+                  background:
+                    "linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.3) 100%)",
+                }}
+              />
+            </div>
+
+            {/* Stripe 3: Warm Mustard Ochre / Himalayan Gold (29%) */}
+            <div
+              className="h-full w-[29%] relative overflow-hidden"
+              style={{
+                background:
+                  "linear-gradient(180deg, #e2a84d 0%, #d4953c 50%, #be7d28 100%)",
+              }}
+            >
+              {/* Luminous center wash */}
+              <div
+                className="absolute inset-0 opacity-40 mix-blend-soft-light"
+                style={{
+                  background:
+                    "radial-gradient(ellipse at 50% 40%, rgba(255,255,255,0.6) 0%, transparent 70%)",
+                }}
+              />
+            </div>
+
+            {/* Stripe 4: Deep Rust / Terracotta (22%) */}
+            <div
+              className="h-full w-[22%] relative overflow-hidden"
+              style={{
+                background:
+                  "linear-gradient(180deg, #ab4832 0%, #933824 50%, #7d2a17 100%)",
+              }}
+            >
+              <div
+                className="absolute inset-0 opacity-35 mix-blend-multiply"
+                style={{
+                  background:
+                    "linear-gradient(90deg, rgba(0,0,0,0.15) 0%, transparent 40%, rgba(0,0,0,0.3) 100%)",
+                }}
+              />
+            </div>
+          </div>
+
+          {/* Vertical Mineral Wash & Dripped Plaster Texture Overlays */}
+          <div
+            className="absolute inset-0 pointer-events-none opacity-50 mix-blend-overlay"
+            style={{
+              backgroundImage: `repeating-linear-gradient(
+                90deg,
+                rgba(255, 255, 255, 0.03) 0px,
+                rgba(255, 255, 255, 0.03) 2px,
+                transparent 2px,
+                transparent 8px
+              )`,
+            }}
+          />
+
+          {/* Authentic Mineral Plaster Grain & Distress SVG Filter */}
+          <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-35 mix-blend-hard-light">
+            <filter id="plaster-grain">
+              <feTurbulence
+                type="fractalNoise"
+                baseFrequency="0.8"
+                numOctaves="3"
+                stitchTiles="stitch"
+              />
+              <feColorMatrix type="saturate" values="0" />
+            </filter>
+            <rect width="100%" height="100%" filter="url(#plaster-grain)" />
+          </svg>
+
+          {/* Subtle Organic Wall Brush Streaks */}
+          <div
+            className="absolute inset-0 pointer-events-none opacity-25 mix-blend-color-dodge"
+            style={{
+              background:
+                "linear-gradient(180deg, rgba(255,255,255,0.15) 0%, transparent 30%, rgba(255,255,255,0.08) 60%, transparent 100%)",
+            }}
+          />
+
+          {/* Side 1 Front Vector Logo */}
+          <div className="absolute inset-0 flex flex-col items-center pt-16 sm:pt-20 pointer-events-none z-10">
+            <div
+              className="w-44 sm:w-52 md:w-56 px-3 filter drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] drop-shadow-[0_8px_16px_rgba(0,0,0,0.3)]"
+              style={{
+                transform: "translateZ(30px)",
+              }}
+            >
+              <svg
+                viewBox="28 112 1491 846"
+                className="w-full h-auto text-white fill-current"
+                role="img"
+                aria-label="Lingkor Logo"
+              >
+                <path
+                  d="M 1405 655 L 1399 647 L 1376 631 L 1367 627 L 1357 627 L 1344 634 L 1332 644 L 1312 664 L 1290 689 L 1289 688 L 1313 630 L 1313 624 L 1311 621 L 1309 620 L 1302 621 L 1276 635 L 1260 641 L 1242 645 L 1225 644 L 1220 635 L 1214 629 L 1208 626 L 1197 625 L 1184 630 L 1174 638 L 1144 656 L 1119 673 L 1101 688 L 1092 697 L 1082 711 L 1078 723 L 1078 733 L 1082 743 L 1086 747 L 1093 751 L 1102 753 L 1129 752 L 1142 749 L 1157 743 L 1180 729 L 1198 711 L 1214 686 L 1221 668 L 1222 659 L 1224 655 L 1251 653 L 1263 650 L 1278 644 L 1280 646 L 1278 650 L 1249 690 L 1241 706 L 1239 713 L 1239 727 L 1242 736 L 1251 747 L 1258 750 L 1266 749 L 1271 744 L 1286 710 L 1297 694 L 1308 681 L 1333 658 L 1340 657 L 1344 661 L 1354 684 L 1358 690 L 1367 699 L 1373 702 L 1381 702 L 1390 695 L 1396 686 L 1405 665 Z M 1172 658 L 1173 661 L 1165 679 L 1151 699 L 1132 720 L 1117 732 L 1108 736 L 1100 737 L 1097 736 L 1093 732 L 1092 721 L 1096 713 L 1101 706 L 1116 691 L 1142 673 Z M 32 734 L 35 740 L 45 747 L 50 748 L 74 747 L 87 744 L 116 733 L 138 722 L 156 711 L 162 709 L 198 727 L 226 737 L 249 741 L 279 741 L 302 736 L 317 730 L 335 719 L 361 697 L 362 699 L 357 715 L 357 733 L 361 743 L 370 751 L 377 753 L 391 753 L 413 747 L 442 732 L 476 710 L 501 691 L 511 685 L 512 686 L 503 702 L 499 713 L 498 730 L 503 742 L 509 747 L 517 749 L 523 746 L 537 723 L 546 712 L 570 689 L 593 672 L 621 655 L 650 643 L 654 644 L 653 648 L 619 690 L 607 712 L 606 716 L 607 735 L 610 741 L 616 747 L 622 750 L 636 750 L 653 742 L 688 717 L 726 685 L 727 686 L 725 694 L 726 712 L 729 718 L 735 724 L 747 729 L 758 729 L 776 724 L 803 709 L 822 695 L 823 696 L 809 713 L 781 741 L 752 766 L 731 782 L 704 800 L 687 810 L 681 815 L 670 820 L 568 819 L 567 818 L 542 818 L 541 817 L 431 815 L 430 814 L 321 812 L 320 811 L 281 811 L 280 812 L 238 813 L 205 817 L 178 825 L 163 833 L 156 839 L 148 852 L 146 861 L 148 877 L 154 889 L 160 897 L 170 907 L 182 916 L 213 932 L 239 941 L 289 951 L 312 952 L 313 953 L 360 953 L 361 952 L 392 950 L 429 944 L 467 935 L 497 926 L 542 909 L 573 895 L 606 878 L 636 861 L 675 836 L 688 831 L 1050 832 L 1051 831 L 1137 831 L 1138 830 L 1203 829 L 1204 828 L 1253 826 L 1297 821 L 1336 814 L 1375 802 L 1411 784 L 1439 763 L 1461 740 L 1483 707 L 1490 693 L 1502 660 L 1511 618 L 1513 601 L 1513 586 L 1514 585 L 1514 566 L 1511 535 L 1508 516 L 1501 489 L 1493 468 L 1484 450 L 1474 435 L 1461 420 L 1441 404 L 1418 392 L 1401 386 L 1364 380 L 1324 381 L 1298 385 L 1274 391 L 1238 404 L 1207 419 L 1186 431 L 1134 466 L 1089 502 L 1027 560 L 979 610 L 954 640 L 919 686 L 898 718 L 885 742 L 885 746 L 891 749 L 895 745 L 914 716 L 923 708 L 936 704 L 949 708 L 978 734 L 999 745 L 1007 747 L 1018 747 L 1034 740 L 1041 735 L 1053 723 L 1058 715 L 1059 704 L 1054 698 L 1045 697 L 1036 701 L 1018 706 L 994 706 L 980 703 L 959 694 L 942 690 L 952 682 L 972 672 L 977 671 L 1003 659 L 1065 637 L 1080 629 L 1089 621 L 1094 610 L 1093 599 L 1087 592 L 1081 590 L 1075 590 L 1067 592 L 1055 598 L 1014 623 L 963 658 L 939 677 L 938 676 L 949 660 L 976 627 L 1033 569 L 1079 529 L 1110 505 L 1136 487 L 1178 461 L 1235 432 L 1272 418 L 1310 410 L 1352 409 L 1386 415 L 1408 423 L 1421 430 L 1432 438 L 1447 453 L 1456 465 L 1470 494 L 1480 533 L 1484 574 L 1483 619 L 1475 664 L 1464 695 L 1454 714 L 1439 735 L 1421 753 L 1410 762 L 1386 777 L 1346 795 L 1309 805 L 1261 812 L 1226 813 L 1225 814 L 1160 815 L 1159 816 L 811 818 L 810 819 L 803 818 L 802 819 L 723 819 L 722 820 L 702 819 L 701 818 L 750 779 L 788 745 L 832 701 L 893 634 L 892 628 L 889 627 L 884 629 L 838 670 L 815 688 L 793 703 L 775 711 L 766 711 L 762 708 L 761 697 L 766 686 L 774 675 L 784 665 L 800 652 L 823 638 L 851 627 L 870 624 L 873 621 L 869 618 L 858 616 L 833 617 L 805 623 L 789 629 L 769 639 L 741 659 L 710 688 L 688 706 L 663 724 L 646 732 L 643 730 L 643 723 L 645 716 L 670 665 L 676 648 L 676 637 L 675 634 L 670 630 L 661 630 L 651 633 L 620 647 L 594 662 L 590 666 L 573 677 L 550 696 L 548 695 L 551 688 L 567 664 L 571 660 L 598 621 L 602 613 L 602 610 L 599 606 L 594 606 L 587 610 L 515 670 L 478 697 L 445 717 L 423 728 L 404 735 L 393 735 L 389 731 L 387 727 L 387 719 L 390 708 L 398 694 L 408 681 L 467 618 L 473 607 L 473 600 L 469 596 L 459 596 L 454 598 L 435 610 L 412 629 L 354 688 L 339 700 L 315 712 L 298 716 L 275 716 L 261 713 L 236 703 L 200 683 L 197 680 L 239 641 L 299 581 L 406 468 L 473 402 L 506 377 L 526 368 L 543 366 L 552 368 L 559 372 L 566 381 L 568 387 L 568 401 L 565 411 L 560 421 L 550 434 L 540 444 L 528 453 L 512 463 L 490 474 L 477 483 L 464 497 L 458 512 L 458 522 L 462 533 L 471 546 L 487 561 L 493 564 L 499 565 L 506 564 L 516 559 L 526 550 L 534 540 L 542 524 L 544 515 L 544 506 L 540 497 L 537 494 L 530 491 L 520 491 L 511 495 L 496 508 L 487 509 L 482 507 L 478 502 L 479 495 L 485 488 L 494 482 L 519 470 L 540 458 L 562 439 L 571 428 L 580 411 L 586 388 L 586 372 L 584 363 L 580 354 L 567 341 L 551 335 L 543 334 L 524 335 L 513 337 L 484 348 L 465 359 L 432 385 L 376 440 L 239 583 L 185 637 L 158 662 L 128 661 L 114 663 L 94 669 L 78 676 L 59 688 L 43 703 L 36 713 L 33 720 Z M 203 859 L 204 846 L 213 836 L 221 832 L 238 827 L 268 823 L 288 823 L 289 822 L 390 823 L 391 824 L 418 824 L 419 825 L 451 825 L 452 826 L 540 828 L 541 829 L 580 829 L 581 830 L 624 830 L 625 831 L 654 831 L 655 832 L 652 836 L 605 862 L 572 877 L 526 894 L 511 897 L 489 904 L 460 910 L 401 917 L 342 917 L 308 913 L 276 906 L 248 896 L 227 885 L 207 867 Z M 547 696 L 548 695 L 549 696 L 548 697 Z M 126 686 L 106 702 L 78 718 L 65 722 L 55 722 L 51 719 L 51 714 L 53 710 L 65 698 L 86 686 L 99 682 L 109 681 L 119 682 Z M 865 210 L 859 215 L 839 242 L 836 250 L 839 254 L 845 256 L 875 254 L 881 255 L 883 259 L 877 262 L 854 262 L 853 261 L 831 262 L 826 266 L 824 270 L 824 277 L 832 283 L 887 283 L 890 284 L 892 287 L 889 290 L 880 291 L 824 290 L 819 292 L 816 295 L 814 300 L 815 307 L 820 313 L 833 315 L 898 314 L 904 318 L 904 321 L 901 324 L 891 326 L 875 326 L 872 329 L 876 332 L 885 333 L 917 333 L 920 332 L 926 327 L 928 322 L 928 317 L 926 312 L 920 307 L 917 306 L 843 307 L 838 304 L 838 300 L 844 297 L 853 296 L 905 297 L 912 295 L 916 290 L 916 284 L 914 280 L 905 276 L 853 276 L 848 275 L 846 273 L 847 270 L 851 268 L 896 267 L 899 266 L 903 261 L 902 252 L 896 248 L 887 247 L 886 248 L 859 248 L 854 245 L 867 226 L 869 226 L 882 242 L 891 243 L 893 240 L 891 235 L 881 223 L 875 213 L 871 210 Z M 863 178 L 858 184 L 859 194 L 865 199 L 876 198 L 881 191 L 881 185 L 879 181 L 873 177 Z M 834 118 L 816 122 L 794 129 L 760 146 L 749 153 L 729 169 L 714 184 L 698 204 L 687 221 L 677 241 L 665 277 L 661 302 L 661 335 L 665 359 L 674 387 L 685 409 L 698 428 L 722 454 L 756 479 L 790 495 L 808 501 L 837 507 L 857 509 L 881 509 L 882 508 L 902 507 L 924 503 L 954 494 L 977 483 L 995 471 L 1014 452 L 1023 437 L 1027 423 L 1027 410 L 1025 402 L 1021 395 L 1014 388 L 1007 384 L 992 380 L 961 380 L 955 382 L 949 382 L 916 388 L 907 391 L 882 395 L 872 398 L 829 404 L 801 404 L 787 401 L 783 397 L 782 392 L 786 387 L 790 385 L 810 381 L 969 367 L 986 361 L 987 359 L 986 355 L 975 352 L 931 351 L 930 350 L 852 350 L 851 351 L 813 350 L 804 348 L 799 344 L 799 341 L 805 336 L 820 333 L 849 331 L 854 328 L 853 325 L 847 324 L 831 324 L 822 326 L 810 326 L 783 329 L 759 334 L 750 340 L 749 346 L 753 351 L 760 354 L 770 356 L 842 357 L 843 356 L 883 356 L 884 355 L 938 355 L 939 356 L 952 356 L 956 358 L 956 360 L 953 362 L 926 366 L 842 369 L 841 370 L 827 370 L 788 374 L 769 377 L 741 384 L 737 386 L 734 390 L 734 396 L 740 401 L 759 407 L 789 412 L 804 412 L 805 413 L 860 412 L 907 407 L 914 405 L 946 401 L 972 401 L 984 406 L 988 410 L 992 419 L 992 425 L 989 434 L 985 440 L 960 464 L 941 477 L 919 487 L 903 492 L 876 496 L 848 495 L 825 490 L 805 483 L 787 474 L 769 462 L 759 454 L 741 436 L 725 414 L 712 388 L 705 365 L 702 342 L 702 317 L 706 288 L 715 258 L 727 232 L 735 219 L 752 196 L 775 173 L 786 164 L 803 153 L 821 144 L 835 139 L 856 134 L 893 133 L 906 135 L 930 142 L 949 151 L 969 164 L 994 188 L 1011 211 L 1024 239 L 1029 258 L 1031 274 L 1031 288 L 1029 302 L 1023 321 L 1023 325 L 1025 327 L 1028 327 L 1037 317 L 1042 305 L 1045 287 L 1044 266 L 1040 247 L 1033 227 L 1018 199 L 1004 180 L 985 161 L 971 150 L 946 135 L 925 126 L 908 121 L 876 116 L 854 116 Z"
+                  fill="#ffffff"
+                  fillRule="evenodd"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </div>
+          </div>
+
+          {/* Luxury Card Border & Specular Gloss Sweep */}
+          <div className="absolute inset-0 rounded-[22px] pointer-events-none ring-1 ring-inset ring-white/20 shadow-[inset_0_1px_1px_rgba(255,255,255,0.4),inset_0_-1px_2px_rgba(0,0,0,0.6)]" />
+
+          {/* Dynamic Light Sheen Overlay (controlled via GSAP) */}
+          <div
+            className="key-card-sheen absolute inset-0 pointer-events-none opacity-40 mix-blend-color-dodge"
+            style={{
+              background:
+                "linear-gradient(115deg, transparent 20%, rgba(255,255,255,0.55) 48%, rgba(255,255,255,0.85) 50%, rgba(255,255,255,0.55) 52%, transparent 75%)",
+              transform: "translateX(-100%)",
+            }}
+          />
+        </div>
+
+        {/* ========================================================= */}
+        {/* BACK FACE (SIDE 2: Warm Sandstone / Tibetan Lattice Back) */}
+        {/* ========================================================= */}
+        <div
+          className="key-card-back absolute inset-0 w-full h-full rounded-[22px] overflow-hidden border border-white/20 flex flex-col justify-between p-6 sm:p-8"
+          style={{
+            backfaceVisibility: "hidden",
+            WebkitBackfaceVisibility: "hidden",
+            transform: "rotateY(180deg)",
+            background:
+              "linear-gradient(145deg, #c9a46c 0%, #b89156 50%, #9e763a 100%)",
+          }}
+        >
+          {/* Subtle Endless Knot / Geometric Screen Watermark */}
+          <div
+            className="absolute inset-0 pointer-events-none opacity-15 mix-blend-multiply"
+            style={{
+              backgroundImage: `radial-gradient(#5a3d13 1.5px, transparent 1.5px), radial-gradient(#5a3d13 1.5px, transparent 1.5px)`,
+              backgroundSize: "24px 24px",
+              backgroundPosition: "0 0, 12px 12px",
+            }}
+          />
+
+          {/* Central Vertical Lattice Watermark */}
+          <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-40 opacity-20 pointer-events-none mix-blend-soft-light border-x border-white/40 flex flex-col justify-around py-8">
+            <div className="w-full h-px bg-white/40" />
+            <div className="w-full h-px bg-white/40" />
+            <div className="w-full h-px bg-white/40" />
+            <div className="w-full h-px bg-white/40" />
+          </div>
+
+          {/* Top of Side 2: Logo + Tibetan Name */}
+          <div className="relative z-10 flex flex-col items-center pt-2">
+            <div className="w-24 sm:w-28 opacity-95 filter drop-shadow-[0_1px_2px_rgba(0,0,0,0.3)]">
+              <svg
+                viewBox="28 112 1491 846"
+                className="w-full h-auto text-white fill-current"
+                role="img"
+                aria-label="Lingkor Logo"
+              >
+                <path
+                  d="M 1405 655 L 1399 647 L 1376 631 L 1367 627 L 1357 627 L 1344 634 L 1332 644 L 1312 664 L 1290 689 L 1289 688 L 1313 630 L 1313 624 L 1311 621 L 1309 620 L 1302 621 L 1276 635 L 1260 641 L 1242 645 L 1225 644 L 1220 635 L 1214 629 L 1208 626 L 1197 625 L 1184 630 L 1174 638 L 1144 656 L 1119 673 L 1101 688 L 1092 697 L 1082 711 L 1078 723 L 1078 733 L 1082 743 L 1086 747 L 1093 751 L 1102 753 L 1129 752 L 1142 749 L 1157 743 L 1180 729 L 1198 711 L 1214 686 L 1221 668 L 1222 659 L 1224 655 L 1251 653 L 1263 650 L 1278 644 L 1280 646 L 1278 650 L 1249 690 L 1241 706 L 1239 713 L 1239 727 L 1242 736 L 1251 747 L 1258 750 L 1266 749 L 1271 744 L 1286 710 L 1297 694 L 1308 681 L 1333 658 L 1340 657 L 1344 661 L 1354 684 L 1358 690 L 1367 699 L 1373 702 L 1381 702 L 1390 695 L 1396 686 L 1405 665 Z M 1172 658 L 1173 661 L 1165 679 L 1151 699 L 1132 720 L 1117 732 L 1108 736 L 1100 737 L 1097 736 L 1093 732 L 1092 721 L 1096 713 L 1101 706 L 1116 691 L 1142 673 Z M 32 734 L 35 740 L 45 747 L 50 748 L 74 747 L 87 744 L 116 733 L 138 722 L 156 711 L 162 709 L 198 727 L 226 737 L 249 741 L 279 741 L 302 736 L 317 730 L 335 719 L 361 697 L 362 699 L 357 715 L 357 733 L 361 743 L 370 751 L 377 753 L 391 753 L 413 747 L 442 732 L 476 710 L 501 691 L 511 685 L 512 686 L 503 702 L 499 713 L 498 730 L 503 742 L 509 747 L 517 749 L 523 746 L 537 723 L 546 712 L 570 689 L 593 672 L 621 655 L 650 643 L 654 644 L 653 648 L 619 690 L 607 712 L 606 716 L 607 735 L 610 741 L 616 747 L 622 750 L 636 750 L 653 742 L 688 717 L 726 685 L 727 686 L 725 694 L 726 712 L 729 718 L 735 724 L 747 729 L 758 729 L 776 724 L 803 709 L 822 695 L 823 696 L 809 713 L 781 741 L 752 766 L 731 782 L 704 800 L 687 810 L 681 815 L 670 820 L 568 819 L 567 818 L 542 818 L 541 817 L 431 815 L 430 814 L 321 812 L 320 811 L 281 811 L 280 812 L 238 813 L 205 817 L 178 825 L 163 833 L 156 839 L 148 852 L 146 861 L 148 877 L 154 889 L 160 897 L 170 907 L 182 916 L 213 932 L 239 941 L 289 951 L 312 952 L 313 953 L 360 953 L 361 952 L 392 950 L 429 944 L 467 935 L 497 926 L 542 909 L 573 895 L 606 878 L 636 861 L 675 836 L 688 831 L 1050 832 L 1051 831 L 1137 831 L 1138 830 L 1203 829 L 1204 828 L 1253 826 L 1297 821 L 1336 814 L 1375 802 L 1411 784 L 1439 763 L 1461 740 L 1483 707 L 1490 693 L 1502 660 L 1511 618 L 1513 601 L 1513 586 L 1514 585 L 1514 566 L 1511 535 L 1508 516 L 1501 489 L 1493 468 L 1484 450 L 1474 435 L 1461 420 L 1441 404 L 1418 392 L 1401 386 L 1364 380 L 1324 381 L 1298 385 L 1274 391 L 1238 404 L 1207 419 L 1186 431 L 1134 466 L 1089 502 L 1027 560 L 979 610 L 954 640 L 919 686 L 898 718 L 885 742 L 885 746 L 891 749 L 895 745 L 914 716 L 923 708 L 936 704 L 949 708 L 978 734 L 999 745 L 1007 747 L 1018 747 L 1034 740 L 1041 735 L 1053 723 L 1058 715 L 1059 704 L 1054 698 L 1045 697 L 1036 701 L 1018 706 L 994 706 L 980 703 L 959 694 L 942 690 L 952 682 L 972 672 L 977 671 L 1003 659 L 1065 637 L 1080 629 L 1089 621 L 1094 610 L 1093 599 L 1087 592 L 1081 590 L 1075 590 L 1067 592 L 1055 598 L 1014 623 L 963 658 L 939 677 L 938 676 L 949 660 L 976 627 L 1033 569 L 1079 529 L 1110 505 L 1136 487 L 1178 461 L 1235 432 L 1272 418 L 1310 410 L 1352 409 L 1386 415 L 1408 423 L 1421 430 L 1432 438 L 1447 453 L 1456 465 L 1470 494 L 1480 533 L 1484 574 L 1483 619 L 1475 664 L 1464 695 L 1454 714 L 1439 735 L 1421 753 L 1410 762 L 1386 777 L 1346 795 L 1309 805 L 1261 812 L 1226 813 L 1225 814 L 1160 815 L 1159 816 L 811 818 L 810 819 L 803 818 L 802 819 L 723 819 L 722 820 L 702 819 L 701 818 L 750 779 L 788 745 L 832 701 L 893 634 L 892 628 L 889 627 L 884 629 L 838 670 L 815 688 L 793 703 L 775 711 L 766 711 L 762 708 L 761 697 L 766 686 L 774 675 L 784 665 L 800 652 L 823 638 L 851 627 L 870 624 L 873 621 L 869 618 L 858 616 L 833 617 L 805 623 L 789 629 L 769 639 L 741 659 L 710 688 L 688 706 L 663 724 L 646 732 L 643 730 L 643 723 L 645 716 L 670 665 L 676 648 L 676 637 L 675 634 L 670 630 L 661 630 L 651 633 L 620 647 L 594 662 L 590 666 L 573 677 L 550 696 L 548 695 L 551 688 L 567 664 L 571 660 L 598 621 L 602 613 L 602 610 L 599 606 L 594 606 L 587 610 L 515 670 L 478 697 L 445 717 L 423 728 L 404 735 L 393 735 L 389 731 L 387 727 L 387 719 L 390 708 L 398 694 L 408 681 L 467 618 L 473 607 L 473 600 L 469 596 L 459 596 L 454 598 L 435 610 L 412 629 L 354 688 L 339 700 L 315 712 L 298 716 L 275 716 L 261 713 L 236 703 L 200 683 L 197 680 L 239 641 L 299 581 L 406 468 L 473 402 L 506 377 L 526 368 L 543 366 L 552 368 L 559 372 L 566 381 L 568 387 L 568 401 L 565 411 L 560 421 L 550 434 L 540 444 L 528 453 L 512 463 L 490 474 L 477 483 L 464 497 L 458 512 L 458 522 L 462 533 L 471 546 L 487 561 L 493 564 L 499 565 L 506 564 L 516 559 L 526 550 L 534 540 L 542 524 L 544 515 L 544 506 L 540 497 L 537 494 L 530 491 L 520 491 L 511 495 L 496 508 L 487 509 L 482 507 L 478 502 L 479 495 L 485 488 L 494 482 L 519 470 L 540 458 L 562 439 L 571 428 L 580 411 L 586 388 L 586 372 L 584 363 L 580 354 L 567 341 L 551 335 L 543 334 L 524 335 L 513 337 L 484 348 L 465 359 L 432 385 L 376 440 L 239 583 L 185 637 L 158 662 L 128 661 L 114 663 L 94 669 L 78 676 L 59 688 L 43 703 L 36 713 L 33 720 Z M 203 859 L 204 846 L 213 836 L 221 832 L 238 827 L 268 823 L 288 823 L 289 822 L 390 823 L 391 824 L 418 824 L 419 825 L 451 825 L 452 826 L 540 828 L 541 829 L 580 829 L 581 830 L 624 830 L 625 831 L 654 831 L 655 832 L 652 836 L 605 862 L 572 877 L 526 894 L 511 897 L 489 904 L 460 910 L 401 917 L 342 917 L 308 913 L 276 906 L 248 896 L 227 885 L 207 867 Z M 547 696 L 548 695 L 549 696 L 548 697 Z M 126 686 L 106 702 L 78 718 L 65 722 L 55 722 L 51 719 L 51 714 L 53 710 L 65 698 L 86 686 L 99 682 L 109 681 L 119 682 Z M 865 210 L 859 215 L 839 242 L 836 250 L 839 254 L 845 256 L 875 254 L 881 255 L 883 259 L 877 262 L 854 262 L 853 261 L 831 262 L 826 266 L 824 270 L 824 277 L 832 283 L 887 283 L 890 284 L 892 287 L 889 290 L 880 291 L 824 290 L 819 292 L 816 295 L 814 300 L 815 307 L 820 313 L 833 315 L 898 314 L 904 318 L 904 321 L 901 324 L 891 326 L 875 326 L 872 329 L 876 332 L 885 333 L 917 333 L 920 332 L 926 327 L 928 322 L 928 317 L 926 312 L 920 307 L 917 306 L 843 307 L 838 304 L 838 300 L 844 297 L 853 296 L 905 297 L 912 295 L 916 290 L 916 284 L 914 280 L 905 276 L 853 276 L 848 275 L 846 273 L 847 270 L 851 268 L 896 267 L 899 266 L 903 261 L 902 252 L 896 248 L 887 247 L 886 248 L 859 248 L 854 245 L 867 226 L 869 226 L 882 242 L 891 243 L 893 240 L 891 235 L 881 223 L 875 213 L 871 210 Z M 863 178 L 858 184 L 859 194 L 865 199 L 876 198 L 881 191 L 881 185 L 879 181 L 873 177 Z M 834 118 L 816 122 L 794 129 L 760 146 L 749 153 L 729 169 L 714 184 L 698 204 L 687 221 L 677 241 L 665 277 L 661 302 L 661 335 L 665 359 L 674 387 L 685 409 L 698 428 L 722 454 L 756 479 L 790 495 L 808 501 L 837 507 L 857 509 L 881 509 L 882 508 L 902 507 L 924 503 L 954 494 L 977 483 L 995 471 L 1014 452 L 1023 437 L 1027 423 L 1027 410 L 1025 402 L 1021 395 L 1014 388 L 1007 384 L 992 380 L 961 380 L 955 382 L 949 382 L 916 388 L 907 391 L 882 395 L 872 398 L 829 404 L 801 404 L 787 401 L 783 397 L 782 392 L 786 387 L 790 385 L 810 381 L 969 367 L 986 361 L 987 359 L 986 355 L 975 352 L 931 351 L 930 350 L 852 350 L 851 351 L 813 350 L 804 348 L 799 344 L 799 341 L 805 336 L 820 333 L 849 331 L 854 328 L 853 325 L 847 324 L 831 324 L 822 326 L 810 326 L 783 329 L 759 334 L 750 340 L 749 346 L 753 351 L 760 354 L 770 356 L 842 357 L 843 356 L 883 356 L 884 355 L 938 355 L 939 356 L 952 356 L 956 358 L 956 360 L 953 362 L 926 366 L 842 369 L 841 370 L 827 370 L 788 374 L 769 377 L 741 384 L 737 386 L 734 390 L 734 396 L 740 401 L 759 407 L 789 412 L 804 412 L 805 413 L 860 412 L 907 407 L 914 405 L 946 401 L 972 401 L 984 406 L 988 410 L 992 419 L 992 425 L 989 434 L 985 440 L 960 464 L 941 477 L 919 487 L 903 492 L 876 496 L 848 495 L 825 490 L 805 483 L 787 474 L 769 462 L 759 454 L 741 436 L 725 414 L 712 388 L 705 365 L 702 342 L 702 317 L 706 288 L 715 258 L 727 232 L 735 219 L 752 196 L 775 173 L 786 164 L 803 153 L 821 144 L 835 139 L 856 134 L 893 133 L 906 135 L 930 142 L 949 151 L 969 164 L 994 188 L 1011 211 L 1024 239 L 1029 258 L 1031 274 L 1031 288 L 1029 302 L 1023 321 L 1023 325 L 1025 327 L 1028 327 L 1037 317 L 1042 305 L 1045 287 L 1044 266 L 1040 247 L 1033 227 L 1018 199 L 1004 180 L 985 161 L 971 150 L 946 135 L 925 126 L 908 121 L 876 116 L 854 116 Z"
+                  fill="#ffffff"
+                  fillRule="evenodd"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </div>
+            <div className="text-white text-2xl font-tibetan mt-2 tracking-widest opacity-90 filter drop-shadow-[0_1px_2px_rgba(0,0,0,0.3)]">
+              གླིང་སྐོར།
+            </div>
+          </div>
+
+          {/* Bottom of Side 2: Hospitality Message */}
+          <div className="relative z-10 text-center px-2 pb-2">
+            <p className="text-white/95 text-[12px] sm:text-[13px] leading-relaxed font-sans font-light tracking-wide text-balance filter drop-shadow-[0_1px_2px_rgba(0,0,0,0.3)]">
+              Lingkor welcomes you in pure Mustang style and homely himalayan
+              hospitality. You will feel at home and maybe... you will not want
+              to leave
+            </p>
+
+            <div className="mt-4 pt-3 border-t border-white/20 flex items-center justify-between text-[10px] tracking-widest text-white/75 font-mono uppercase">
+              <span>BOUDHA • KATHMANDU</span>
+              <span className="flex items-center gap-1">
+                <span className="inline-block w-1.5 h-1.5 rounded-full bg-amber-300" />
+                ROOM ACCESS
+              </span>
+            </div>
+          </div>
+
+          {/* Card Border & Specular Gloss */}
+          <div className="absolute inset-0 rounded-[22px] pointer-events-none ring-1 ring-inset ring-white/25 shadow-[inset_0_1px_1px_rgba(255,255,255,0.4),inset_0_-1px_2px_rgba(0,0,0,0.4)]" />
+        </div>
+      </div>
+    </div>
+  );
+});
