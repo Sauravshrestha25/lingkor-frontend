@@ -24,7 +24,14 @@ import { VoiceCard } from "./VoiceCard";
  * the same as before.
  */
 export default function Testimonials({ voices }: { voices: Voice[] }) {
-  const { emblaRef, embla, focus } = useDragRail();
+  const {
+    emblaRef,
+    focus,
+    canScrollPrev,
+    canScrollNext,
+    scrollPrev,
+    scrollNext,
+  } = useDragRail();
 
   const current = voices[focus];
 
@@ -62,17 +69,19 @@ export default function Testimonials({ voices }: { voices: Voice[] }) {
           <Label className="hidden opacity-50 sm:block">Drag</Label>
           <Button
             type="button"
-            onClick={() => embla?.scrollPrev()}
+            onClick={scrollPrev}
+            disabled={!canScrollPrev}
             aria-label="Previous"
-            className="text-label cursor-pointer uppercase opacity-65 transition-opacity duration-300 hover:opacity-100"
+            className="text-label cursor-pointer uppercase opacity-65 transition-opacity duration-300 hover:opacity-100 disabled:cursor-default disabled:opacity-25"
           >
             Prev
           </Button>
           <Button
             type="button"
-            onClick={() => embla?.scrollNext()}
+            onClick={scrollNext}
+            disabled={!canScrollNext}
             aria-label="Next"
-            className="text-label cursor-pointer uppercase opacity-65 transition-opacity duration-300 hover:opacity-100"
+            className="text-label cursor-pointer uppercase opacity-65 transition-opacity duration-300 hover:opacity-100 disabled:cursor-default disabled:opacity-25"
           >
             Next
           </Button>

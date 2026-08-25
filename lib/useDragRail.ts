@@ -34,6 +34,8 @@ export function useDragRail({ dim = true }: { dim?: boolean } = {}) {
     containScroll: "trimSnaps",
   });
   const [focus, setFocus] = useState(0);
+  const [canScrollPrev, setCanScrollPrev] = useState(false);
+  const [canScrollNext, setCanScrollNext] = useState(false);
 
   /**
    * Distance from a reference point, read off the laid-out boxes rather than from
@@ -84,6 +86,8 @@ export function useDragRail({ dim = true }: { dim?: boolean } = {}) {
     });
 
     setFocus(best);
+    setCanScrollPrev(embla.canScrollPrev());
+    setCanScrollNext(embla.canScrollNext());
   }, [embla, dim]);
 
   useEffect(() => {
@@ -142,6 +146,17 @@ export function useDragRail({ dim = true }: { dim?: boolean } = {}) {
   }, [embla]);
 
   const clickAllowed = useCallback(() => !gesture.current.moved, []);
+  const scrollPrev = useCallback(() => embla?.scrollPrev(), [embla]);
+  const scrollNext = useCallback(() => embla?.scrollNext(), [embla]);
 
-  return { emblaRef, embla, focus, clickAllowed };
+  return {
+    emblaRef,
+    embla,
+    focus,
+    canScrollPrev,
+    canScrollNext,
+    clickAllowed,
+    scrollPrev,
+    scrollNext,
+  };
 }

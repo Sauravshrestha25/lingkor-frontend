@@ -12,7 +12,14 @@ import { Astroid, ChevronLeft, ChevronRight } from "lucide-react";
  * `useDragRail` — the same momentum drag as the spaces carousel and the voices rail.
  */
 export default function RoomsRail() {
-  const { emblaRef, embla, focus } = useDragRail({ dim: false });
+  const {
+    emblaRef,
+    focus,
+    canScrollPrev,
+    canScrollNext,
+    scrollPrev,
+    scrollNext,
+  } = useDragRail({ dim: false });
 
   return (
     <div className="shell-max">
@@ -58,25 +65,27 @@ export default function RoomsRail() {
         </div>
       </div>
 
-      <div className="mt-10 flex w-full items-center justify-between shell-px">
+      <div className="mt-10 flex w-full items-center justify-between knot-px">
         <Label className="opacity-50">
           {String(focus + 1).padStart(2, "0")} / {ROOMS.length}
         </Label>
         <div className="flex gap-8">
           <Button
             type="button"
-            onClick={() => embla?.scrollPrev()}
-            className="text-label border border-black/80 px-2 py-2 cursor-pointer uppercase opacity-50 transition-opacity duration-300 hover:opacity-100"
+            onClick={scrollPrev}
+            disabled={!canScrollPrev}
+            aria-label="Previous room"
+            className="text-label cursor-pointer border border-black/80 px-2 py-2 uppercase opacity-50 transition-opacity duration-300 hover:opacity-100 disabled:cursor-default disabled:opacity-25"
           >
-            {/* Prev */}
             <ChevronLeft />
           </Button>
           <Button
             type="button"
-            onClick={() => embla?.scrollNext()}
-            className="text-label border border-black/80 px-2 py-2 cursor-pointer uppercase opacity-50 transition-opacity duration-300 hover:opacity-100"
+            onClick={scrollNext}
+            disabled={!canScrollNext}
+            aria-label="Next room"
+            className="text-label cursor-pointer border border-black/80 px-2 py-2 uppercase opacity-50 transition-opacity duration-300 hover:opacity-100 disabled:cursor-default disabled:opacity-25"
           >
-            {/* Next */}
             <ChevronRight />
           </Button>
         </div>

@@ -27,7 +27,15 @@ import { Label } from "@/components/ui";
  * second set of tiles saying the same five things over again.
  */
 export default function SpacesCarousel({ spaces }: { spaces: Space[] }) {
-  const { emblaRef, embla, focus, clickAllowed } = useDragRail();
+  const {
+    emblaRef,
+    focus,
+    canScrollPrev,
+    canScrollNext,
+    clickAllowed,
+    scrollPrev,
+    scrollNext,
+  } = useDragRail();
 
   return (
     <div className="shell-max">
@@ -131,15 +139,17 @@ export default function SpacesCarousel({ spaces }: { spaces: Space[] }) {
         <div className="flex gap-8">
           <Button
             type="button"
-            onClick={() => embla?.scrollPrev()}
-            className="text-label cursor-pointer uppercase opacity-50 transition-opacity duration-300 hover:opacity-100"
+            onClick={scrollPrev}
+            disabled={!canScrollPrev}
+            className="text-label cursor-pointer uppercase opacity-50 transition-opacity duration-300 hover:opacity-100 disabled:cursor-default disabled:opacity-25"
           >
             Prev
           </Button>
           <Button
             type="button"
-            onClick={() => embla?.scrollNext()}
-            className="text-label cursor-pointer uppercase opacity-50 transition-opacity duration-300 hover:opacity-100"
+            onClick={scrollNext}
+            disabled={!canScrollNext}
+            className="text-label cursor-pointer uppercase opacity-50 transition-opacity duration-300 hover:opacity-100 disabled:cursor-default disabled:opacity-25"
           >
             Next
           </Button>
