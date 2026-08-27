@@ -71,7 +71,7 @@ export default function KoraCircle() {
       { ok: "(min-width: 1024px) and (prefers-reduced-motion: no-preference)" },
       (ctx) => {
         if (!ctx.conditions?.ok) return;
-        let lastHour = -1;
+        let lastHour = 0;
 
         const tl = gsap.timeline({
           scrollTrigger: {

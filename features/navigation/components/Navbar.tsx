@@ -208,16 +208,18 @@ export default function Navbar() {
           photograph while it made its mind up. The shadow keeps its own transition.
         */
         className={`fixed inset-x-0 top-0 z-50 ${
-          past || open
-            ? "bg-white text-ink"
-            : `bg-transparent ${darkTop ? "text-space" : "text-ink"}`
+          open
+            ? "bg-transparent text-ink"
+            : past
+              ? "bg-white text-ink"
+              : `bg-transparent ${darkTop ? "text-space" : "text-ink"}`
         } ${past && !open ? "shadow-[0_1px_0_rgba(28,26,23,0.1)]" : ""}`}
       >
         {/* Three columns with the logo in the middle one, not a flex row with the
             logo first: the mark stays optically centred in the viewport no matter
             how wide the labels either side get. */}
-        <nav className="mx-auto grid h-24 w-full shell-max grid-cols-[1fr_auto_1fr] items-center shell-px">
-          <div className="flex items-center">
+        <nav className="mx-auto flex h-24 w-full items-center justify-between shell-max shell-px sm:grid sm:grid-cols-[1fr_auto_1fr]">
+          <div className="order-2 flex items-center sm:order-none">
             <Button
               type="button"
               onClick={() => {
@@ -250,7 +252,7 @@ export default function Navbar() {
           <Link
             href="/"
             aria-label="Lingkor, home"
-            className="relative block justify-self-center"
+            className="relative order-1 block sm:order-none sm:justify-self-center"
           >
             <Image
               src="/Logo/logo-white.svg"
@@ -267,7 +269,7 @@ export default function Navbar() {
             />
           </Link>
 
-          <div className="flex items-center justify-end">
+          <div className="hidden items-center justify-end sm:flex">
             <Link
               href="/contact"
               onClick={() => {

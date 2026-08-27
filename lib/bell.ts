@@ -23,6 +23,18 @@ const PARTIALS = [
   [5.43, 0.07, 1.1],
 ] as const;
 
+const RESONANT_PARTIALS = [
+  // ratio, gain, decay seconds
+  [0.5, 0.2, 7.8],
+  [1.0, 0.72, 8.8],
+  [1.51, 0.42, 7.1],
+  [2.03, 0.35, 6.4],
+  [2.74, 0.24, 5.2],
+  [3.76, 0.17, 4.4],
+  [5.41, 0.11, 3.2],
+  [7.18, 0.06, 2.2],
+] as const;
+
 const STORAGE_KEY = "lb-bell-muted";
 const MIN_GAP_MS = 260; // rapid row traversal must not machine-gun
 
@@ -144,4 +156,84 @@ export function playBell(variant = 0, decayScale = 1) {
     osc.start(t);
     osc.stop(t + scaledDecay);
   }
+}
+
+export function playResonantBell(variant = 0) {
+  if (muted || !ctx || !master) return;
+
+  const now = performance.now();
+  if (now - last < MIN_GAP_MS) return;
+  last = now;
+
+  if (ctx.state === "suspended") void ctx.resume();
+
+  const t = ctx.currentTime;
+  const semitones = [-2, 0, 3, 5, 7][variant % 5];
+  const root = 392 * Math.pow(2, semitones / 12);
+  const dry = ctx.createGain();
+  const delay = ctx.createDelay(1.2);
+  const feedback = ctx.createGain();
+  const wet = ctx.createGain();
+
+  dry.gain.value = 1;
+  delay.delayTime.value = 0.21;
+  feedback.gain.value = 0.36;
+  wet.gain.value = 0.28;
+
+  dry.connect(master);
+  dry.connect(delay);
+  delay.connect(feedback);
+  feedback.connect(delay);
+  delay.connect(wet);
+  wet.connect(master);
+
+  for (const [ratio, gain, decay] of RESONANT_PARTIALS) {
+    const osc = ctx.createOscillator();
+    const env = ctx.createGain();
+
+    osc.type = "sine";
+    osc.frequency.value = root * ratio;
+    osc.detune.value = (Math.random() - 0.5) * 9;
+
+    env.gain.setValueAtTime(0, t);
+    env.gain.linearRampToValueAtTime(gain, t + 0.012);
+    env.gain.setTargetAtTime(0, t + 0.018, decay / 4.6);
+
+    osc.connect(env);
+    env.connect(dry);
+    osc.start(t);
+    osc.stop(t + decay);
+  }
+
+  const noiseLength = Math.round(ctx.sampleRate * 0.035);
+  const buffer = ctx.createBuffer(1, noiseLength, ctx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < noiseLength; i += 1) {
+    const fade = 1 - i / noiseLength;
+    data[i] = (Math.random() * 2 - 1) * fade;
+  }
+
+  const strike = ctx.createBufferSource();
+  const strikeFilter = ctx.createBiquadFilter();
+  const strikeEnv = ctx.createGain();
+
+  strike.buffer = buffer;
+  strikeFilter.type = "bandpass";
+  strikeFilter.frequency.value = root * 8.2;
+  strikeFilter.Q.value = 5.5;
+  strikeEnv.gain.setValueAtTime(0.15, t);
+  strikeEnv.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
+
+  strike.connect(strikeFilter);
+  strikeFilter.connect(strikeEnv);
+  strikeEnv.connect(dry);
+  strike.start(t);
+  strike.stop(t + 0.09);
+
+  window.setTimeout(() => {
+    dry.disconnect();
+    delay.disconnect();
+    feedback.disconnect();
+    wet.disconnect();
+  }, 10_000);
 }

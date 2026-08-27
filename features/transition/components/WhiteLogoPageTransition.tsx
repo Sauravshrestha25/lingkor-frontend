@@ -15,6 +15,13 @@ function wait(ms: number) {
 
 type Phase = "idle" | "before" | "entering" | "covered" | "leaving";
 
+const phaseTransform: Record<Exclude<Phase, "idle">, string> = {
+  before: "translate3d(0, -100%, 0)",
+  entering: "translate3d(0, 0, 0)",
+  covered: "translate3d(0, 0, 0)",
+  leaving: "translate3d(0, -100%, 0)",
+};
+
 export function WhiteLogoPageTransition() {
   const { isTransitioning, targetPath, markTransitionDone } =
     usePageTransition();
@@ -65,11 +72,8 @@ export function WhiteLogoPageTransition() {
 
   return (
     <div
-      className={`fixed inset-0 z-[90] grid place-items-center bg-white transition-transform duration-[620ms] ease-[cubic-bezier(0.76,0,0.24,1)] will-change-transform ${
-        phase === "entering" || phase === "covered"
-          ? "translate-y-0"
-          : "-translate-y-full"
-      }`}
+      className="fixed inset-0 z-[90] grid place-items-center bg-white transition-transform duration-[620ms] ease-[cubic-bezier(0.76,0,0.24,1)] will-change-transform"
+      style={{ transform: phaseTransform[phase] }}
       aria-hidden
     >
       <Image

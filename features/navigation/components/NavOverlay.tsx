@@ -2,34 +2,15 @@
 
 import { useState, type RefObject } from "react";
 import Link from "next/link";
+import NextImage from "next/image";
 import { NAV, SPACES } from "../nav";
 import { POSTS } from "@/lib/journal";
-import { MenuCursorPlate } from "./MenuCursorPlate";
+import { BOUDHA } from "@/lib/photo";
+import { ExternalLinkIcon } from "@/components/shared/ExternalLinkIcon";
 
-/**
- * The full-screen menu, after the one on fleava.com.
- *
- * **The structure is theirs**, measured live rather than eyeballed: the destinations are
- * not a stacked list. They run *inline and wrap like a line of prose* — at a 900px
- * viewport `Home` sat at x135, `Works 17` at x312, `Journal 33` at x512, and
- * `Expertise 06` wrapped back to x135. A menu that reads as one sentence of places.
- * Under it, a band of much smaller links carries everything else.
- *
- * **The content is ours, and inverted from theirs.** The five element spaces hold the
- * big line, because they are what the hotel actually is; Home, Rooms, Journal, Mustang,
- * Boudha, About and Contact drop to the band underneath. Pointing at a space brings its
- * photograph up on a plate that follows the cursor, washes the menu in a light tint of
- * that element's colour, and runs the colour through the name, its role, the rule and
- * the header controls.
- *
- * ⚠️ **Namkha is the exception, by design.** Space's colour is `#F0EDE6` — the identical
- * off-white the site is built on, because Namkha *is* the ground. It therefore has no
- * tint that would be visible and no accent that would read on white, so it shows its
- * photograph and leaves the colour alone. See `tintable` in `../nav`.
- *
- * The bottom band never drives colour or imagery. Only the spaces do, which is what
- * keeps the effect meaning something.
- */
+const BOUDHA_MAPS_URL =
+  "https://www.google.com/maps/place/Boudhanath/@27.7215062,85.3594225,17z/data=!3m1!4b1!4m6!3m5!1s0x39eb1b0c4bf34e89:0x9e398a10248b4a6d!8m2!3d27.7215062!4d85.3619974!16s%2Fg%2F11vdfg74zw?entry=ttu&g_ep=EgoyMDI2MDgyNC4wIKXMDSoASAFQAw%3D%3D";
+
 export function NavOverlay({
   overlayRef,
   open,
@@ -41,7 +22,6 @@ export function NavOverlay({
   open: boolean;
   pathname: string;
   setOpen: (open: boolean) => void;
-  /** Lifts the hovered space's colour to the header, which is a DOM sibling. */
   onAccent: (accent: string | null) => void;
 }) {
   const [hovered, setHovered] = useState<number | null>(null);
@@ -72,15 +52,9 @@ export function NavOverlay({
   return (
     <div
       ref={overlayRef}
-      className="fixed inset-0 z-40 text-ink"
+      className="fixed inset-0 z-40 overflow-y-auto text-ink"
       style={{
         clipPath: "inset(0 0 100% 0)",
-        /*
-          The wash. `color-mix` against white rather than five hand-picked pale
-          variants: one rule, five colours, and it stays correct if a brand hex is ever
-          corrected. 10% is about as far as this goes before label-sized type sitting
-          on it drops under AA.
-        */
         backgroundColor: live
           ? `color-mix(in srgb, ${live} 10%, white)`
           : "#ffffff",
@@ -88,134 +62,132 @@ export function NavOverlay({
       }}
       aria-hidden={!open}
     >
-      <MenuCursorPlate
-        open={open}
-        active={hovered}
-        images={SPACES.map((s) => ({ src: s.img, alt: "" }))}
-      />
+      <div className="relative z-20 mx-auto flex min-h-full w-full shell-max flex-col shell-px pt-24 pb-[calc(5.75rem+env(safe-area-inset-bottom))] sm:pb-8 lg:pt-32 lg:pb-10">
 
-      <div className="relative z-20 mx-auto flex h-full w-full shell-max flex-col justify-between overflow-y-auto shell-px pt-32 pb-10 lg:pt-40 lg:pb-14">
-        {/* ── The five spaces, as one wrapping line ──────────────────────────
-            `flex-wrap` with a word-sized column gap is what produces the
-            reference's behaviour: names sit shoulder to shoulder and break to a
-            new line only when they run out of width. A grid would lock them into
-            columns and lose exactly the quality being copied. The gap is in `em`
-            so it stays proportional as the clamp scales. */}
-        {/*
-          The leave handler sits on the names region, not on the overlay.
-
-          On the overlay it only fired when the pointer left the *menu*, so crossing
-          from a name into the empty space beside it left the photograph up and the
-          tint on — pointing at nothing, still showing something. Bound here, the
-          plate goes the moment the pointer is off the words.
-        */}
-        <nav className="flex flex-1 items-center" onPointerLeave={leave}>
-          <ol className="flex flex-wrap items-baseline gap-x-[0.5em] gap-y-1 font-display text-[clamp(2rem,5.4vw,4.5rem)] leading-[1.2] tracking-[-0.017em]">
-            {SPACES.map((s, i) => {
-              const active = pathname.startsWith(s.href);
-              const dimmed = hovered !== null && hovered !== i;
-              // `data-notrim`, and padding on both edges of the mask below.
-              //
-              // The mask is `overflow-hidden` (the names rise into it) and the global
-              // base rule in globals.css trims every box to cap height, so the line
-              // box stopped at the baseline and descenders were sliced off — 18px
-              // gone from the g of Ghegu. Top padding too, because the role tag is a
-              // <sup> and rises above the cap line.
-              return (
-                <li
-                  key={s.href}
-                  data-notrim
-                  className="overflow-hidden pt-[0.3em] pb-[0.14em]"
-                >
-                  <Link
-                    href={s.href}
-                    onClick={() => setOpen(false)}
-                    onPointerEnter={() => enter(i)}
-                    onFocus={() => enter(i)}
-                    onBlur={leave}
-                    tabIndex={open ? 0 : -1}
-                    aria-current={active ? "page" : undefined}
-                    className="inline-flex items-start transition-opacity duration-500"
-                    style={{ opacity: dimmed ? 0.25 : 1 }}
-                  >
-                    {/*
-                      Two elements, on purpose. The link owns the hover and the dim,
-                      the span owns the entrance, and they must not be the same node:
-                      GSAP tweens `opacity` on `[data-menu-item]`, and when a CSS
-                      `transition-opacity` sat on that same element the transition
-                      chased the tween every frame and the names settled at 0.09.
-
-                      The initial hidden state is a *class*, never a React `style`
-                      prop — GSAP writes inline styles, which beat a class, but React
-                      re-applies a style prop on every render and re-zeroed the
-                      opacity mid-animation. Class: no conflict. Prop: React wins.
-                    */}
-                    <span
-                      data-menu-item
-                      className="inline-flex items-start opacity-0 transition-colors duration-500"
-                      style={{
-                        color: hovered === i && live ? live : undefined,
-                      }}
-                    >
-                      {s.label}
-                      <sup className="ml-2 text-[0.19em] leading-none tracking-[0.18em] whitespace-nowrap uppercase opacity-60">
-                        {s.role}
-                      </sup>
-                    </span>
-                  </Link>
-                </li>
-              );
-            })}
-          </ol>
-        </nav>
-
-        {/* ── Everything else ────────────────────────────────────────────────
-            Label-sized and deliberately inert: it takes no colour and shows no
-            image, so the five spaces above stay the only thing in here that
-            reacts to the pointer. */}
-        <div
-          className="mt-16 border-t pt-8 transition-colors duration-500"
-          style={{
-            borderColor: live ?? "color-mix(in srgb, #1c1a17 15%, transparent)",
-          }}
-        >
-          <div className="grid grid-cols-2 gap-x-8 gap-y-10 sm:grid-cols-3">
-            <div className="col-span-2">
-              <p className="text-label uppercase opacity-45">Elsewhere</p>
-              <ul className="mt-4 flex flex-wrap gap-x-7 gap-y-3">
-                {secondary.map((p) => (
-                  <li key={p.href}>
-                    <Link
-                      href={p.href}
-                      onClick={() => setOpen(false)}
-                      tabIndex={open ? 0 : -1}
-                      className={`text-label inline-flex items-start uppercase transition-opacity duration-300 hover:opacity-45 ${
-                        pathname === p.href ? "opacity-100" : "opacity-70"
-                      }`}
-                    >
-                      {p.label}
-                      {p.count !== undefined && (
-                        <sup
-                          aria-hidden="true"
-                          className="ml-1 text-[0.7em] leading-none tabular-nums opacity-60"
-                        >
-                          {String(p.count).padStart(2, "0")}
-                        </sup>
-                      )}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div>
-              <p className="text-label uppercase opacity-45">Where</p>
-              <p className="text-label mt-4 uppercase opacity-70">
-                Boudha, Kathmandu
-              </p>
-            </div>
+        {/* Centered image — switches to hovered space photo */}
+        <div className="hidden justify-center sm:flex">
+          <div className="relative h-28 w-44 overflow-hidden lg:h-36 lg:w-56">
+            {/* Base: Netsang (first space) when nothing hovered */}
+            <NextImage
+              src={SPACES[0].img ?? BOUDHA}
+              alt={SPACES[0].label}
+              fill
+              sizes="256px"
+              className={`object-cover transition-opacity duration-400 ${hovered !== null ? "opacity-0" : "opacity-100"}`}
+            />
+            {/* Per-space images */}
+            {SPACES.map((s, i) => s.img ? (
+              <NextImage
+                key={s.href}
+                src={s.img}
+                alt={s.label}
+                fill
+                sizes="256px"
+                className={`object-cover transition-opacity duration-400 ${hovered === i ? "opacity-100" : "opacity-0"}`}
+              />
+            ) : null)}
           </div>
         </div>
+
+        {/* 5 spaces — 3 + 2, centered */}
+        <nav
+          className="flex flex-1 flex-col items-center justify-center gap-y-1 py-8 sm:py-10"
+          onPointerLeave={leave}
+        >
+          {[SPACES.slice(0, 3), SPACES.slice(3)].map((row, ri) => (
+            <ol
+              key={ri}
+              className="flex flex-wrap items-baseline justify-center gap-x-[0.45em] font-display text-[clamp(1.9rem,8.2vw,4.5rem)] leading-[1.08] tracking-[0] sm:flex-nowrap sm:gap-x-[0.5em] sm:text-[clamp(2rem,5.4vw,4.5rem)] sm:leading-[1.2]"
+            >
+              {row.map((s) => {
+                const i = SPACES.indexOf(s);
+                const active = pathname.startsWith(s.href);
+                const dimmed = hovered !== null && hovered !== i;
+                return (
+                  <li
+                    key={s.href}
+                    data-notrim
+                    className="overflow-hidden pt-[0.3em] pb-[0.14em]"
+                  >
+                    <Link
+                      href={s.href}
+                      onClick={() => setOpen(false)}
+                      onPointerEnter={() => enter(i)}
+                      onFocus={() => enter(i)}
+                      onBlur={leave}
+                      tabIndex={open ? 0 : -1}
+                      aria-current={active ? "page" : undefined}
+                      className="inline-flex items-start transition-opacity duration-500"
+                      style={{ opacity: dimmed ? 0.25 : 1 }}
+                    >
+                      <span
+                        data-menu-item
+                        className="inline-flex flex-col items-start transition-colors duration-500"
+                        style={{ color: hovered === i && live ? live : undefined }}
+                      >
+                        <span className="text-[0.19em] leading-none tracking-[0.18em] whitespace-nowrap uppercase opacity-60 mb-[0.4em]">
+                          {s.role}
+                        </span>
+                        {s.label}
+                      </span>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ol>
+          ))}
+        </nav>
+
+        {/* Bottom — justify-between: Elsewhere (left) / Where (right) */}
+        <div
+          className="flex flex-col items-stretch gap-6 border-t pt-5 pr-16 transition-colors duration-500 sm:flex-row sm:items-end sm:justify-between sm:gap-8 sm:pr-0"
+          style={{ borderColor: live ?? "color-mix(in srgb, #1c1a17 15%, transparent)" }}
+        >
+          <div>
+            <p className="text-label uppercase opacity-45 mb-3">Elsewhere</p>
+            <ul className="grid grid-cols-2 gap-x-5 gap-y-2 sm:flex sm:flex-wrap">
+              {secondary.map((p) => (
+                <li key={p.href}>
+                  <Link
+                    href={p.href}
+                    onClick={() => setOpen(false)}
+                    tabIndex={open ? 0 : -1}
+                    className={`group text-label inline-flex items-center gap-1.5 uppercase transition-opacity duration-300 hover:opacity-40 ${
+                      pathname === p.href ? "opacity-100" : "opacity-55"
+                    }`}
+                  >
+                    {p.label}
+                    {p.count !== undefined && (
+                      <sup
+                        aria-hidden="true"
+                        className="ml-0.5 text-[0.7em] leading-none tabular-nums opacity-60"
+                      >
+                        {String(p.count).padStart(2, "0")}
+                      </sup>
+                    )}
+                    <ExternalLinkIcon size={11} />
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="text-left sm:text-right">
+            <p className="text-label uppercase opacity-45 mb-3">Where</p>
+            <Link
+              href={BOUDHA_MAPS_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setOpen(false)}
+              tabIndex={open ? 0 : -1}
+              className="group text-label inline-flex max-w-44 items-center justify-start gap-1.5 uppercase opacity-70 transition-opacity duration-300 hover:opacity-40 sm:max-w-none sm:justify-end"
+            >
+              Boudha, Kathmandu
+              <ExternalLinkIcon size={11} />
+            </Link>
+          </div>
+        </div>
+
       </div>
     </div>
   );

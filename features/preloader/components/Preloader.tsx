@@ -2,7 +2,7 @@
 
 import { useCallback, useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
-import { playBell, setBellMuted, unlockBell } from "@/lib/bell";
+import { playResonantBell, setBellMuted, unlockBell } from "@/lib/bell";
 import {
   BOUDHA_HOLD,
   FADE,
@@ -36,7 +36,6 @@ import { EntryStage } from "./EntryStage";
 import { IntroStage } from "./IntroStage";
 
 type EntryMode = "sound" | "silent";
-const PRELOADER_BELL_DECAY_SCALE = 0.42;
 const SITE_MUSIC_AFTER_BELL_MS = 2500;
 const EXTRA_PRELOADER_HOLD = 1;
 const ENTRY_FADE_MS = 1000;
@@ -61,7 +60,7 @@ export default function Preloader() {
     if (soundEnabled.current && !bellPlayed.current) {
       bellPlayed.current = true;
       fadeOutPreloaderSound(700);
-      playBell(0, PRELOADER_BELL_DECAY_SCALE);
+      playResonantBell();
       transitionToSiteSound(SITE_MUSIC_AFTER_BELL_MS);
     }
     unlockScroll(); // never leave the page unscrollable, whatever else fails
@@ -124,7 +123,7 @@ export default function Preloader() {
       if (entryMode === "sound" && !bellPlayed.current) {
         bellPlayed.current = true;
         fadeOutPreloaderSound(700);
-        playBell(0, PRELOADER_BELL_DECAY_SCALE);
+        playResonantBell();
         transitionToSiteSound(SITE_MUSIC_AFTER_BELL_MS);
       }
       unlockScroll();
@@ -271,7 +270,7 @@ export default function Preloader() {
           () => {
             if (entryMode !== "sound" || bellPlayed.current) return;
             bellPlayed.current = true;
-            playBell(0, PRELOADER_BELL_DECAY_SCALE);
+            playResonantBell();
             transitionToSiteSound(SITE_MUSIC_AFTER_BELL_MS);
           },
           [],
@@ -399,11 +398,18 @@ export default function Preloader() {
 
   if (!entryMode) {
     return (
-      <EntryStage
-        leaving={entryLeaving}
-        onSound={() => enter("sound")}
-        onSilent={() => enter("silent")}
-      />
+      <>
+        {/* Ink backdrop: sits at z-99 behind EntryStage (z-100). During the door rush
+            EntryStage fades to opacity-0 via GSAP (async) before React re-renders —
+            without this the home page bleeds through. Both this div and EntryStage are
+            removed in the same React commit that adds IntroStage, so no flash. */}
+        <div className="fixed inset-0 z-[99] bg-ink pointer-events-none" aria-hidden />
+        <EntryStage
+          leaving={entryLeaving}
+          onSound={() => enter("sound")}
+          onSilent={() => enter("silent")}
+        />
+      </>
     );
   }
 
