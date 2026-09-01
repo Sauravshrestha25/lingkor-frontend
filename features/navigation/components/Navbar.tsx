@@ -230,7 +230,7 @@ export default function Navbar() {
         {/* Three columns with the logo in the middle one, not a flex row with the
             logo first: the mark stays optically centred in the viewport no matter
             how wide the labels either side get. */}
-        <nav className="mx-auto flex h-24 w-full items-center justify-between shell-max shell-px sm:grid sm:grid-cols-[1fr_auto_1fr]">
+        <nav className="mx-auto flex h-16 w-full items-center justify-between shell-max shell-px sm:grid sm:grid-cols-[1fr_auto_1fr]">
           <div
             className={`order-2 flex items-center transition-opacity duration-500 sm:order-none ${
               heroPlaying ? "pointer-events-none opacity-0" : "opacity-100"
