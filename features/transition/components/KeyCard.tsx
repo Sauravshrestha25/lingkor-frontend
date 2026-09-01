@@ -234,9 +234,6 @@ export const KeyCard = forwardRef<HTMLDivElement, KeyCardProps>(function KeyCard
                 />
               </svg>
             </div>
-            <div className="text-white text-2xl font-tibetan mt-2 tracking-widest opacity-90 filter drop-shadow-[0_1px_2px_rgba(0,0,0,0.3)]">
-              གླིང་སྐོར།
-            </div>
           </div>
 
           {/* Bottom of Side 2: Hospitality Message */}

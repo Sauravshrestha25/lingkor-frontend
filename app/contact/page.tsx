@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
-import PageHeader from "@/components/PageHeader";
+import Image from "next/image";
 import Footer from "@/features/navigation/components/Footer";
 import EnquireForm from "@/features/enquiry/components/EnquireForm";
-import { Rise } from "@/components/anim";
+import { Rise, SplitChars } from "@/components/anim";
+import { LineArt } from "@/components/media/Photo";
 import { Label } from "@/components/ui";
 import { CONTACT } from "@/lib/site";
 
@@ -12,35 +13,60 @@ export const metadata: Metadata = {
     "Write to Lingkor, Boudha — Kathmandu, Nepal. Enquiries, dates and directions.",
 };
 
-const ROUTE = [
-  {
-    place: "Tribhuvan International",
-    leg: "By air",
-    detail:
-      "Kathmandu's only airport, and the closest one to the stupa — Boudha is on the same side of the city.",
-  },
-  {
-    place: "The ring road",
-    leg: "By taxi",
-    detail:
-      "North-east across town. From Thamel or Durbar Square it is one fare and no changes.",
-  },
-  {
-    place: "Boudhanath",
-    leg: "On foot",
-    detail:
-      "The last stretch is the kora itself: through the gate, around the dome, clockwise like everyone else.",
-  },
-];
-
 export default function ContactPage() {
   return (
     <main className="w-full">
-      <PageHeader
-        label="Contact"
-        lines={["Write to us,", "and we will", "hold a room"]}
-        intro="Tell us when you would like to come and how long you can stay. We answer every message ourselves."
-      />
+      {/* Contact opening, laid out to the client's sample page: kicker, a Hasweny
+          headline in their words, the yak-caravan line drawing used delicately
+          beside a short note, and a Mustang texture that fades up slowly on the
+          right. */}
+      <header className="w-full bg-canvas pt-40 pb-20 lg:pt-44 lg:pb-28">
+        <div className="mx-auto w-full shell-max shell-px">
+          <div className="grid gap-14 lg:grid-cols-12 lg:items-start lg:gap-16">
+            <div className="lg:col-span-5 lg:pt-24">
+              <Rise>
+                <Label className="opacity-60">Contact</Label>
+              </Rise>
+
+              <SplitChars
+                lines={[
+                  "Send us a message.",
+                  "We will thrive to grant",
+                  "your wishes.",
+                ]}
+                delay={120}
+                className="font-display mt-8 text-[clamp(2.25rem,1.35rem+2.1vw,3rem)] leading-[1.08]"
+              />
+
+              <Rise delay={240} className="mt-12">
+                <div className="flex justify-center">
+                  <LineArt
+                    name="caravan"
+                    tone="terracotta"
+                    className="h-auto w-32 opacity-80 lg:w-40"
+                  />
+                </div>
+                <p className="text-body mt-12 max-w-[36ch] opacity-70">
+                  Tell us when you would like to come and for how long. We
+                  answer every message ourselves.
+                </p>
+              </Rise>
+            </div>
+
+            <Rise delay={360} y={18} className="lg:col-span-7 lg:pt-16">
+              <div className="relative aspect-[3/2] w-full overflow-hidden">
+                <Image
+                  src="/images/mustang/_ECS0507-mod.webp"
+                  alt="Wind-cut cliffs of Upper Mustang"
+                  fill
+                  sizes="(min-width: 1024px) 58vw, 100vw"
+                  className="object-cover"
+                />
+              </div>
+            </Rise>
+          </div>
+        </div>
+      </header>
 
       <section className="w-full bg-canvas pb-28 lg:pb-40">
         <div className="mx-auto w-full shell-max shell-px">
@@ -73,37 +99,6 @@ export default function ContactPage() {
                     </a>
                   </p>
                 </address>
-              </Rise>
-
-              <Rise delay={160} className="mt-14">
-                <Label className="opacity-50">Getting here</Label>
-                <ol className="mt-6">
-                  {ROUTE.map((stop, i) => (
-                    <li key={stop.place} className="flex gap-5 pb-7 last:pb-0">
-                      <div className="relative flex w-3 shrink-0 justify-center">
-                        <span
-                          aria-hidden="true"
-                          className={`absolute top-3 h-full w-px bg-ink/20 ${
-                            i === ROUTE.length - 1 ? "hidden" : ""
-                          }`}
-                        />
-                        <span
-                          aria-hidden="true"
-                          className="relative mt-2 h-1.5 w-1.5 rounded-full bg-ink/60"
-                        />
-                      </div>
-                      <div>
-                        <div className="flex items-baseline gap-3">
-                          <span className="font-display text-[1.375rem] leading-none">
-                            {stop.place}
-                          </span>
-                          <Label className="opacity-40">{stop.leg}</Label>
-                        </div>
-                        <p className="text-body mt-2 opacity-70">{stop.detail}</p>
-                      </div>
-                    </li>
-                  ))}
-                </ol>
               </Rise>
             </div>
           </div>

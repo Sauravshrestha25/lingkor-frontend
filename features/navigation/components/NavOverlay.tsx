@@ -56,17 +56,16 @@ export function NavOverlay({
       style={{
         clipPath: "inset(0 0 100% 0)",
         backgroundColor: live
-          ? `color-mix(in srgb, ${live} 10%, white)`
-          : "#ffffff",
+          ? `color-mix(in srgb, ${live} 10%, var(--color-canvas))`
+          : "var(--color-canvas)",
         transition: "background-color 600ms cubic-bezier(0.22, 1, 0.36, 1)",
       }}
       aria-hidden={!open}
     >
-      <div className="relative z-20 mx-auto flex min-h-full w-full shell-max flex-col shell-px pt-24 pb-[calc(5.75rem+env(safe-area-inset-bottom))] sm:pb-8 lg:pt-32 lg:pb-10">
-
+      <div className="relative z-20 mx-auto flex min-h-full w-full shell-max flex-col shell-px pt-20 pb-[calc(4.5rem+env(safe-area-inset-bottom))] sm:pb-6 lg:pt-24 lg:pb-8">
         {/* Centered image — switches to hovered space photo */}
         <div className="hidden justify-center sm:flex">
-          <div className="relative h-28 w-44 overflow-hidden lg:h-36 lg:w-56">
+          <div className="relative h-20 w-32 overflow-hidden lg:h-24 lg:w-40">
             {/* Base: Netsang (first space) when nothing hovered */}
             <NextImage
               src={SPACES[0].img ?? BOUDHA}
@@ -76,28 +75,30 @@ export function NavOverlay({
               className={`object-cover transition-opacity duration-400 ${hovered !== null ? "opacity-0" : "opacity-100"}`}
             />
             {/* Per-space images */}
-            {SPACES.map((s, i) => s.img ? (
-              <NextImage
-                key={s.href}
-                src={s.img}
-                alt={s.label}
-                fill
-                sizes="256px"
-                className={`object-cover transition-opacity duration-400 ${hovered === i ? "opacity-100" : "opacity-0"}`}
-              />
-            ) : null)}
+            {SPACES.map((s, i) =>
+              s.img ? (
+                <NextImage
+                  key={s.href}
+                  src={s.img}
+                  alt={s.label}
+                  fill
+                  sizes="256px"
+                  className={`object-cover transition-opacity duration-400 ${hovered === i ? "opacity-100" : "opacity-0"}`}
+                />
+              ) : null,
+            )}
           </div>
         </div>
 
         {/* 5 spaces — 3 + 2, centered */}
         <nav
-          className="flex flex-1 flex-col items-center justify-center gap-y-1 py-8 sm:py-10"
+          className="flex min-h-0 flex-1 flex-col items-center justify-center gap-y-0 py-3 sm:py-5"
           onPointerLeave={leave}
         >
           {[SPACES.slice(0, 3), SPACES.slice(3)].map((row, ri) => (
             <ol
               key={ri}
-              className="flex flex-wrap items-baseline justify-center gap-x-[0.45em] font-display text-[clamp(1.9rem,8.2vw,4.5rem)] leading-[1.08] tracking-[0] sm:flex-nowrap sm:gap-x-[0.5em] sm:text-[clamp(2rem,5.4vw,4.5rem)] sm:leading-[1.2]"
+              className="flex flex-wrap items-baseline justify-center gap-x-[0.45em] font-display text-[clamp(1.75rem,7vw,3.25rem)] leading-[1.08] tracking-[0] sm:flex-nowrap sm:gap-x-[0.5em] sm:text-[clamp(2rem,4.6vw,3.5rem)] sm:leading-[1.15]"
             >
               {row.map((s) => {
                 const i = SPACES.indexOf(s);
@@ -123,7 +124,9 @@ export function NavOverlay({
                       <span
                         data-menu-item
                         className="inline-flex flex-col items-start transition-colors duration-500"
-                        style={{ color: hovered === i && live ? live : undefined }}
+                        style={{
+                          color: hovered === i && live ? live : undefined,
+                        }}
                       >
                         <span className="text-[0.19em] leading-none tracking-[0.18em] whitespace-nowrap uppercase opacity-60 mb-[0.4em]">
                           {s.role}
@@ -141,7 +144,9 @@ export function NavOverlay({
         {/* Bottom — justify-between: Elsewhere (left) / Where (right) */}
         <div
           className="flex flex-col items-stretch gap-6 border-t pt-5 pr-16 transition-colors duration-500 sm:flex-row sm:items-end sm:justify-between sm:gap-8 sm:pr-0"
-          style={{ borderColor: live ?? "color-mix(in srgb, #1c1a17 15%, transparent)" }}
+          style={{
+            borderColor: live ?? "color-mix(in srgb, #1c1a17 15%, transparent)",
+          }}
         >
           <div>
             <p className="text-label uppercase opacity-45 mb-3">Elsewhere</p>
@@ -187,7 +192,6 @@ export function NavOverlay({
             </Link>
           </div>
         </div>
-
       </div>
     </div>
   );

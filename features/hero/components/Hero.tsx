@@ -1,89 +1,448 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 import Image from "next/image";
+import { VolumeX } from "lucide-react";
 import { gsap, reduced } from "@/lib/gsap";
 
-import { SplitChars } from "@/components/anim";
-import { Rise } from "@/components/anim";
+import { SplitChars, Rise } from "@/components/anim";
 import { Button } from "@/components/shared/button";
+import { BOUDHA, LOBBY } from "@/lib/photo";
+import { claimIntro, finishIntro } from "@/features/preloader/gate";
+import { setBellMuted, unlockBell, playResonantBell } from "@/lib/bell";
+import {
+  enterSilently,
+  fadeOutPreloaderSound,
+  prewarmIntroSound,
+  setSiteSoundMuted,
+  startPreloaderSound,
+  transitionToSiteSound,
+} from "@/features/preloader/audio";
+import {
+  BLUR_IN,
+  FADE,
+  FILL_BEAT,
+  HOLD,
+  LOGO_MASK,
+  LOGO_RATIO,
+  LOGO_SRC,
+  logoOnlyFor,
+  logoX,
+  logoY,
+  ONCE_PER_SESSION,
+  PHOTOS,
+  pickLogo,
+  REVEAL_BEAT,
+  SESSION_KEY,
+  SHARP_BEAT,
+  wipeMaskFor,
+  WIPE_HIDDEN,
+  WRITE_LEAD,
+} from "@/features/preloader/preloader";
 
 /**
- * The lobby, looking out through the main doors.
+ * The hero **is** the cinematic.
  *
- * **Interior, not the stupa.** The written brief opens the homepage on Mustang geology
- * dissolving into Boudhanath; that is deliberately superseded. You are inside the
- * building from the first frame, and everything after it is the country the building
- * came from — which is the point of the page: *stay here because it feels like
- * Mustang*, not *go to Mustang*.
+ * The client wants the homepage to open straight into a 25–30s film — Mustang
+ * geology, slowly, dissolving into Boudhanath and then the mark — scored to a ~25s
+ * track, "but anytime, we should be able to scroll down". No door screen. So it is a
+ * real section of the page: it starts the moment it mounts, plays muted (browsers
+ * will not autoplay sound without a gesture), and a quiet "sound on" prompt fades in
+ * over it. The page scrolls normally underneath, and the first scroll / wheel / key
+ * fast-forwards the film to its resting state.
  *
- * `Lobby_to_MainDoor` specifically, of the three lobby renders: it looks *outward*, so
- * the building holds you and the world is the thing beyond the glass. The reception
- * view puts a desk between you and the room, and the sofa view has no exit in it.
+ * The mark: the "Lingkor" wordmark is placed so its little spire glyph registers to
+ * the real gold spire of the stupa in the Boudha frame, then it writes itself on
+ * from that pinnacle downward ("as if it is built on top of it"), goes solid white,
+ * and flies up into the navbar's own logo slot — which is where the intro hands off.
+ * The hero then rests on the lobby interior, not the monument.
  *
- * **The headline is the client's, not ours.** `6. Graphics/Color signboard.jpg` — the
- * sign that will stand outside the building — is the wordmark over a wall painted in
- * the five element colours, with one line under it: *"Rest in the Spirit of Mustang"*.
- * That is the sentence the hotel chose to greet people with. It was previously set here
- * as a 11px label under an invented headline ("Mustang brought down to the stupa"),
- * which put our words above theirs in the first thing anyone reads. Note the capital
- * *S* — the sign has it, and we were lower-casing it.
- *
- * **Centred, not bottom-left.** Every other hero on the site is bottom-weighted, and so
- * was this. On the signboard the type sits centred with a great deal of wall around it,
- * and the brief asks the site to feel "spacious, real feeling of space, nothing tight".
- * Centre with air is that; a caption in the bottom corner is not.
- *
- * **It breathes before you touch it.** A very slow, continuous scale runs whether or not
- * you scroll — 24 seconds one way, then back. The brief asks for "like a dream", and a
- * photograph that is perfectly still reads as a screenshot. Scroll still drives the
- * separate recede, so the two compose: the drift is ambient, the recede is yours.
- *
- * This was a looping video, and the brief does want film here — Mustang geology
- * dissolving into the stupa, with wind (REQUIREMENTS.md §8). The preloader tells that
- * story in stills; the footage we had was ordinary drone work and 12 MB of it said less
- * than one frame does. When the real film exists it goes back, and the type can stay as
- * it is.
- *
- * The preloader ends on this exact frame, so the handoff is a match, not a cut.
+ * Frames, mask geometry and every duration live in `features/preloader/preloader.ts`.
  */
+
+const SITE_MUSIC_AFTER_BELL_MS = 600; // brief gap before the site loop takes over
+const REST_HOLD = 1.4; // solid mark holds before it flies
+const FLIGHT = 1.6; // mark travels to the navbar slot
+const REST_FADE = 2.0; // resting content comes up
+const SKIP_IN_AT = 0.9; // when the skip button fades in
+const PROMPT_IN_AT = 1.6; // when the sound prompt fades in
+
 export default function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
+  const tlRef = useRef<gsap.core.Timeline | null>(null);
+  const soundRef = useRef(false);
 
-  useEffect(() => {
+  // Before paint, so the below-the-fold reveals and the floating sound toggle stay
+  // held until the film ends (see `afterIntro` / `isIntroActive`).
+  useLayoutEffect(() => {
+    claimIntro();
+    unlockBell();
+    enterSilently(); // muted by default; makes the mute flags read correctly
+    prewarmIntroSound(); // buffer the audio so the click's play() lands on a ready element
+  }, []);
+
+  useLayoutEffect(() => {
     const section = sectionRef.current;
-    const media = section?.querySelector("[data-media]");
-    if (!section || !media || reduced()) return;
+    if (!section) return;
+    const q = gsap.utils.selector(section);
+    const prompt = () => q(".hero-prompt")[0] as HTMLElement | undefined;
+    const flightEl = () => q(".hero-flight")[0] as HTMLElement | undefined;
+    const maskEl = () => q(".hero-mask")[0] as HTMLElement | undefined;
 
-    // The ambient drift. Slow enough that it is never caught moving — you only notice
-    // that the frame is not the same as it was.
-    const breathe = gsap.to(media, {
-      scale: 1.12,
-      duration: 24,
-      ease: "sine.inOut",
-      repeat: -1,
-      yoyo: true,
+    // Portrait phones crop the Boudha frame hard, so the wordmark needs a different
+    // width and offset there. Picked once on mount.
+    const place = pickLogo(window.innerWidth);
+
+    const repeat =
+      ONCE_PER_SESSION && sessionStorage.getItem(SESSION_KEY) === "1";
+
+    // Put the write-on mask at its viewport-correct placement (the React inline
+    // `style={LOGO_MASK}` is the desktop default).
+    const applyStartMask = () => {
+      const el = maskEl();
+      if (el) Object.assign(el.style, wipeMaskFor(place, WIPE_HIDDEN));
+    };
+
+    // Place the flat mark exactly where the masked glyph renders, so the swap from
+    // "written on" to "solid" is seamless. Same %-of-(viewport − logo) model as
+    // `wipeMaskFor` / `logoOnlyFor` in preloader.ts.
+    const layoutFlight = () => {
+      const el = flightEl();
+      if (!el) return;
+      const W = window.innerWidth;
+      const H = window.innerHeight;
+      const w = Math.min((place.vw / 100) * W, place.max);
+      const h = w / LOGO_RATIO;
+      gsap.set(el, {
+        width: w,
+        height: h,
+        left: place.xF * (W - w),
+        top: place.yF * (H - h),
+        x: 0,
+        y: 0,
+        scale: 1,
+        rotation: 0,
+      });
+    };
+
+    const setStart = () => {
+      gsap.set(q(".hero-page"), { opacity: 0 });
+      gsap.set(q(".hero-page")[0], { opacity: 1 });
+      gsap.set(
+        [q(".hero-blur"), q(".hero-mask"), q(".hero-flight"), q(".hero-ground")],
+        { opacity: 0 },
+      );
+      gsap.set(
+        [q(".hero-rest"), q(".hero-scrim"), q(".hero-prompt"), q(".hero-skip")],
+        { opacity: 0 },
+      );
+      applyStartMask();
+      layoutFlight();
+    };
+
+    const jumpToRest = () => {
+      gsap.set(q(".hero-page"), { opacity: 0 });
+      gsap.set(q(".hero-page").at(-1) ?? q(".hero-page")[0], { opacity: 1 });
+      gsap.set([q(".hero-blur"), q(".hero-mask"), q(".hero-flight")], {
+        opacity: 0,
+      });
+      gsap.set([q(".hero-prompt"), q(".hero-skip")], {
+        opacity: 0,
+        pointerEvents: "none",
+      });
+      gsap.set([q(".hero-ground"), q(".hero-scrim"), q(".hero-rest")], {
+        opacity: 1,
+      });
+      sessionStorage.setItem(SESSION_KEY, "1");
+      finishIntro();
+    };
+
+    if (reduced() || repeat) {
+      jumpToRest();
+      return;
+    }
+
+    setStart();
+    window.addEventListener("resize", layoutFlight);
+
+    // The wipe layer's y is a list value GSAP cannot tween, so it is repainted each
+    // frame: y from 100% (glyph hidden) to 0% (glyph shown) sweeps the reveal DOWN.
+    const wipe = { y: 100 };
+    const paintWipe = () => {
+      const el = maskEl();
+      if (!el) return;
+      const pos = `${logoX(place)} ${logoY(place)}, ${logoX(place)} ${wipe.y}%`;
+      el.style.setProperty("-webkit-mask-position", pos);
+      el.style.maskPosition = pos;
+    };
+    const dropWipe = () => {
+      const el = maskEl();
+      if (!el) return;
+      const only = logoOnlyFor(place);
+      el.style.maskImage = String(only.maskImage);
+      el.style.maskPosition = String(only.maskPosition);
+      el.style.maskSize = String(only.maskSize);
+      el.style.setProperty("-webkit-mask-image", `url(${LOGO_SRC})`);
+      el.style.setProperty("-webkit-mask-position", String(only.maskPosition));
+      el.style.setProperty("-webkit-mask-size", String(only.maskSize));
+    };
+
+    const hidePrompt = () => {
+      const el = prompt();
+      if (el)
+        gsap.to(el, {
+          opacity: 0,
+          pointerEvents: "none",
+          duration: 0.4,
+          ease: "power2.out",
+        });
+    };
+
+    // FLIP the flat mark from where it sits to the navbar's own logo slot.
+    const flyToNavbar = () => {
+      const el = flightEl();
+      if (!el) return;
+      const nav = document.querySelector(".nav-logo") as HTMLElement | null;
+      const from = el.getBoundingClientRect();
+      const to = nav?.getBoundingClientRect();
+      const target = to
+        ? {
+            x: to.left + to.width / 2 - (from.left + from.width / 2),
+            y: to.top + to.height / 2 - (from.top + from.height / 2),
+            scale: to.width / from.width,
+          }
+        : { x: 0, y: -window.innerHeight * 0.42, scale: 0.16 };
+      gsap.to(el, { ...target, duration: FLIGHT, ease: "power3.inOut" });
+    };
+
+    const settle = () => {
+      sessionStorage.setItem(SESSION_KEY, "1");
+      if (soundRef.current) {
+        fadeOutPreloaderSound();
+        transitionToSiteSound(SITE_MUSIC_AFTER_BELL_MS);
+      }
+      const ground = q(".hero-ground")[0];
+      if (ground) {
+        gsap.to(ground, {
+          scale: 1.08,
+          duration: 24,
+          ease: "sine.inOut",
+          repeat: -1,
+          yoyo: true,
+        });
+      }
+    };
+
+    const tl = gsap.timeline({ onComplete: settle });
+    tlRef.current = tl;
+    if (process.env.NODE_ENV === "development") {
+      (window as unknown as { __heroTl?: gsap.core.Timeline }).__heroTl = tl;
+    }
+
+    // Phase 1 — the Mustang frames, long cross-dissolves.
+    q(".hero-page").forEach((page, i) => {
+      if (i === 0) return;
+      tl.to(page, { opacity: 1, duration: FADE, ease: "power1.inOut" }, i * HOLD);
     });
 
-    // The recede, on scroll. Separate tween on a wrapper so it cannot fight the scale
-    // above: two tweens writing `scale` on one element is a race, and the loser wins
-    // at random frame boundaries.
-    const recede = gsap.to(section.querySelector("[data-recede]"), {
-      yPercent: -4,
-      opacity: 0.5,
-      ease: "none",
-      scrollTrigger: {
-        trigger: section,
-        start: "top top",
-        end: "bottom top",
-        scrub: true,
-      },
+    const boudhaAt = (PHOTOS.length - 1) * HOLD;
+    const glyphAt = boudhaAt + SHARP_BEAT;
+    const solidAt = glyphAt + REVEAL_BEAT;
+    const flightAt = solidAt + FILL_BEAT + REST_HOLD;
+
+    // Once the film has genuinely been on screen a moment, count it as seen — a
+    // later remount (client nav back to `/`) then skips straight to the resting
+    // hero. Placed on the timeline so StrictMode's mount/unmount rehearsal, which is
+    // torn down in the same tick, never reaches it.
+    tl.call(
+      () => sessionStorage.setItem(SESSION_KEY, "1"),
+      [],
+      1.5,
+    ).fromTo(
+      q(".hero-skip"),
+      { opacity: 0, pointerEvents: "none" },
+      { opacity: 1, pointerEvents: "auto", duration: 0.5, ease: "power2.out" },
+      SKIP_IN_AT,
+    )
+      .fromTo(
+        q(".hero-prompt"),
+        { opacity: 0, pointerEvents: "none" },
+        { opacity: 1, pointerEvents: "auto", duration: 0.6, ease: "power2.out" },
+        PROMPT_IN_AT,
+      )
+      // Phase 2 — Boudhanath settles, blur lifts, the mark writes itself on from the
+      // pinnacle downward, then cross-fades into the flat white mark.
+      .fromTo(
+        q(".hero-blur"),
+        { opacity: 0 },
+        { opacity: 1, duration: BLUR_IN, ease: "power1.inOut" },
+        glyphAt,
+      )
+      .set(q(".hero-mask"), { opacity: 1 }, glyphAt)
+      .call(hidePrompt, [], glyphAt)
+      .to(
+        q(".hero-skip"),
+        { opacity: 0, pointerEvents: "none", duration: 0.4, ease: "power2.out" },
+        glyphAt,
+      )
+      .call(
+        () => {
+          if (soundRef.current) playResonantBell();
+        },
+        [],
+        glyphAt,
+      )
+      .to(
+        wipe,
+        {
+          y: 0,
+          duration: REVEAL_BEAT - WRITE_LEAD,
+          ease: "power1.inOut",
+          onUpdate: paintWipe,
+          onComplete: dropWipe,
+        },
+        glyphAt + WRITE_LEAD,
+      )
+      .call(layoutFlight, [], solidAt)
+      .to(
+        q(".hero-flight"),
+        { opacity: 1, duration: FILL_BEAT, ease: "power2.inOut" },
+        solidAt,
+      )
+      .to(
+        [q(".hero-mask"), q(".hero-blur")],
+        { opacity: 0, duration: FILL_BEAT, ease: "power2.inOut" },
+        solidAt + FILL_BEAT * 0.45,
+      )
+      // A small "set" beat before it lifts.
+      .to(
+        q(".hero-flight"),
+        { scale: 1.02, duration: 0.2, ease: "power2.out" },
+        flightAt - 0.9,
+      )
+      .to(
+        q(".hero-flight"),
+        { scale: 1, duration: 0.35, ease: "power2.inOut" },
+        flightAt - 0.7,
+      )
+      // Phase 3 — the mark flies to the navbar; the lobby interior and the resting
+      // hero come up behind it.
+      .call(flyToNavbar, [], flightAt)
+      .call(finishIntro, [], flightAt + FLIGHT * 0.65)
+      .to(
+        q(".hero-flight"),
+        { opacity: 0, duration: 0.4, ease: "power1.out" },
+        flightAt + FLIGHT - 0.1,
+      )
+      .to(
+        [q(".hero-ground"), q(".hero-scrim")],
+        { opacity: 1, duration: REST_FADE, ease: "power2.inOut" },
+        flightAt + FLIGHT - 0.4,
+      )
+      .to(
+        q(".hero-rest"),
+        { opacity: 1, duration: REST_FADE * 0.8, ease: "power2.out" },
+        flightAt + FLIGHT,
+      );
+
+    // Turn sound on mid-film: build the graph, unmute, let the bell fire if its beat
+    // has not passed yet.
+    const enableSound = () => {
+      if (soundRef.current) return;
+      soundRef.current = true;
+      startPreloaderSound();
+      setSiteSoundMuted(false);
+      setBellMuted(false);
+      hidePrompt();
+    };
+
+    // Skip button / first scroll / wheel / key: leave the film and cross-fade to the
+    // resting hero. Racing the timeline's progress to 1 flashed 20s of frames in a
+    // second — this just dissolves whatever is on screen into the lobby instead.
+    let skipped = false;
+    let ff: Array<() => void> = [];
+    const skipToRest = (dur = 0.7) => {
+      if (skipped) return;
+      skipped = true;
+      ff.forEach((off) => off());
+      ff = [];
+      tlRef.current?.kill();
+
+      const leaving = [
+        ...q(".hero-page"),
+        q(".hero-blur"),
+        q(".hero-mask"),
+        q(".hero-flight"),
+      ];
+      gsap.killTweensOf([
+        ...leaving,
+        q(".hero-ground"),
+        q(".hero-scrim"),
+        q(".hero-rest"),
+        q(".hero-prompt"),
+        q(".hero-skip"),
+      ]);
+
+      gsap.to([q(".hero-prompt"), q(".hero-skip")], {
+        opacity: 0,
+        pointerEvents: "none",
+        duration: 0.3,
+        ease: "power2.out",
+      });
+      gsap.to(leaving, { opacity: 0, duration: dur, ease: "power2.inOut" });
+      gsap.to([q(".hero-ground"), q(".hero-scrim")], {
+        opacity: 1,
+        duration: dur,
+        ease: "power2.inOut",
+      });
+      gsap.to(q(".hero-rest"), {
+        opacity: 1,
+        duration: dur * 0.9,
+        ease: "power2.out",
+        delay: dur * 0.35,
+      });
+
+      finishIntro();
+      sessionStorage.setItem(SESSION_KEY, "1");
+      if (soundRef.current) {
+        fadeOutPreloaderSound();
+        transitionToSiteSound(SITE_MUSIC_AFTER_BELL_MS);
+      }
+      const ground = q(".hero-ground")[0];
+      if (ground) {
+        gsap.to(ground, {
+          scale: 1.08,
+          duration: 24,
+          ease: "sine.inOut",
+          repeat: -1,
+          yoyo: true,
+        });
+      }
+    };
+
+    // NB: no `touchmove` — a tap on the sound prompt carries a few px of finger
+    // movement, which fired this and ran skipToRest() instead of enableSound(): the
+    // prompt vanished and sound never came on. `scroll` already covers a real
+    // touch-drag scroll.
+    const once: AddEventListenerOptions = { passive: true, once: true };
+    (["wheel", "scroll", "keydown"] as const).forEach((ev) => {
+      const h = () => skipToRest();
+      window.addEventListener(ev, h, once);
+      ff.push(() => window.removeEventListener(ev, h));
     });
+
+    const promptEl = prompt();
+    promptEl?.addEventListener("click", enableSound);
+    const skipEl = q(".hero-skip")[0] as HTMLElement | undefined;
+    const onSkip = () => skipToRest();
+    skipEl?.addEventListener("click", onSkip);
 
     return () => {
-      breathe.kill();
-      recede.scrollTrigger?.kill();
-      recede.kill();
+      ff.forEach((off) => off());
+      window.removeEventListener("resize", layoutFlight);
+      promptEl?.removeEventListener("click", enableSound);
+      skipEl?.removeEventListener("click", onSkip);
+      tlRef.current?.kill();
     };
   }, []);
 
@@ -93,77 +452,128 @@ export default function Hero() {
       ref={sectionRef}
       className="relative h-svh w-full overflow-hidden bg-ink"
     >
-      <div data-recede className="absolute inset-0 will-change-transform">
-        <div data-media className="absolute inset-0 will-change-transform">
-          {/* `preload` (Next 16 renamed this from `priority`) because it is the LCP
-              element — the first full-viewport thing anyone sees.
-
-              Note: the preloader's match-cut no longer applies. It used to end on the
-              same Boudha frame this showed, so the handoff was seamless; it is
-              commented out of the page, and if it comes back its last frame has to
-              change to this one or the two will cross-fade between subjects. */}
-          <Image
-            src="/images/spaces/lobby.png"
-            alt="The lobby, looking out through the main doors"
-            fill
-            sizes="100vw"
-            preload
-            className="object-cover scale-105"
-          />
-        </div>
+      {/* The frame stack — full-bleed, dissolving in DOM order. */}
+      <div className="absolute inset-0" aria-hidden>
+        {PHOTOS.map((src, i) => (
+          <div key={src} className="hero-page absolute inset-0">
+            <Image
+              src={src}
+              alt=""
+              fill
+              sizes="100vw"
+              priority={i === 0}
+              loading={i === 0 ? undefined : "eager"}
+              className="object-cover will-change-transform"
+            />
+          </div>
+        ))}
       </div>
 
-      {/* Bottom-weighted again, and lighter. The old flat `ink/45` was tuned for a
-          dark stupa at night; on a bright interior it reads as a grey veil over the
-          whole room. This keeps the ceiling clear and puts the weight where the type
-          sits. */}
-      <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-ink/50 via-ink/55 to-ink/50" />
+      {/* Softens the stack while the mark writes on. */}
+      <div
+        className="hero-blur pointer-events-none absolute inset-0 opacity-0"
+        style={{
+          backdropFilter: "blur(18px) brightness(0.6)",
+          WebkitBackdropFilter: "blur(18px) brightness(0.6)",
+        }}
+        aria-hidden
+      />
 
-      <div className="h-screen w-full flex flex-col items-center justify-center space-y-3 px-6 text-center text-space">
-        <div className="flex flex-col items-center justify-center">
-          <Rise>
-            <p className="text-xl font-sub uppercase  pb-8">
-              Mustang to Boudha
-            </p>
-          </Rise>
-
-          {/* The client's own line, at the size they gave it. */}
-          <SplitChars
-            lines={["Rest in the Spirit", "of Mustang"]}
-            delay={220}
-            className="font-display mt-8 text-[clamp(2.75rem,7.5vw,7rem)] uppercase leading-[0.95]"
-          />
-
-          {/* The one commercial action on the page, and it is above the fold.
-              Everything else here asks the reader to keep scrolling; a hotel homepage
-              needs at least one thing that asks them to get in touch. It deliberately
-              does not say "Book" — there is no engine, no rates and no availability
-              behind it yet, and a button that cannot do what it says is worse than no
-              button. See CONTENT.md for what is still missing. */}
-          {/* `Button asChild` renders the anchor while keeping the shared press and
-              hover behaviour, so the one call to action on the page reacts the same way
-              as every other control. It stays an `<a>` because it navigates. */}
-          <Rise delay={520} className="mt-12">
-            <Button asChild hoverScale={1.03} tapScale={0.97}>
-              <a
-                href="#enquire"
-                className="text-label text-ink inline-block border border-space/50 px-8 py-4 uppercase transition-colors duration-500 ease-brand bg-space hover:bg-space/80 hover:text-ink"
-              >
-                Enquire about a stay
-              </a>
-            </Button>
-          </Rise>
-        </div>
+      {/* The write-on: the sharp Boudhanath frame, clipped by the glyph, revealed
+          top→down by the sliding wipe layer. */}
+      <div
+        className="hero-mask absolute inset-0 opacity-0"
+        style={LOGO_MASK}
+        aria-hidden
+      >
+        <Image
+          src={BOUDHA}
+          alt=""
+          fill
+          sizes="100vw"
+          loading="eager"
+          className="object-cover"
+        />
       </div>
 
-      {/* Scroll cue, on the centre line rather than in a corner. The rule travels down
-          its own track on a loop — a hint, not an instruction. */}
+      {/* The solid mark — placed by JS over the written glyph, then flown to the
+          navbar's logo slot. */}
+      <div
+        className="hero-flight absolute left-0 top-0 z-20 opacity-0 will-change-transform"
+        aria-hidden
+      >
+        <Image src={LOGO_SRC} alt="" fill sizes="80vw" className="object-contain" />
+      </div>
+
+      {/* The interior the hero settles on, once the mark has flown. */}
+      <div className="hero-ground absolute inset-0 opacity-0" aria-hidden>
+        <Image
+          src={LOBBY}
+          alt=""
+          fill
+          sizes="100vw"
+          loading="eager"
+          className="object-cover will-change-transform"
+        />
+      </div>
+
+      {/* Legibility wash for the resting state. */}
+      <div
+        className="hero-scrim pointer-events-none absolute inset-0 bg-linear-to-t from-ink/55 via-ink/45 to-ink/45 opacity-0"
+        aria-hidden
+      />
+
+      {/* Quiet "sound on" prompt over the film — starts muted. */}
+      <button
+        type="button"
+        className="hero-prompt absolute bottom-[max(2rem,env(safe-area-inset-bottom))] left-5 z-30 flex cursor-pointer items-center gap-2.5 rounded-full border border-space/30 bg-ink/45 py-2 pl-2 pr-4 text-space opacity-0 backdrop-blur-md transition-colors hover:bg-ink/65 sm:left-8"
+        aria-label="Play with sound"
+      >
+        <span className="grid size-8 place-items-center rounded-full bg-space/15">
+          <VolumeX className="size-4" aria-hidden />
+        </span>
+        <span className="text-label uppercase">Play with sound</span>
+      </button>
+
+      {/* Skip the cinematic. */}
+      <button
+        type="button"
+        className="hero-skip absolute bottom-[max(2rem,env(safe-area-inset-bottom))] right-5 z-30 cursor-pointer rounded-full border border-space/30 bg-ink/45 px-5 py-2.5 text-label uppercase text-space opacity-0 backdrop-blur-md transition-colors hover:bg-ink/65 sm:right-8"
+      >
+        Skip
+      </button>
+
+      {/* Resting hero. */}
+      <div className="hero-rest absolute inset-0 flex flex-col items-center justify-center space-y-3 px-6 text-center text-space opacity-0">
+        <Rise>
+          <p className="font-sub text-xl uppercase pb-8">Mustang to Boudha</p>
+        </Rise>
+
+        <SplitChars
+          lines={["Rest in the Spirit", "of Mustang"]}
+          delay={120}
+          className="font-display mt-8 text-[clamp(2.75rem,7.5vw,7rem)] uppercase leading-[0.95]"
+        />
+
+        <Rise delay={520} className="mt-12">
+          <Button asChild hoverScale={1.03} tapScale={0.97}>
+            <a
+              href="#enquire"
+              className="text-label text-ink inline-block border border-space/50 px-8 py-4 uppercase transition-colors duration-500 ease-brand bg-space hover:bg-space/80 hover:text-ink"
+            >
+              Enquire about a stay
+            </a>
+          </Button>
+        </Rise>
+      </div>
+
+      {/* Scroll cue — part of the resting state. */}
       <a
         href="#about"
         aria-label="Scroll to the next section"
-        className="group absolute bottom-[max(2rem,env(safe-area-inset-bottom))] left-1/2 flex -translate-x-1/2 flex-col items-center gap-3 text-space"
+        className="hero-rest group absolute bottom-[max(2rem,env(safe-area-inset-bottom))] left-1/2 flex -translate-x-1/2 flex-col items-center gap-3 text-space opacity-0"
       >
-        <span className="text-xl font-sub uppercase  transition-opacity duration-300 group-hover:opacity-100">
+        <span className="font-sub text-xl uppercase transition-opacity duration-300 group-hover:opacity-100">
           Scroll
         </span>
         <span

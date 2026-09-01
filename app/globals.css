@@ -18,16 +18,23 @@
    * the two genuinely are one colour, so those panels carry a hairline instead of a
    * colour difference — see `SpacesCarousel` and `/spaces`.
    */
-  --color-canvas: #ffffff;
+  /* Off-white, not pure white — the client brief is explicit ("background to be
+     off white not pure white"). `#F0EDE6` is the brand's own documented off-white
+     (Namkha panel in `4. Colors/LINGKOR-Colors per area.pdf`). True white is kept
+     available as `--color-namkha` for the rare surface that needs it. */
+  --color-canvas: #f0ede6;
   --color-sand: #cecaaf;
   --color-ink: #1c1a17;
   --color-midnight: #1b1b24;
+  /* "Rato mato" — the logo colour on any white / off-white ground, per the client.
+     Sampled from `6. Graphics/LINGKOR_Logo_BusinessCard_BP_V2 - Red Brick`. */
+  --color-brick: #bc7c3f;
 
   /* The five elements. One colour owns one section; never two in a viewport. */
   --color-earth: #cc9636;
   --color-water: #539b8f;
-  /* Deviation from client brand doc — see REQUIREMENTS.md §3, "Ghegu colour". */
-  --color-wind: #6e7f91;
+  /* Ghegu / Wind — the client's per-area green, restored on their instruction. */
+  --color-wind: #939d2c;
   --color-fire: #c66020;
   --color-space: #f0ede6;
 
@@ -65,21 +72,23 @@
   --font-title: var(--font-hasweny);
 
   /*
-   * Yagpo, by choice. It carries full Latin (52/52) as well as the Tibetan block, so
-   * it genuinely sets the body text rather than falling back.
-   *
-   * ⚠️ It also has unusual vertical metrics — ascent 2048 / descent −2048 on an em of
-   * 2048, so its content area is a full **2.0em**, double a normal face. That is what
-   * puts apparent padding under labels and buttons: with a 1.2em line box on a 2.0em
-   * content area the half-leading goes negative, the baseline lands high in the box,
-   * and the unused descent sits underneath as dead space.
-   *
-   * The fix is `text-box` trimming (see `.text-trim` below and the `body` rule), not a
-   * different typeface.
+   * Body face. The client asked for "a much simpler font ... maybe like Roboto or
+   * Lato" for running text, keeping Hasweny for titles only. Lato: humanist, warm,
+   * full Latin, reads well small. It now backs every non-title role — body copy,
+   * the small uppercase labels, and anything that used to ask for Yagpo or Barlow.
    */
-  --font-body: var(--font-yagpo);
-  --font-tibetan: var(--font-yagpo);
-  --font-sub: var(--font-barlow);
+  --font-simple: var(--font-lato), "Helvetica Neue", Arial, sans-serif;
+
+  /*
+   * All three non-title roles collapse onto one simple face now (Lato). Yagpo (body)
+   * and Barlow Condensed (sub) are removed: the client wants running text in a plain
+   * sans, and the Tibetan welcome copy that motivated a Tibetan-capable body font is
+   * gone. `--font-tibetan` stays as an alias so old call sites still resolve; any real
+   * Tibetan on the site will come in as supplied artwork, not live text.
+   */
+  --font-body: var(--font-simple);
+  --font-tibetan: var(--font-simple);
+  --font-sub: var(--font-simple);
 
   --text-display: clamp(2.75rem, 2rem + 3.4vw, 4rem);
   --text-display--line-height: 1.02;
