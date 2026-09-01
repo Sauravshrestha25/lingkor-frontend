@@ -120,6 +120,22 @@ export const logoX = (p: LogoNums) => `${p.xF * 100}%`;
 export const logoY = (p: LogoNums) => `${p.yF * 100}%`;
 
 /**
+ * The EMBLEM alone — ring + spire zigzag + pinnacle dot, sliced out of the wordmark
+ * (`logo-emblem-white.svg`, viewBox `649 104 408 417`). This is what writes on over
+ * Boudhanath now: small, fitted inside the prayer-flag triangle so the dot sits on
+ * the gold finial and the ring closes around the spire. The full "Lingkor" lockup
+ * only assembles later, on the plaster wall.
+ *
+ * In the emblem artwork the dot is at ~x0.54 / y0.20 of the box.
+ */
+export const EMBLEM_SRC = "/Logo/logo-emblem-white.svg";
+export const EMBLEM_RATIO = 408 / 417;
+export const EMBLEM_DESKTOP: LogoNums = { vw: 14, max: 210, xF: 0.49, yF: 0.045 };
+export const EMBLEM_MOBILE: LogoNums = { vw: 34, max: 260, xF: 0.5, yF: 0.08 };
+export const pickEmblem = (viewportW: number): LogoNums =>
+  viewportW <= MOBILE_MAX_W ? { ...EMBLEM_MOBILE } : { ...EMBLEM_DESKTOP };
+
+/**
  * The logo is an SVG, so it has no meaningful pixel size — these numbers exist only so
  * Next can reserve the right aspect box before it loads. The rendered width is
  * `LOGO_W` above; the ratio is what matters here.
@@ -153,9 +169,10 @@ export const WIPE_HIDDEN = "100%";
 export const wipeMaskFor = (
   p: LogoNums,
   y: string,
+  src: string = LOGO_SRC,
 ): React.CSSProperties => ({
-  WebkitMaskImage: `url(${LOGO_SRC}), ${WIPE}`,
-  maskImage: `url(${LOGO_SRC}), ${WIPE}`,
+  WebkitMaskImage: `url(${src}), ${WIPE}`,
+  maskImage: `url(${src}), ${WIPE}`,
   WebkitMaskRepeat: "no-repeat, no-repeat",
   maskRepeat: "no-repeat, no-repeat",
   WebkitMaskPosition: `${logoX(p)} ${logoY(p)}, ${logoX(p)} ${y}`,
@@ -172,9 +189,12 @@ export const wipeMaskFor = (
  * the last few percent of the mark fractionally translucent; swapping to this makes
  * the finished state exactly opaque instead of almost.
  */
-export const logoOnlyFor = (p: LogoNums): React.CSSProperties => ({
-  WebkitMaskImage: `url(${LOGO_SRC})`,
-  maskImage: `url(${LOGO_SRC})`,
+export const logoOnlyFor = (
+  p: LogoNums,
+  src: string = LOGO_SRC,
+): React.CSSProperties => ({
+  WebkitMaskImage: `url(${src})`,
+  maskImage: `url(${src})`,
   WebkitMaskRepeat: "no-repeat",
   maskRepeat: "no-repeat",
   WebkitMaskPosition: `${logoX(p)} ${logoY(p)}`,
@@ -185,9 +205,9 @@ export const logoOnlyFor = (p: LogoNums): React.CSSProperties => ({
   maskComposite: "add",
 });
 
-// Desktop values for the initial React render; Hero re-applies the viewport-correct
-// placement before the timeline starts.
-export const LOGO_MASK = wipeMaskFor(LOGO_DESKTOP, WIPE_HIDDEN);
+// Desktop emblem placement for the initial React render on `.hero-mask`; Hero
+// re-applies the viewport-correct placement before the timeline starts.
+export const LOGO_MASK = wipeMaskFor(EMBLEM_DESKTOP, WIPE_HIDDEN, EMBLEM_SRC);
 
 // Scroll lock lives on <html>: body carries `overflow-x: hidden` from globals.css,
 // so clearing an inline overflow on body does not reliably give scrolling back.

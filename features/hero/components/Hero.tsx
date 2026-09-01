@@ -7,7 +7,7 @@ import { gsap, reduced } from "@/lib/gsap";
 
 import { SplitChars, Rise } from "@/components/anim";
 import { Button } from "@/components/shared/button";
-import { BOUDHA } from "@/lib/photo";
+import { BOUDHA, WALL } from "@/lib/photo";
 import { claimIntro, finishIntro } from "@/features/preloader/gate";
 import { setBellMuted, unlockBell, playResonantBell } from "@/lib/bell";
 import {
@@ -20,6 +20,7 @@ import {
 } from "@/features/preloader/audio";
 import {
   BLUR_IN,
+  EMBLEM_SRC,
   FADE,
   FILL_BEAT,
   HOLD,
@@ -31,6 +32,7 @@ import {
   logoY,
   ONCE_PER_SESSION,
   PHOTOS,
+  pickEmblem,
   pickLogo,
   REVEAL_BEAT,
   SESSION_KEY,
@@ -101,20 +103,24 @@ export default function Hero() {
     const flightEl = () => q(".hero-flight")[0] as HTMLElement | undefined;
     const maskEl = () => q(".hero-mask")[0] as HTMLElement | undefined;
 
-    // Portrait phones crop the Boudha frame hard, so the wordmark needs a different
+    // Portrait phones crop the Boudha frame hard, so both marks need a different
     // width and offset there. Picked once on mount.
     const place = pickLogo(window.innerWidth);
+    const emblemPlace = pickEmblem(window.innerWidth);
 
-    // Put the write-on mask at its viewport-correct placement (the React inline
-    // `style={LOGO_MASK}` is the desktop default).
+    // The write-on mask is the EMBLEM alone, sat on the gold spire (the React inline
+    // `style={LOGO_MASK}` is the desktop emblem default).
     const applyStartMask = () => {
       const el = maskEl();
-      if (el) Object.assign(el.style, wipeMaskFor(place, WIPE_HIDDEN));
+      if (el)
+        Object.assign(
+          el.style,
+          wipeMaskFor(emblemPlace, WIPE_HIDDEN, EMBLEM_SRC),
+        );
     };
 
-    // Place the flat mark exactly where the masked glyph renders, so the swap from
-    // "written on" to "solid" is seamless. Same %-of-(viewport − logo) model as
-    // `wipeMaskFor` / `logoOnlyFor` in preloader.ts.
+    // The flat mark that flies to the navbar is the FULL "Lingkor" lockup, and it
+    // assembles CENTRED on the plaster wall (upper third), not on the spire.
     const layoutFlight = () => {
       const el = flightEl();
       if (!el) return;
@@ -125,8 +131,8 @@ export default function Hero() {
       gsap.set(el, {
         width: w,
         height: h,
-        left: place.xF * (W - w),
-        top: place.yF * (H - h),
+        left: (W - w) / 2,
+        top: (H - h) * 0.36,
         x: 0,
         y: 0,
         scale: 1,
@@ -194,18 +200,20 @@ export default function Hero() {
     const paintWipe = () => {
       const el = maskEl();
       if (!el) return;
-      const pos = `${logoX(place)} ${logoY(place)}, ${logoX(place)} ${wipe.y}%`;
+      const pos = `${logoX(emblemPlace)} ${logoY(emblemPlace)}, ${logoX(
+        emblemPlace,
+      )} ${wipe.y}%`;
       el.style.setProperty("-webkit-mask-position", pos);
       el.style.maskPosition = pos;
     };
     const dropWipe = () => {
       const el = maskEl();
       if (!el) return;
-      const only = logoOnlyFor(place);
+      const only = logoOnlyFor(emblemPlace, EMBLEM_SRC);
       el.style.maskImage = String(only.maskImage);
       el.style.maskPosition = String(only.maskPosition);
       el.style.maskSize = String(only.maskSize);
-      el.style.setProperty("-webkit-mask-image", `url(${LOGO_SRC})`);
+      el.style.setProperty("-webkit-mask-image", `url(${EMBLEM_SRC})`);
       el.style.setProperty("-webkit-mask-position", String(only.maskPosition));
       el.style.setProperty("-webkit-mask-size", String(only.maskSize));
     };
@@ -333,13 +341,21 @@ export default function Hero() {
         glyphAt + WRITE_LEAD,
       )
       .call(layoutFlight, [], solidAt)
+      // The emblem on Boudhanath cross-fades into the full "Lingkor" lockup centred
+      // on the plaster wall: wall comes up, Boudha stack + emblem mask go out, the
+      // flat mark fades in.
+      .to(
+        [q(".hero-ground")],
+        { opacity: 1, duration: FILL_BEAT + REST_HOLD, ease: "power1.inOut" },
+        solidAt + FILL_BEAT * 0.3,
+      )
       .to(
         q(".hero-flight"),
         { opacity: 1, duration: FILL_BEAT, ease: "power2.inOut" },
-        solidAt,
+        solidAt + FILL_BEAT * 0.35,
       )
       .to(
-        [q(".hero-mask"), q(".hero-blur")],
+        [q(".hero-mask"), q(".hero-blur"), ...q(".hero-page")],
         { opacity: 0, duration: FILL_BEAT, ease: "power2.inOut" },
         solidAt + FILL_BEAT * 0.45,
       )
@@ -364,7 +380,7 @@ export default function Hero() {
         flightAt + FLIGHT - 0.1,
       )
       .to(
-        [q(".hero-ground"), q(".hero-scrim")],
+        q(".hero-scrim"),
         { opacity: 1, duration: REST_FADE, ease: "power2.inOut" },
         flightAt + FLIGHT - 0.4,
       )
@@ -541,12 +557,11 @@ export default function Hero() {
         />
       </div>
 
-      {/* What the hero settles on once the mark has flown — the same Boudhanath
-          frame the film ends on, held as its own layer so it can breathe under the
-          resting content without the write-on mask on top of it. */}
+      {/* What the film cross-fades into and the hero rests on — the prayer-flag
+          plaster wall, its own layer so it can breathe under the resting content. */}
       <div className="hero-ground absolute inset-0 opacity-0" aria-hidden>
         <Image
-          src={BOUDHA}
+          src={WALL}
           alt=""
           fill
           sizes="100vw"
