@@ -108,11 +108,11 @@ export type LogoNums = { vw: number; max: number; xF: number; yF: number };
 // spire. Smaller than the first cut (`vw: 73`, "too huge") so it sits inside the
 // prayer-flag triangle. The write-on itself is unchanged; the bg then fades from
 // Boudhanath to the plaster wall UNDER the mark, and the mark flies to the navbar.
-export const LOGO_DESKTOP: LogoNums = { vw: 36, max: 575, xF: 0.46, yF: 0.087 };
+export const LOGO_DESKTOP: LogoNums = { vw: 29, max: 460, xF: 0.47, yF: 0.16 };
 // Portrait: nothing is cropped vertically, so the stupa sits lower and the frame
 // only shows a narrow centre band. Tune these four against a real phone / Chrome
 // responsive mode if the glyph drifts off the spire.
-export const LOGO_MOBILE: LogoNums = { vw: 55, max: 340, xF: 0.28, yF: 0.17 };
+export const LOGO_MOBILE: LogoNums = { vw: 44, max: 275, xF: 0.33, yF: 0.24 };
 export const MOBILE_MAX_W = 640; // <= this viewport width uses LOGO_MOBILE
 
 export const pickLogo = (viewportW: number): LogoNums =>
