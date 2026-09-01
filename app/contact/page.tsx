@@ -119,39 +119,6 @@ export default function ContactPage() {
                   </p>
                 </address>
               </Rise>
-
-              <Rise delay={160} className="mt-14">
-                <Label className="opacity-50">Getting here</Label>
-                <ol className="mt-6">
-                  {ROUTE.map((stop, i) => (
-                    <li key={stop.place} className="flex gap-5 pb-7 last:pb-0">
-                      <div className="relative flex w-3 shrink-0 justify-center">
-                        <span
-                          aria-hidden="true"
-                          className={`absolute top-3 h-full w-px bg-ink/20 ${
-                            i === ROUTE.length - 1 ? "hidden" : ""
-                          }`}
-                        />
-                        <span
-                          aria-hidden="true"
-                          className="relative mt-2 h-1.5 w-1.5 rounded-full bg-ink/60"
-                        />
-                      </div>
-                      <div>
-                        <div className="flex items-baseline gap-3">
-                          <span className="font-display text-[1.375rem] leading-none">
-                            {stop.place}
-                          </span>
-                          <Label className="opacity-40">{stop.leg}</Label>
-                        </div>
-                        <p className="text-body mt-2 opacity-70">
-                          {stop.detail}
-                        </p>
-                      </div>
-                    </li>
-                  ))}
-                </ol>
-              </Rise>
             </div>
           </div>
         </div>
