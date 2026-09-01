@@ -112,8 +112,9 @@ export default function Hero() {
       if (el) Object.assign(el.style, wipeMaskFor(place, WIPE_HIDDEN));
     };
 
-    // Once written, the flat mark re-centres onto the plaster wall (upper third) and
-    // flies from there to the navbar's logo slot.
+    // The flat mark sits exactly where the write-on mask rendered it (spire glyph on
+    // the gold spire). The bg fades from Boudhanath to the wall behind it; then it
+    // flies, unmoved until then, to the navbar's logo slot.
     const layoutFlight = () => {
       const el = flightEl();
       if (!el) return;
@@ -124,8 +125,8 @@ export default function Hero() {
       gsap.set(el, {
         width: w,
         height: h,
-        left: (W - w) / 2,
-        top: (H - h) * 0.36,
+        left: place.xF * (W - w),
+        top: place.yF * (H - h),
         x: 0,
         y: 0,
         scale: 1,
@@ -332,23 +333,29 @@ export default function Hero() {
         glyphAt + WRITE_LEAD,
       )
       .call(layoutFlight, [], solidAt)
-      // The emblem on Boudhanath cross-fades into the full "Lingkor" lockup centred
-      // on the plaster wall: wall comes up, Boudha stack + emblem mask go out, the
-      // flat mark fades in.
-      .to(
-        [q(".hero-ground")],
-        { opacity: 1, duration: FILL_BEAT + REST_HOLD, ease: "power1.inOut" },
-        solidAt + FILL_BEAT * 0.3,
-      )
+      // The written wordmark goes solid (mask hands off to the flat mark, same shape
+      // and place)…
       .to(
         q(".hero-flight"),
         { opacity: 1, duration: FILL_BEAT, ease: "power2.inOut" },
-        solidAt + FILL_BEAT * 0.35,
+        solidAt,
       )
       .to(
-        [q(".hero-mask"), q(".hero-blur"), ...q(".hero-page")],
-        { opacity: 0, duration: FILL_BEAT, ease: "power2.inOut" },
-        solidAt + FILL_BEAT * 0.45,
+        q(".hero-mask"),
+        { opacity: 0, duration: FILL_BEAT * 0.6, ease: "power2.inOut" },
+        solidAt + FILL_BEAT * 0.5,
+      )
+      // …then the background alone fades from Boudhanath to the plaster wall, behind
+      // the mark, which holds its place until it flies.
+      .to(
+        q(".hero-ground"),
+        { opacity: 1, duration: 1.1, ease: "power1.inOut" },
+        solidAt + FILL_BEAT + 0.2,
+      )
+      .to(
+        [q(".hero-blur"), ...q(".hero-page")],
+        { opacity: 0, duration: 1.1, ease: "power1.inOut" },
+        solidAt + FILL_BEAT + 0.2,
       )
       // A small "set" beat before it lifts.
       .to(
@@ -361,8 +368,8 @@ export default function Hero() {
         { scale: 1, duration: 0.35, ease: "power2.inOut" },
         flightAt - 0.7,
       )
-      // Phase 3 — the mark flies to the navbar; the resting hero comes up over the
-      // hero come up behind it.
+      // Phase 3 — the mark flies up to the navbar; the resting content comes up over
+      // the wall behind it.
       .call(flyToNavbar, [], flightAt)
       .call(finishIntro, [], flightAt + FLIGHT * 0.65)
       .to(

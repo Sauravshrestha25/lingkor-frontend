@@ -105,13 +105,14 @@ export const LOGO_RATIO = 1491 / 846; // artwork viewBox aspect, for the flight 
  */
 export type LogoNums = { vw: number; max: number; xF: number; yF: number };
 // The whole "Lingkor" wordmark writes on over Boudhanath, spire glyph on the gold
-// spire — the write-on itself is unchanged; only what happens after (cross-fade to
-// the wall, mark re-centres and flies to the navbar) is new.
-export const LOGO_DESKTOP: LogoNums = { vw: 73, max: 1250, xF: 0.335, yF: 0.105 };
+// spire. Smaller than the first cut (`vw: 73`, "too huge") so it sits inside the
+// prayer-flag triangle. The write-on itself is unchanged; the bg then fades from
+// Boudhanath to the plaster wall UNDER the mark, and the mark flies to the navbar.
+export const LOGO_DESKTOP: LogoNums = { vw: 52, max: 820, xF: 0.43, yF: 0.065 };
 // Portrait: nothing is cropped vertically, so the stupa sits lower and the frame
 // only shows a narrow centre band. Tune these four against a real phone / Chrome
 // responsive mode if the glyph drifts off the spire.
-export const LOGO_MOBILE: LogoNums = { vw: 96, max: 560, xF: 0.12, yF: 0.18 };
+export const LOGO_MOBILE: LogoNums = { vw: 78, max: 480, xF: 0.17, yF: 0.15 };
 export const MOBILE_MAX_W = 640; // <= this viewport width uses LOGO_MOBILE
 
 export const pickLogo = (viewportW: number): LogoNums =>
