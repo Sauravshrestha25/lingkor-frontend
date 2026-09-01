@@ -104,10 +104,12 @@ export const LOGO_RATIO = 1491 / 846; // artwork viewBox aspect, for the flight 
  * the glyph on the spire.
  */
 export type LogoNums = { vw: number; max: number; xF: number; yF: number };
+// The whole "Lingkor" wordmark writes on over Boudhanath, spire glyph on the gold
+// spire — the write-on itself is unchanged; only what happens after (cross-fade to
+// the wall, mark re-centres and flies to the navbar) is new.
 export const LOGO_DESKTOP: LogoNums = { vw: 73, max: 1250, xF: 0.335, yF: 0.105 };
 // Portrait: nothing is cropped vertically, so the stupa sits lower and the frame
-// only shows a narrow centre band. Whole wordmark kept on-screen (glyph ends up
-// smaller than the real spire). Tune these four against a real phone / Chrome
+// only shows a narrow centre band. Tune these four against a real phone / Chrome
 // responsive mode if the glyph drifts off the spire.
 export const LOGO_MOBILE: LogoNums = { vw: 96, max: 560, xF: 0.12, yF: 0.18 };
 export const MOBILE_MAX_W = 640; // <= this viewport width uses LOGO_MOBILE
@@ -118,22 +120,6 @@ export const pickLogo = (viewportW: number): LogoNums =>
 export const logoW = (p: LogoNums) => `min(${p.vw}vw, ${p.max}px)`;
 export const logoX = (p: LogoNums) => `${p.xF * 100}%`;
 export const logoY = (p: LogoNums) => `${p.yF * 100}%`;
-
-/**
- * The EMBLEM alone — ring + spire zigzag + pinnacle dot, sliced out of the wordmark
- * (`logo-emblem-white.svg`, viewBox `649 104 408 417`). This is what writes on over
- * Boudhanath now: small, fitted inside the prayer-flag triangle so the dot sits on
- * the gold finial and the ring closes around the spire. The full "Lingkor" lockup
- * only assembles later, on the plaster wall.
- *
- * In the emblem artwork the dot is at ~x0.54 / y0.20 of the box.
- */
-export const EMBLEM_SRC = "/Logo/logo-emblem-white.svg";
-export const EMBLEM_RATIO = 408 / 417;
-export const EMBLEM_DESKTOP: LogoNums = { vw: 14, max: 210, xF: 0.49, yF: 0.045 };
-export const EMBLEM_MOBILE: LogoNums = { vw: 34, max: 260, xF: 0.5, yF: 0.08 };
-export const pickEmblem = (viewportW: number): LogoNums =>
-  viewportW <= MOBILE_MAX_W ? { ...EMBLEM_MOBILE } : { ...EMBLEM_DESKTOP };
 
 /**
  * The logo is an SVG, so it has no meaningful pixel size — these numbers exist only so
@@ -207,7 +193,7 @@ export const logoOnlyFor = (
 
 // Desktop emblem placement for the initial React render on `.hero-mask`; Hero
 // re-applies the viewport-correct placement before the timeline starts.
-export const LOGO_MASK = wipeMaskFor(EMBLEM_DESKTOP, WIPE_HIDDEN, EMBLEM_SRC);
+export const LOGO_MASK = wipeMaskFor(LOGO_DESKTOP, WIPE_HIDDEN);
 
 // Scroll lock lives on <html>: body carries `overflow-x: hidden` from globals.css,
 // so clearing an inline overflow on body does not reliably give scrolling back.

@@ -72,7 +72,7 @@ export function WhiteLogoPageTransition() {
 
   return (
     <div
-      className="fixed inset-0 z-[90] grid place-items-center bg-white transition-transform duration-[620ms] ease-[cubic-bezier(0.76,0,0.24,1)] will-change-transform"
+      className="fixed inset-0 z-[90] grid place-items-center bg-netsang transition-transform duration-[620ms] ease-[cubic-bezier(0.76,0,0.24,1)] will-change-transform"
       style={{ transform: phaseTransform[phase] }}
       aria-hidden
     >

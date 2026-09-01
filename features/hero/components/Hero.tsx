@@ -20,7 +20,6 @@ import {
 } from "@/features/preloader/audio";
 import {
   BLUR_IN,
-  EMBLEM_SRC,
   FADE,
   FILL_BEAT,
   HOLD,
@@ -32,7 +31,6 @@ import {
   logoY,
   ONCE_PER_SESSION,
   PHOTOS,
-  pickEmblem,
   pickLogo,
   REVEAL_BEAT,
   SESSION_KEY,
@@ -103,24 +101,19 @@ export default function Hero() {
     const flightEl = () => q(".hero-flight")[0] as HTMLElement | undefined;
     const maskEl = () => q(".hero-mask")[0] as HTMLElement | undefined;
 
-    // Portrait phones crop the Boudha frame hard, so both marks need a different
+    // Portrait phones crop the Boudha frame hard, so the mark needs a different
     // width and offset there. Picked once on mount.
     const place = pickLogo(window.innerWidth);
-    const emblemPlace = pickEmblem(window.innerWidth);
 
-    // The write-on mask is the EMBLEM alone, sat on the gold spire (the React inline
-    // `style={LOGO_MASK}` is the desktop emblem default).
+    // The write-on mask is the whole "Lingkor" wordmark, spire glyph on the gold
+    // spire — unchanged. The React inline `style={LOGO_MASK}` is the desktop default.
     const applyStartMask = () => {
       const el = maskEl();
-      if (el)
-        Object.assign(
-          el.style,
-          wipeMaskFor(emblemPlace, WIPE_HIDDEN, EMBLEM_SRC),
-        );
+      if (el) Object.assign(el.style, wipeMaskFor(place, WIPE_HIDDEN));
     };
 
-    // The flat mark that flies to the navbar is the FULL "Lingkor" lockup, and it
-    // assembles CENTRED on the plaster wall (upper third), not on the spire.
+    // Once written, the flat mark re-centres onto the plaster wall (upper third) and
+    // flies from there to the navbar's logo slot.
     const layoutFlight = () => {
       const el = flightEl();
       if (!el) return;
@@ -200,20 +193,18 @@ export default function Hero() {
     const paintWipe = () => {
       const el = maskEl();
       if (!el) return;
-      const pos = `${logoX(emblemPlace)} ${logoY(emblemPlace)}, ${logoX(
-        emblemPlace,
-      )} ${wipe.y}%`;
+      const pos = `${logoX(place)} ${logoY(place)}, ${logoX(place)} ${wipe.y}%`;
       el.style.setProperty("-webkit-mask-position", pos);
       el.style.maskPosition = pos;
     };
     const dropWipe = () => {
       const el = maskEl();
       if (!el) return;
-      const only = logoOnlyFor(emblemPlace, EMBLEM_SRC);
+      const only = logoOnlyFor(place);
       el.style.maskImage = String(only.maskImage);
       el.style.maskPosition = String(only.maskPosition);
       el.style.maskSize = String(only.maskSize);
-      el.style.setProperty("-webkit-mask-image", `url(${EMBLEM_SRC})`);
+      el.style.setProperty("-webkit-mask-image", `url(${LOGO_SRC})`);
       el.style.setProperty("-webkit-mask-position", String(only.maskPosition));
       el.style.setProperty("-webkit-mask-size", String(only.maskSize));
     };

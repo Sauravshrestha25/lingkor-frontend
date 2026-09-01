@@ -27,7 +27,7 @@ export const HOURS = [
     time: "05:30",
     label: "First kora",
     line: "The circle starts before the shops do. Butter lamps, and a thousand feet going the same way.",
-    sky: "var(--color-canvas)",
+    sky: "var(--color-surface)",
     ink: "var(--color-ink)",
     lamps: 1,
     knotTone: 0,
