@@ -11,4 +11,11 @@
  * wrong for most of the library — only 34 of the 123 webp files ever had a `-1280`
  * sibling, so the small candidate 404'd for the rest.
  */
-export const BOUDHA = "/images/boudhanath.webp";
+export const BOUDHA = "/images/boudha/boudhanath_new.png";
+
+/**
+ * The interior the homepage settles on. The cinematic writes the mark onto Boudha,
+ * then the mark flies to the navbar and the hero rests on this instead — the room,
+ * not the monument.
+ */
+export const LOBBY = "/images/spaces/lobby.png";

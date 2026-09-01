@@ -230,6 +230,21 @@ export function enterSilently() {
   stopAllIntroSound();
 }
 
+/**
+ * Build and buffer the intro/site audio elements ahead of time, muted and paused.
+ *
+ * `startPreloaderSound()` used to `new Audio()` + `.load()` and then `.play()` in the
+ * same tick as the click — Chrome can reject that `play()` with NotAllowedError even
+ * inside a genuine gesture, because the resource load was only just kicked off. With
+ * the elements already created and preloading, the click's `play()` lands on a ready
+ * element and is honoured.
+ */
+export function prewarmIntroSound() {
+  if (typeof Audio === "undefined") return;
+  preloaderMusic ??= makeLoop(PRELOADER_MUSIC_SRC, PRELOADER_VOLUME);
+  ensureSiteMusic();
+}
+
 export function fadeOutPreloaderSound(duration = PRELOADER_FADE_OUT_MS) {
   if (!audioEnabled || !preloaderMusic) return;
   fade(preloaderMusic, 0, duration);

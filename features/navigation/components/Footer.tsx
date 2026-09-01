@@ -12,7 +12,7 @@ import { CONTACT, NAV, SPACES } from "@/lib/site";
  * The homepage closes in midnight. Interior routes use the inverse white treatment.
  */
 export default function Footer({ dark = false }: { dark?: boolean }) {
-  const ground = dark ? "bg-midnight text-space" : "bg-white text-ink";
+  const ground = dark ? "bg-midnight text-space" : "bg-canvas text-ink";
   const rule = dark ? "border-space/20" : "border-ink/20";
 
   return (

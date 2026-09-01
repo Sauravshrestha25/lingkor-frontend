@@ -36,7 +36,7 @@ let finished = false;
  * timeline, a component torn down at the wrong moment — the page must still animate.
  * Comfortably longer than the intro itself.
  */
-const NEVER_LONGER_THAN = 20_000;
+const NEVER_LONGER_THAN = 38_000;
 let safety: number | undefined;
 
 export function claimIntro() {

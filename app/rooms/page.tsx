@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import PageHeader from "@/components/PageHeader";
 import Footer from "@/features/navigation/components/Footer";
-import { Parallax, Rise } from "@/components/anim";
-import { Label, TextLink } from "@/components/ui";
+import { Rise } from "@/components/anim";
+import { RoomCard } from "@/features/rooms/components/RoomCard";
+import { TextLink } from "@/components/ui";
 import { ROOMS } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -27,22 +28,12 @@ export default function RoomsPage() {
           <div className="grid grid-cols-1 gap-x-8 gap-y-16 sm:grid-cols-2 lg:grid-cols-3">
             {ROOMS.map((room, i) => (
               <Rise key={room.id} delay={(i % 3) * 90}>
-                <article className="group">
-                  <Parallax
-                    src={`/images/rooms/${room.id}.webp`}
-                    alt={`${room.name} — ${room.note}`}
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    className="aspect-4/5 w-full"
-                    strength={6}
-                  />
-                  <div className="mt-6 border-t border-ink/15 pt-5">
-                    <div className="flex items-baseline justify-between gap-4">
-                      <h2 className="font-display text-sub">{room.name}</h2>
-                      <Label className="shrink-0 opacity-40">{room.size}</Label>
-                    </div>
-                    <Label className="mt-3 block opacity-50">{room.note}</Label>
-                  </div>
-                </article>
+                <RoomCard
+                  room={room}
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  loading={i < 3 ? "eager" : "lazy"}
+                  headingLevel="h2"
+                />
               </Rise>
             ))}
           </div>

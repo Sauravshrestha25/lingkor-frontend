@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -8,6 +8,7 @@ import { gsap, reduced } from "@/lib/gsap";
 import { NavOverlay } from "./NavOverlay";
 import { Button } from "@/components/shared/button";
 import { getLenis } from "@/lib/lenis";
+import { isIntroActive, subscribeIntroActive } from "@/features/preloader/gate";
 
 export default function Navbar() {
   const [past, setPast] = useState(false);
@@ -45,6 +46,17 @@ export default function Navbar() {
     pathname === "/" ||
     pathname === "/mustang" ||
     pathname.startsWith("/spaces/");
+
+  // While the hero cinematic is playing on the homepage, the Menu button and the
+  // Enquire link stay off-screen — the film owns the frame until the visitor
+  // scrolls (which also fast-forwards it) or it finishes on its own. Both exits
+  // clear the intro gate, which re-renders this via the store below.
+  const introActive = useSyncExternalStore(
+    subscribeIntroActive,
+    isIntroActive,
+    () => false,
+  );
+  const heroPlaying = introActive && !past;
 
   const [routeAtOpen, setRouteAtOpen] = useState(pathname);
   if (routeAtOpen !== pathname) {
@@ -211,7 +223,7 @@ export default function Navbar() {
           open
             ? "bg-transparent text-ink"
             : past
-              ? "bg-white text-ink"
+              ? "bg-canvas text-ink"
               : `bg-transparent ${darkTop ? "text-space" : "text-ink"}`
         } ${past && !open ? "shadow-[0_1px_0_rgba(28,26,23,0.1)]" : ""}`}
       >
@@ -219,7 +231,11 @@ export default function Navbar() {
             logo first: the mark stays optically centred in the viewport no matter
             how wide the labels either side get. */}
         <nav className="mx-auto flex h-24 w-full items-center justify-between shell-max shell-px sm:grid sm:grid-cols-[1fr_auto_1fr]">
-          <div className="order-2 flex items-center sm:order-none">
+          <div
+            className={`order-2 flex items-center transition-opacity duration-500 sm:order-none ${
+              heroPlaying ? "pointer-events-none opacity-0" : "opacity-100"
+            }`}
+          >
             <Button
               type="button"
               onClick={() => {
@@ -252,24 +268,41 @@ export default function Navbar() {
           <Link
             href="/"
             aria-label="Lingkor, home"
-            className="relative order-1 block sm:order-none sm:justify-self-center"
+            aria-hidden={heroPlaying}
+            tabIndex={heroPlaying ? -1 : undefined}
+            /*
+              Kept in layout (opacity, not display) so the hero cinematic's mark has a
+              stable rect to fly into — it lands here as the intro ends and this fades
+              up underneath it. Hidden meanwhile so it does not double the wordmark
+              baked at the top of the flying artwork.
+            */
+            className={`relative order-1 block transition-opacity duration-500 sm:order-none sm:justify-self-center ${
+              heroPlaying ? "pointer-events-none opacity-0" : "opacity-100"
+            }`}
           >
+            {/* Brick ("Rato mato") on any white / off-white bar, per the client;
+                the white mark only over a dark photo top. Two files rather than a
+                CSS filter — an inverted white SVG rendered as near-black ink, not
+                the brand colour. */}
             <Image
-              src="/Logo/logo-white.svg"
+              src={
+                !past && !open && darkTop
+                  ? "/Logo/logo-white.svg"
+                  : "/Logo/logo-brick.svg"
+              }
               alt="Lingkor"
               width={200}
               height={120}
               priority
-              /* The source is a white SVG, inverted to read as ink on a light bar.
-                 Over a dark top it is already the right colour, so the invert comes
-                 off — inverted, it was a black mark on a black photograph. */
-              className={`nav-logo h-11 w-auto object-contain sm:h-12 ${
-                !past && !open && darkTop ? "" : "invert"
-              }`}
+              className="nav-logo h-11 w-auto object-contain sm:h-12"
             />
           </Link>
 
-          <div className="hidden items-center justify-end sm:flex">
+          <div
+            className={`hidden items-center justify-end transition-opacity duration-500 sm:flex ${
+              heroPlaying ? "pointer-events-none opacity-0" : "opacity-100"
+            }`}
+          >
             <Link
               href="/contact"
               onClick={() => {
