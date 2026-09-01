@@ -18,7 +18,7 @@ export function JourneyDivider() {
           </Rise>
           <RevealParagraph
             text={JOURNEY}
-            className="text-body mt-6 max-w-[58ch]"
+            className="text-body  mt-6 max-w-[58ch]"
           />
 
           <Rise delay={200} className="mt-16">

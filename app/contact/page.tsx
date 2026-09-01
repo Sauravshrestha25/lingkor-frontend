@@ -12,23 +12,38 @@ export const metadata: Metadata = {
     "Write to Lingkor, Boudha — Kathmandu, Nepal. Enquiries, dates and directions.",
 };
 
+const ROUTE = [
+  {
+    place: "Tribhuvan International",
+    leg: "By air",
+    detail:
+      "Kathmandu's only airport, and the closest one to the stupa — Boudha is on the same side of the city.",
+  },
+  {
+    place: "The ring road",
+    leg: "By taxi",
+    detail:
+      "North-east across town. From Thamel or Durbar Square it is one fare and no changes.",
+  },
+  {
+    place: "Boudhanath",
+    leg: "On foot",
+    detail:
+      "The last stretch is the kora itself: through the gate, around the dome, clockwise like everyone else.",
+  },
+];
+
 export default function ContactPage() {
   return (
     <main className="w-full">
-      {/* Contact opening — built to the client's sample: a small "• Contact"
-          kicker, the headline in their exact words and line breaks, the yak
-          caravan drawing left-aligned beneath it (a slice of the descending
-          trail), a two-line note, and a tall Mustang texture on the right. */}
+      {/* Contact opening, laid out to the client's sample page: kicker, a Hasweny
+          headline in their words, the yak-caravan line drawing used delicately
+          beside a short note, and a Mustang texture that fades up slowly on the
+          right. */}
       <header className="w-full bg-canvas pt-40 pb-20 lg:pt-44 lg:pb-28">
         <div className="mx-auto w-full shell-max shell-px">
-          <div className="grid gap-14 lg:grid-cols-12 lg:items-start lg:gap-x-12">
-            <div className="lg:col-span-6 lg:pt-16">
-              <Rise>
-                <p className="text-sm text-ink/45">
-                  <span className="mr-2">&bull;</span>Contact
-                </p>
-              </Rise>
-
+          <div className="grid gap-14 lg:grid-cols-12 lg:items-start lg:gap-16">
+            <div className="lg:col-span-6">
               <SplitChars
                 lines={[
                   "Send us a message.",
@@ -36,37 +51,34 @@ export default function ContactPage() {
                   "your wishes.",
                 ]}
                 delay={120}
-                className="font-display mt-10 whitespace-nowrap text-[clamp(2rem,1.1rem+2.6vw,3rem)] leading-[1.08]"
+                className="font-display mt-8 whitespace-nowrap text-[clamp(1.9rem,1.1rem+2vw,2.5rem)] leading-[1.14]"
               />
 
               <Rise delay={240} className="mt-16">
-                <div className="relative aspect-[13/5] w-[clamp(240px,26vw,360px)] overflow-hidden">
-                  <Image
-                    src="/images/art/caravan-terracotta.png"
-                    alt="A caravan of pack yaks on the trail"
-                    fill
-                    sizes="(min-width: 1024px) 26vw, 60vw"
-                    className="object-cover object-[50%_33%] opacity-90"
-                  />
-                </div>
-              </Rise>
-
-              <Rise delay={320} className="mt-14">
-                <p className="text-sm leading-relaxed text-ink/55">
-                  Tell us when you would like to come and for how long.
-                  <br />
-                  We answer every messages ourselves
+                {/* The three-yak caravan strip from the client's contact sample
+                    (transparent PNG supplied by the client). */}
+                <Image
+                  src="/images/newwww+contact.png"
+                  alt=""
+                  width={2063}
+                  height={762}
+                  sizes="384px"
+                  className="h-auto w-72 lg:w-96"
+                />
+                <p className="text-body mt-14 max-w-[34rem] opacity-70">
+                  Tell us when you would like to come and for how long. We
+                  answer every messages ourselves
                 </p>
               </Rise>
             </div>
 
-            <Rise delay={360} y={18} className="lg:col-span-6">
+            <Rise delay={360} y={18} className="lg:col-span-6 lg:pt-16">
               <div className="relative aspect-[3/2] w-full overflow-hidden">
                 <Image
-                  src="/images/mustang/_ECS1673-mod.webp"
-                  alt="Wind-cut earth pinnacles of Upper Mustang"
+                  src="/images/mustang/_ECS3504.webp"
+                  alt="Eroded pinnacles of Upper Mustang"
                   fill
-                  sizes="(min-width: 1024px) 50vw, 100vw"
+                  sizes="(min-width: 1024px) 58vw, 100vw"
                   className="object-cover"
                 />
               </div>
@@ -106,6 +118,39 @@ export default function ContactPage() {
                     </a>
                   </p>
                 </address>
+              </Rise>
+
+              <Rise delay={160} className="mt-14">
+                <Label className="opacity-50">Getting here</Label>
+                <ol className="mt-6">
+                  {ROUTE.map((stop, i) => (
+                    <li key={stop.place} className="flex gap-5 pb-7 last:pb-0">
+                      <div className="relative flex w-3 shrink-0 justify-center">
+                        <span
+                          aria-hidden="true"
+                          className={`absolute top-3 h-full w-px bg-ink/20 ${
+                            i === ROUTE.length - 1 ? "hidden" : ""
+                          }`}
+                        />
+                        <span
+                          aria-hidden="true"
+                          className="relative mt-2 h-1.5 w-1.5 rounded-full bg-ink/60"
+                        />
+                      </div>
+                      <div>
+                        <div className="flex items-baseline gap-3">
+                          <span className="font-display text-[1.375rem] leading-none">
+                            {stop.place}
+                          </span>
+                          <Label className="opacity-40">{stop.leg}</Label>
+                        </div>
+                        <p className="text-body mt-2 opacity-70">
+                          {stop.detail}
+                        </p>
+                      </div>
+                    </li>
+                  ))}
+                </ol>
               </Rise>
             </div>
           </div>

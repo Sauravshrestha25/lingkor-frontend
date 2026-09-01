@@ -564,10 +564,10 @@ export default function Hero() {
       {/* Quiet "sound on" prompt over the film — starts muted. */}
       <button
         type="button"
-        className="hero-prompt absolute bottom-[max(2rem,env(safe-area-inset-bottom))] left-5 z-30 flex cursor-pointer items-center gap-2.5 rounded-full border border-space/30 bg-netsang py-2 pl-2 pr-4 text-ink opacity-0 backdrop-blur-md transition-colors hover:bg-ink/65 sm:left-8"
+        className="hero-prompt absolute bottom-[max(2rem,env(safe-area-inset-bottom))] left-5 z-30 flex cursor-pointer items-center gap-2.5 rounded-full border border-space/30 bg-netsang py-2 pl-2 pr-4 text-ink opacity-0 backdrop-blur-md transition-colors hover:bg-netsang/80 sm:left-8"
         aria-label="Play with sound"
       >
-        <span className="grid size-8 place-items-center rounded-full bg-space/15">
+        <span className="grid size-8 place-items-center rounded-full border ">
           <VolumeX className="size-4" aria-hidden />
         </span>
         <span className="text-label uppercase">Play with sound</span>
@@ -576,7 +576,7 @@ export default function Hero() {
       {/* Skip the cinematic. */}
       <button
         type="button"
-        className="hero-skip absolute bottom-[max(2rem,env(safe-area-inset-bottom))] right-5 z-30 cursor-pointer rounded-full border border-space/30 bg-netsang px-5 py-2.5 text-label uppercase text-ink opacity-0 backdrop-blur-md transition-colors hover:bg-ink/65 sm:right-8"
+        className="hero-skip absolute bottom-[max(2rem,env(safe-area-inset-bottom))] right-5 z-30 cursor-pointer rounded-full border border-space/30 bg-netsang/80 px-5 py-2.5 text-label uppercase text-ink opacity-0 backdrop-blur-md transition-colors hover:bg-netsang sm:right-8"
       >
         Skip
       </button>

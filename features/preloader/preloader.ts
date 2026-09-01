@@ -35,15 +35,13 @@ export const QUOTES: ({ text: string; source: string } | null)[] = [
 
 export const SESSION_KEY = "lb-preloaded";
 /**
- * Play the cinematic once per tab session.
+ * Play the cinematic on every arrival at `/` — hard refresh, and client navigation
+ * back from another route (which remounts `Hero`), by request from the client.
  *
- * The hero now lives on the homepage (`features/hero/components/Hero.tsx`), which
- * client navigation *does* remount — so without this, every return to `/` replayed
- * the full ~25s film. `Hero` stamps `SESSION_KEY` the moment the film starts (and on
- * skip / scroll / completion); on any later mount it finds the stamp and jumps
- * straight to the resting hero. Cleared only by closing the tab.
+ * Set `true` to instead play it once per tab session: `Hero` stamps `SESSION_KEY`
+ * when the film starts and jumps straight to the resting hero on any later mount.
  */
-export const ONCE_PER_SESSION = true;
+export const ONCE_PER_SESSION = false;
 export const MIN_MS = 300; // floor before the timeline starts — frame 1 is on screen for it
 export const MAX_MS = 5000; // ceiling: start anyway, even if the first frame never arrives
 export const FAILSAFE_MS = 45000; // last resort: never leave the navbar logo hidden (> full runtime)
