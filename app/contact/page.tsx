@@ -3,7 +3,6 @@ import Image from "next/image";
 import Footer from "@/features/navigation/components/Footer";
 import EnquireForm from "@/features/enquiry/components/EnquireForm";
 import { Rise, SplitChars } from "@/components/anim";
-import { LineArt } from "@/components/media/Photo";
 import { Label } from "@/components/ui";
 import { CONTACT } from "@/lib/site";
 
@@ -16,16 +15,18 @@ export const metadata: Metadata = {
 export default function ContactPage() {
   return (
     <main className="w-full">
-      {/* Contact opening, laid out to the client's sample page: kicker, a Hasweny
-          headline in their words, the yak-caravan line drawing used delicately
-          beside a short note, and a Mustang texture that fades up slowly on the
-          right. */}
+      {/* Contact opening — built to the client's sample: a small "• Contact"
+          kicker, the headline in their exact words and line breaks, the yak
+          caravan drawing left-aligned beneath it (a slice of the descending
+          trail), a two-line note, and a tall Mustang texture on the right. */}
       <header className="w-full bg-canvas pt-40 pb-20 lg:pt-44 lg:pb-28">
         <div className="mx-auto w-full shell-max shell-px">
-          <div className="grid gap-14 lg:grid-cols-12 lg:items-start lg:gap-16">
-            <div className="lg:col-span-5 lg:pt-24">
+          <div className="grid gap-14 lg:grid-cols-12 lg:items-start lg:gap-x-12">
+            <div className="lg:col-span-6 lg:pt-16">
               <Rise>
-                <Label className="opacity-60">Contact</Label>
+                <p className="text-sm text-ink/45">
+                  <span className="mr-2">&bull;</span>Contact
+                </p>
               </Rise>
 
               <SplitChars
@@ -35,31 +36,37 @@ export default function ContactPage() {
                   "your wishes.",
                 ]}
                 delay={120}
-                className="font-display mt-8 text-[clamp(2.25rem,1.35rem+2.1vw,3rem)] leading-[1.08]"
+                className="font-display mt-10 whitespace-nowrap text-[clamp(2rem,1.1rem+2.6vw,3rem)] leading-[1.08]"
               />
 
-              <Rise delay={240} className="mt-12">
-                <div className="flex justify-center">
-                  <LineArt
-                    name="caravan"
-                    tone="terracotta"
-                    className="h-auto w-32 opacity-80 lg:w-40"
+              <Rise delay={240} className="mt-16">
+                <div className="relative aspect-[13/5] w-[clamp(240px,26vw,360px)] overflow-hidden">
+                  <Image
+                    src="/images/art/caravan-terracotta.png"
+                    alt="A caravan of pack yaks on the trail"
+                    fill
+                    sizes="(min-width: 1024px) 26vw, 60vw"
+                    className="object-cover object-[50%_33%] opacity-90"
                   />
                 </div>
-                <p className="text-body mt-12 max-w-[36ch] opacity-70">
-                  Tell us when you would like to come and for how long. We
-                  answer every message ourselves.
+              </Rise>
+
+              <Rise delay={320} className="mt-14">
+                <p className="text-sm leading-relaxed text-ink/55">
+                  Tell us when you would like to come and for how long.
+                  <br />
+                  We answer every messages ourselves
                 </p>
               </Rise>
             </div>
 
-            <Rise delay={360} y={18} className="lg:col-span-7 lg:pt-16">
+            <Rise delay={360} y={18} className="lg:col-span-6">
               <div className="relative aspect-[3/2] w-full overflow-hidden">
                 <Image
-                  src="/images/mustang/_ECS0507-mod.webp"
-                  alt="Wind-cut cliffs of Upper Mustang"
+                  src="/images/mustang/_ECS1673-mod.webp"
+                  alt="Wind-cut earth pinnacles of Upper Mustang"
                   fill
-                  sizes="(min-width: 1024px) 58vw, 100vw"
+                  sizes="(min-width: 1024px) 50vw, 100vw"
                   className="object-cover"
                 />
               </div>

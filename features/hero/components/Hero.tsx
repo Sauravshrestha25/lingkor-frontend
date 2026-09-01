@@ -7,7 +7,7 @@ import { gsap, reduced } from "@/lib/gsap";
 
 import { SplitChars, Rise } from "@/components/anim";
 import { Button } from "@/components/shared/button";
-import { BOUDHA, LOBBY } from "@/lib/photo";
+import { BOUDHA } from "@/lib/photo";
 import { claimIntro, finishIntro } from "@/features/preloader/gate";
 import { setBellMuted, unlockBell, playResonantBell } from "@/lib/bell";
 import {
@@ -55,7 +55,7 @@ import {
  * the real gold spire of the stupa in the Boudha frame, then it writes itself on
  * from that pinnacle downward ("as if it is built on top of it"), goes solid white,
  * and flies up into the navbar's own logo slot — which is where the intro hands off.
- * The hero then rests on the lobby interior, not the monument.
+ * The hero then rests on the same Boudhanath frame the film ended on.
  *
  * Frames, mask geometry and every duration live in `features/preloader/preloader.ts`.
  */
@@ -72,10 +72,10 @@ export default function Hero() {
   const tlRef = useRef<gsap.core.Timeline | null>(null);
   const soundRef = useRef(false);
 
-  // Already seen this tab session? `sessionStorage` survives a reload and dies with
-  // the tab — so a refresh lands straight on the resting hero (no replay, no flash),
-  // and closing the tab and opening the page again plays the film. Read once, at
-  // render, so the decision is made before any effect claims the intro gate.
+  // The client wants the film on every arrival at `/` — refresh and client-nav back
+  // from another route (which remounts this component). So this is `false` unless
+  // `ONCE_PER_SESSION` is flipped on, in which case a `sessionStorage` stamp makes it
+  // play once per tab. Read once, at render, before any effect claims the intro gate.
   const seenRef = useRef(
     typeof window !== "undefined" &&
       ONCE_PER_SESSION &&
@@ -83,8 +83,8 @@ export default function Hero() {
   );
 
   // Before paint, so the below-the-fold reveals and the floating sound toggle stay
-  // held until the film ends (see `afterIntro` / `isIntroActive`). Skipped entirely
-  // on a reload — nothing to hold, nothing to release.
+  // held until the film ends (see `afterIntro` / `isIntroActive`). Only skipped when
+  // `ONCE_PER_SESSION` is on and the film has already run this tab.
   useLayoutEffect(() => {
     if (seenRef.current) return;
     claimIntro();
@@ -104,7 +104,6 @@ export default function Hero() {
     // Portrait phones crop the Boudha frame hard, so the wordmark needs a different
     // width and offset there. Picked once on mount.
     const place = pickLogo(window.innerWidth);
-
 
     // Put the write-on mask at its viewport-correct placement (the React inline
     // `style={LOGO_MASK}` is the desktop default).
@@ -139,7 +138,12 @@ export default function Hero() {
       gsap.set(q(".hero-page"), { opacity: 0 });
       gsap.set(q(".hero-page")[0], { opacity: 1 });
       gsap.set(
-        [q(".hero-blur"), q(".hero-mask"), q(".hero-flight"), q(".hero-ground")],
+        [
+          q(".hero-blur"),
+          q(".hero-mask"),
+          q(".hero-flight"),
+          q(".hero-ground"),
+        ],
         { opacity: 0 },
       );
       gsap.set(
@@ -261,7 +265,11 @@ export default function Hero() {
     // Phase 1 — the Mustang frames, long cross-dissolves.
     q(".hero-page").forEach((page, i) => {
       if (i === 0) return;
-      tl.to(page, { opacity: 1, duration: FADE, ease: "power1.inOut" }, i * HOLD);
+      tl.to(
+        page,
+        { opacity: 1, duration: FADE, ease: "power1.inOut" },
+        i * HOLD,
+      );
     });
 
     const boudhaAt = (PHOTOS.length - 1) * HOLD;
@@ -278,7 +286,12 @@ export default function Hero() {
       .fromTo(
         q(".hero-prompt"),
         { opacity: 0, pointerEvents: "none" },
-        { opacity: 1, pointerEvents: "auto", duration: 0.6, ease: "power2.out" },
+        {
+          opacity: 1,
+          pointerEvents: "auto",
+          duration: 0.6,
+          ease: "power2.out",
+        },
         PROMPT_IN_AT,
       )
       // Phase 2 — Boudhanath settles, blur lifts, the mark writes itself on from the
@@ -293,7 +306,12 @@ export default function Hero() {
       .call(hidePrompt, [], glyphAt)
       .to(
         q(".hero-skip"),
-        { opacity: 0, pointerEvents: "none", duration: 0.4, ease: "power2.out" },
+        {
+          opacity: 0,
+          pointerEvents: "none",
+          duration: 0.4,
+          ease: "power2.out",
+        },
         glyphAt,
       )
       .call(
@@ -336,7 +354,7 @@ export default function Hero() {
         { scale: 1, duration: 0.35, ease: "power2.inOut" },
         flightAt - 0.7,
       )
-      // Phase 3 — the mark flies to the navbar; the lobby interior and the resting
+      // Phase 3 — the mark flies to the navbar; the resting hero comes up over the
       // hero come up behind it.
       .call(flyToNavbar, [], flightAt)
       .call(finishIntro, [], flightAt + FLIGHT * 0.65)
@@ -369,7 +387,7 @@ export default function Hero() {
 
     // Skip button / first scroll / wheel / key: leave the film and cross-fade to the
     // resting hero. Racing the timeline's progress to 1 flashed 20s of frames in a
-    // second — this just dissolves whatever is on screen into the lobby instead.
+    // second — this just dissolves whatever is on screen into the resting hero instead.
     let skipped = false;
     let ff: Array<() => void> = [];
     const skipToRest = (dur = 0.7) => {
@@ -514,13 +532,21 @@ export default function Hero() {
         className="hero-flight absolute left-0 top-0 z-20 opacity-0 will-change-transform"
         aria-hidden
       >
-        <Image src={LOGO_SRC} alt="" fill sizes="80vw" className="object-contain" />
+        <Image
+          src={LOGO_SRC}
+          alt=""
+          fill
+          sizes="80vw"
+          className="object-contain"
+        />
       </div>
 
-      {/* The interior the hero settles on, once the mark has flown. */}
+      {/* What the hero settles on once the mark has flown — the same Boudhanath
+          frame the film ends on, held as its own layer so it can breathe under the
+          resting content without the write-on mask on top of it. */}
       <div className="hero-ground absolute inset-0 opacity-0" aria-hidden>
         <Image
-          src={LOBBY}
+          src={BOUDHA}
           alt=""
           fill
           sizes="100vw"
@@ -538,7 +564,7 @@ export default function Hero() {
       {/* Quiet "sound on" prompt over the film — starts muted. */}
       <button
         type="button"
-        className="hero-prompt absolute bottom-[max(2rem,env(safe-area-inset-bottom))] left-5 z-30 flex cursor-pointer items-center gap-2.5 rounded-full border border-space/30 bg-ink/45 py-2 pl-2 pr-4 text-space opacity-0 backdrop-blur-md transition-colors hover:bg-ink/65 sm:left-8"
+        className="hero-prompt absolute bottom-[max(2rem,env(safe-area-inset-bottom))] left-5 z-30 flex cursor-pointer items-center gap-2.5 rounded-full border border-space/30 bg-netsang py-2 pl-2 pr-4 text-ink opacity-0 backdrop-blur-md transition-colors hover:bg-ink/65 sm:left-8"
         aria-label="Play with sound"
       >
         <span className="grid size-8 place-items-center rounded-full bg-space/15">
@@ -550,7 +576,7 @@ export default function Hero() {
       {/* Skip the cinematic. */}
       <button
         type="button"
-        className="hero-skip absolute bottom-[max(2rem,env(safe-area-inset-bottom))] right-5 z-30 cursor-pointer rounded-full border border-space/30 bg-ink/45 px-5 py-2.5 text-label uppercase text-space opacity-0 backdrop-blur-md transition-colors hover:bg-ink/65 sm:right-8"
+        className="hero-skip absolute bottom-[max(2rem,env(safe-area-inset-bottom))] right-5 z-30 cursor-pointer rounded-full border border-space/30 bg-netsang px-5 py-2.5 text-label uppercase text-ink opacity-0 backdrop-blur-md transition-colors hover:bg-ink/65 sm:right-8"
       >
         Skip
       </button>
