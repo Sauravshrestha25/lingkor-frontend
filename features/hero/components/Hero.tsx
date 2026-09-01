@@ -72,9 +72,21 @@ export default function Hero() {
   const tlRef = useRef<gsap.core.Timeline | null>(null);
   const soundRef = useRef(false);
 
+  // Already seen this tab session? `sessionStorage` survives a reload and dies with
+  // the tab — so a refresh lands straight on the resting hero (no replay, no flash),
+  // and closing the tab and opening the page again plays the film. Read once, at
+  // render, so the decision is made before any effect claims the intro gate.
+  const seenRef = useRef(
+    typeof window !== "undefined" &&
+      ONCE_PER_SESSION &&
+      window.sessionStorage.getItem(SESSION_KEY) === "1",
+  );
+
   // Before paint, so the below-the-fold reveals and the floating sound toggle stay
-  // held until the film ends (see `afterIntro` / `isIntroActive`).
+  // held until the film ends (see `afterIntro` / `isIntroActive`). Skipped entirely
+  // on a reload — nothing to hold, nothing to release.
   useLayoutEffect(() => {
+    if (seenRef.current) return;
     claimIntro();
     unlockBell();
     enterSilently(); // muted by default; makes the mute flags read correctly
@@ -93,8 +105,6 @@ export default function Hero() {
     // width and offset there. Picked once on mount.
     const place = pickLogo(window.innerWidth);
 
-    const repeat =
-      ONCE_PER_SESSION && sessionStorage.getItem(SESSION_KEY) === "1";
 
     // Put the write-on mask at its viewport-correct placement (the React inline
     // `style={LOGO_MASK}` is the desktop default).
@@ -157,13 +167,22 @@ export default function Hero() {
       finishIntro();
     };
 
-    if (reduced() || repeat) {
+    if (reduced() || seenRef.current) {
       jumpToRest();
       return;
     }
 
     setStart();
     window.addEventListener("resize", layoutFlight);
+
+    // Count this play the moment it starts, so ANY reload from here on lands on the
+    // resting hero. Deferred to an animation frame, not set inline: StrictMode's
+    // dev-only mount → unmount → remount would otherwise stamp on the first run and
+    // make the second run (the real one) skip the film. The frame fires after that
+    // rehearsal has settled; the cleanup cancels it if this run was the rehearsal.
+    const stampId = requestAnimationFrame(() => {
+      sessionStorage.setItem(SESSION_KEY, "1");
+    });
 
     // The wipe layer's y is a list value GSAP cannot tween, so it is repainted each
     // frame: y from 100% (glyph hidden) to 0% (glyph shown) sweeps the reveal DOWN.
@@ -250,15 +269,7 @@ export default function Hero() {
     const solidAt = glyphAt + REVEAL_BEAT;
     const flightAt = solidAt + FILL_BEAT + REST_HOLD;
 
-    // Once the film has genuinely been on screen a moment, count it as seen — a
-    // later remount (client nav back to `/`) then skips straight to the resting
-    // hero. Placed on the timeline so StrictMode's mount/unmount rehearsal, which is
-    // torn down in the same tick, never reaches it.
-    tl.call(
-      () => sessionStorage.setItem(SESSION_KEY, "1"),
-      [],
-      1.5,
-    ).fromTo(
+    tl.fromTo(
       q(".hero-skip"),
       { opacity: 0, pointerEvents: "none" },
       { opacity: 1, pointerEvents: "auto", duration: 0.5, ease: "power2.out" },
@@ -438,6 +449,7 @@ export default function Hero() {
     skipEl?.addEventListener("click", onSkip);
 
     return () => {
+      cancelAnimationFrame(stampId);
       ff.forEach((off) => off());
       window.removeEventListener("resize", layoutFlight);
       promptEl?.removeEventListener("click", enableSound);
