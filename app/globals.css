@@ -59,6 +59,7 @@
   --color-ring: #539b8f;
   --color-netsang: #f7f0e1;
   --color-namkha: #ffffff;
+  --color-surface: #f2f0e9;
 
   /*
    * Three type roles. There is no fourth.
@@ -130,7 +131,7 @@
    * never once winning. `1rem + 0.4vw` scales below 1440, where the root is fixed;
    * above it, the root does the scaling.
    */
-  --text-body: clamp(1.0625rem, 1rem + 0.4vw, 1rem);
+  --text-body: clamp(1.0625rem, 1rem + 0.4vw, 1.5rem);
   --text-body--line-height: 1.65;
   --text-label: 0.6875rem;
   --text-label--line-height: 1.2;

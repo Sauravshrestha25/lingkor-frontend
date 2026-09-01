@@ -35,15 +35,13 @@ export const QUOTES: ({ text: string; source: string } | null)[] = [
 
 export const SESSION_KEY = "lb-preloaded";
 /**
- * Play the cinematic once per tab session.
+ * Play the cinematic on every arrival at `/` — hard refresh, and client navigation
+ * back from another route (which remounts `Hero`), by request from the client.
  *
- * The hero now lives on the homepage (`features/hero/components/Hero.tsx`), which
- * client navigation *does* remount — so without this, every return to `/` replayed
- * the full ~25s film. `Hero` stamps `SESSION_KEY` the moment the film starts (and on
- * skip / scroll / completion); on any later mount it finds the stamp and jumps
- * straight to the resting hero. Cleared only by closing the tab.
+ * Set `true` to instead play it once per tab session: `Hero` stamps `SESSION_KEY`
+ * when the film starts and jumps straight to the resting hero on any later mount.
  */
-export const ONCE_PER_SESSION = true;
+export const ONCE_PER_SESSION = false;
 export const MIN_MS = 300; // floor before the timeline starts — frame 1 is on screen for it
 export const MAX_MS = 5000; // ceiling: start anyway, even if the first frame never arrives
 export const FAILSAFE_MS = 45000; // last resort: never leave the navbar logo hidden (> full runtime)
@@ -106,12 +104,15 @@ export const LOGO_RATIO = 1491 / 846; // artwork viewBox aspect, for the flight 
  * the glyph on the spire.
  */
 export type LogoNums = { vw: number; max: number; xF: number; yF: number };
-export const LOGO_DESKTOP: LogoNums = { vw: 73, max: 1250, xF: 0.335, yF: 0.105 };
+// The whole "Lingkor" wordmark writes on over Boudhanath, spire glyph on the gold
+// spire. Smaller than the first cut (`vw: 73`, "too huge") so it sits inside the
+// prayer-flag triangle. The write-on itself is unchanged; the bg then fades from
+// Boudhanath to the plaster wall UNDER the mark, and the mark flies to the navbar.
+export const LOGO_DESKTOP: LogoNums = { vw: 29, max: 460, xF: 0.47, yF: 0.28 };
 // Portrait: nothing is cropped vertically, so the stupa sits lower and the frame
-// only shows a narrow centre band. Whole wordmark kept on-screen (glyph ends up
-// smaller than the real spire). Tune these four against a real phone / Chrome
+// only shows a narrow centre band. Tune these four against a real phone / Chrome
 // responsive mode if the glyph drifts off the spire.
-export const LOGO_MOBILE: LogoNums = { vw: 96, max: 560, xF: 0.12, yF: 0.18 };
+export const LOGO_MOBILE: LogoNums = { vw: 44, max: 275, xF: 0.33, yF: 0.24 };
 export const MOBILE_MAX_W = 640; // <= this viewport width uses LOGO_MOBILE
 
 export const pickLogo = (viewportW: number): LogoNums =>
@@ -155,9 +156,10 @@ export const WIPE_HIDDEN = "100%";
 export const wipeMaskFor = (
   p: LogoNums,
   y: string,
+  src: string = LOGO_SRC,
 ): React.CSSProperties => ({
-  WebkitMaskImage: `url(${LOGO_SRC}), ${WIPE}`,
-  maskImage: `url(${LOGO_SRC}), ${WIPE}`,
+  WebkitMaskImage: `url(${src}), ${WIPE}`,
+  maskImage: `url(${src}), ${WIPE}`,
   WebkitMaskRepeat: "no-repeat, no-repeat",
   maskRepeat: "no-repeat, no-repeat",
   WebkitMaskPosition: `${logoX(p)} ${logoY(p)}, ${logoX(p)} ${y}`,
@@ -174,9 +176,12 @@ export const wipeMaskFor = (
  * the last few percent of the mark fractionally translucent; swapping to this makes
  * the finished state exactly opaque instead of almost.
  */
-export const logoOnlyFor = (p: LogoNums): React.CSSProperties => ({
-  WebkitMaskImage: `url(${LOGO_SRC})`,
-  maskImage: `url(${LOGO_SRC})`,
+export const logoOnlyFor = (
+  p: LogoNums,
+  src: string = LOGO_SRC,
+): React.CSSProperties => ({
+  WebkitMaskImage: `url(${src})`,
+  maskImage: `url(${src})`,
   WebkitMaskRepeat: "no-repeat",
   maskRepeat: "no-repeat",
   WebkitMaskPosition: `${logoX(p)} ${logoY(p)}`,
@@ -187,8 +192,8 @@ export const logoOnlyFor = (p: LogoNums): React.CSSProperties => ({
   maskComposite: "add",
 });
 
-// Desktop values for the initial React render; Hero re-applies the viewport-correct
-// placement before the timeline starts.
+// Desktop emblem placement for the initial React render on `.hero-mask`; Hero
+// re-applies the viewport-correct placement before the timeline starts.
 export const LOGO_MASK = wipeMaskFor(LOGO_DESKTOP, WIPE_HIDDEN);
 
 // Scroll lock lives on <html>: body carries `overflow-x: hidden` from globals.css,

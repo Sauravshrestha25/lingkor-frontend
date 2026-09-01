@@ -47,7 +47,7 @@ export function SoundToggle() {
       }}
       aria-label={muted ? "Unmute sound" : "Mute sound"}
       aria-pressed={muted}
-      className="fixed right-5 bottom-5 z-[120] grid size-11 cursor-pointer place-items-center rounded-full border border-white/45 bg-ink/72 text-white shadow-[0_10px_30px_rgba(0,0,0,0.18)] backdrop-blur-md transition-colors duration-300 hover:bg-ink sm:right-0 sm:bottom-8"
+      className="fixed right-5 bottom-5 z-[120] grid size-11 cursor-pointer place-items-center rounded-full border border-white/45 bg-ink/72 text-white shadow-[0_10px_30px_rgba(0,0,0,0.18)] backdrop-blur-md transition-colors duration-300 hover:bg-ink sm:right-2 sm:bottom-8"
       hoverScale={1.04}
       tapScale={0.94}
     >

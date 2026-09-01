@@ -7,7 +7,7 @@ import { gsap, reduced } from "@/lib/gsap";
 
 import { SplitChars, Rise } from "@/components/anim";
 import { Button } from "@/components/shared/button";
-import { BOUDHA } from "@/lib/photo";
+import { BOUDHA, WALL } from "@/lib/photo";
 import { claimIntro, finishIntro } from "@/features/preloader/gate";
 import { setBellMuted, unlockBell, playResonantBell } from "@/lib/bell";
 import {
@@ -101,20 +101,20 @@ export default function Hero() {
     const flightEl = () => q(".hero-flight")[0] as HTMLElement | undefined;
     const maskEl = () => q(".hero-mask")[0] as HTMLElement | undefined;
 
-    // Portrait phones crop the Boudha frame hard, so the wordmark needs a different
+    // Portrait phones crop the Boudha frame hard, so the mark needs a different
     // width and offset there. Picked once on mount.
     const place = pickLogo(window.innerWidth);
 
-    // Put the write-on mask at its viewport-correct placement (the React inline
-    // `style={LOGO_MASK}` is the desktop default).
+    // The write-on mask is the whole "Lingkor" wordmark, spire glyph on the gold
+    // spire — unchanged. The React inline `style={LOGO_MASK}` is the desktop default.
     const applyStartMask = () => {
       const el = maskEl();
       if (el) Object.assign(el.style, wipeMaskFor(place, WIPE_HIDDEN));
     };
 
-    // Place the flat mark exactly where the masked glyph renders, so the swap from
-    // "written on" to "solid" is seamless. Same %-of-(viewport − logo) model as
-    // `wipeMaskFor` / `logoOnlyFor` in preloader.ts.
+    // The flat mark sits exactly where the write-on mask rendered it (spire glyph on
+    // the gold spire). The bg fades from Boudhanath to the wall behind it; then it
+    // flies, unmoved until then, to the navbar's logo slot.
     const layoutFlight = () => {
       const el = flightEl();
       if (!el) return;
@@ -333,15 +333,29 @@ export default function Hero() {
         glyphAt + WRITE_LEAD,
       )
       .call(layoutFlight, [], solidAt)
+      // The written wordmark goes solid (mask hands off to the flat mark, same shape
+      // and place)…
       .to(
         q(".hero-flight"),
         { opacity: 1, duration: FILL_BEAT, ease: "power2.inOut" },
         solidAt,
       )
       .to(
-        [q(".hero-mask"), q(".hero-blur")],
-        { opacity: 0, duration: FILL_BEAT, ease: "power2.inOut" },
-        solidAt + FILL_BEAT * 0.45,
+        q(".hero-mask"),
+        { opacity: 0, duration: FILL_BEAT * 0.6, ease: "power2.inOut" },
+        solidAt + FILL_BEAT * 0.5,
+      )
+      // …then the background alone fades from Boudhanath to the plaster wall, behind
+      // the mark, which holds its place until it flies.
+      .to(
+        q(".hero-ground"),
+        { opacity: 1, duration: 1.1, ease: "power1.inOut" },
+        solidAt + FILL_BEAT + 0.2,
+      )
+      .to(
+        [q(".hero-blur"), ...q(".hero-page")],
+        { opacity: 0, duration: 1.1, ease: "power1.inOut" },
+        solidAt + FILL_BEAT + 0.2,
       )
       // A small "set" beat before it lifts.
       .to(
@@ -354,8 +368,8 @@ export default function Hero() {
         { scale: 1, duration: 0.35, ease: "power2.inOut" },
         flightAt - 0.7,
       )
-      // Phase 3 — the mark flies to the navbar; the resting hero comes up over the
-      // hero come up behind it.
+      // Phase 3 — the mark flies up to the navbar; the resting content comes up over
+      // the wall behind it.
       .call(flyToNavbar, [], flightAt)
       .call(finishIntro, [], flightAt + FLIGHT * 0.65)
       .to(
@@ -364,7 +378,7 @@ export default function Hero() {
         flightAt + FLIGHT - 0.1,
       )
       .to(
-        [q(".hero-ground"), q(".hero-scrim")],
+        q(".hero-scrim"),
         { opacity: 1, duration: REST_FADE, ease: "power2.inOut" },
         flightAt + FLIGHT - 0.4,
       )
@@ -541,12 +555,11 @@ export default function Hero() {
         />
       </div>
 
-      {/* What the hero settles on once the mark has flown — the same Boudhanath
-          frame the film ends on, held as its own layer so it can breathe under the
-          resting content without the write-on mask on top of it. */}
+      {/* What the film cross-fades into and the hero rests on — the prayer-flag
+          plaster wall, its own layer so it can breathe under the resting content. */}
       <div className="hero-ground absolute inset-0 opacity-0" aria-hidden>
         <Image
-          src={BOUDHA}
+          src={WALL}
           alt=""
           fill
           sizes="100vw"
@@ -564,10 +577,10 @@ export default function Hero() {
       {/* Quiet "sound on" prompt over the film — starts muted. */}
       <button
         type="button"
-        className="hero-prompt absolute bottom-[max(2rem,env(safe-area-inset-bottom))] left-5 z-30 flex cursor-pointer items-center gap-2.5 rounded-full border border-space/30 bg-netsang py-2 pl-2 pr-4 text-ink opacity-0 backdrop-blur-md transition-colors hover:bg-ink/65 sm:left-8"
+        className="hero-prompt absolute bottom-[max(2rem,env(safe-area-inset-bottom))] left-5 z-30 flex cursor-pointer items-center gap-2.5 rounded-full border border-space/30 bg-netsang py-2 pl-2 pr-4 text-ink opacity-0 backdrop-blur-md transition-colors hover:bg-netsang/80 sm:left-8"
         aria-label="Play with sound"
       >
-        <span className="grid size-8 place-items-center rounded-full bg-space/15">
+        <span className="grid size-8 place-items-center rounded-full border ">
           <VolumeX className="size-4" aria-hidden />
         </span>
         <span className="text-label uppercase">Play with sound</span>
@@ -576,7 +589,7 @@ export default function Hero() {
       {/* Skip the cinematic. */}
       <button
         type="button"
-        className="hero-skip absolute bottom-[max(2rem,env(safe-area-inset-bottom))] right-5 z-30 cursor-pointer rounded-full border border-space/30 bg-netsang px-5 py-2.5 text-label uppercase text-ink opacity-0 backdrop-blur-md transition-colors hover:bg-ink/65 sm:right-8"
+        className="hero-skip absolute bottom-[max(2rem,env(safe-area-inset-bottom))] right-5 z-30 cursor-pointer rounded-full border border-space/30 bg-netsang px-5 py-2.5 text-label uppercase text-ink opacity-0 backdrop-blur-md transition-colors hover:bg-netsang sm:right-8"
       >
         Skip
       </button>
