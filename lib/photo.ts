@@ -12,3 +12,10 @@
  * sibling, so the small candidate 404'd for the rest.
  */
 export const BOUDHA = "/images/boudha/boudhanath_new.png";
+
+/**
+ * Where the cinematic lands: a cracked-plaster wall in the prayer-flag palette
+ * (white / gold / terracotta / slate). The film cross-fades from Boudhanath to this,
+ * and it is the resting hero's ground.
+ */
+export const WALL = "/images/preloader/mustang-wall.png";

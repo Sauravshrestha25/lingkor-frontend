@@ -173,20 +173,20 @@ export default function Hero() {
     const flightEl = () => q(".hero-flight")[0] as HTMLElement | undefined;
     const maskEl = () => q(".hero-mask")[0] as HTMLElement | undefined;
 
-    // Portrait phones crop the Boudha frame hard, so the wordmark needs a different
+    // Portrait phones crop the Boudha frame hard, so the mark needs a different
     // width and offset there. Picked once on mount.
     const place = LOGO_BIG;
 
-    // Put the write-on mask at its viewport-correct placement (the React inline
-    // `style={LOGO_MASK}` is the desktop default).
+    // The write-on mask is the whole "Lingkor" wordmark, spire glyph on the gold
+    // spire — unchanged. The React inline `style={LOGO_MASK}` is the desktop default.
     const applyStartMask = () => {
       const el = maskEl();
       if (el) Object.assign(el.style, wipeMaskFor(place, WIPE_HIDDEN));
     };
 
-    // Place the flat mark exactly where the masked glyph renders, so the swap from
-    // "written on" to "solid" is seamless. Same %-of-(viewport − logo) model as
-    // `wipeMaskFor` / `logoOnlyFor` in preloader.ts.
+    // The flat mark sits exactly where the write-on mask rendered it (spire glyph on
+    // the gold spire). The bg fades from Boudhanath to the wall behind it; then it
+    // flies, unmoved until then, to the navbar's logo slot.
     const layoutFlight = () => {
       const el = flightEl();
       if (!el) return;
@@ -453,6 +453,8 @@ export default function Hero() {
         glyphAt + WRITE_LEAD,
       )
       .call(layoutFlight, [], solidAt)
+      // The written wordmark goes solid (mask hands off to the flat mark, same shape
+      // and place)…
       .to(
         q(".hero-flight"),
         { opacity: 1, duration: FILL_BEAT, ease: "power2.inOut" },
@@ -535,8 +537,8 @@ export default function Hero() {
         { scale: 1, duration: 0.35, ease: "power2.inOut" },
         flightAt - 0.7,
       )
-      // Phase 3 — the mark flies to the navbar; the resting hero comes up over the
-      // hero come up behind it.
+      // Phase 3 — the mark flies up to the navbar; the resting content comes up over
+      // the wall behind it.
       .call(flyToNavbar, [], flightAt)
       // Release the below-the-fold reveals only as the resting hero actually starts
       // fading up — firing this mid-flight ran the char/line reveals behind a still

@@ -40,7 +40,7 @@ export default function ContactPage() {
           headline in their words, the yak-caravan line drawing used delicately
           beside a short note, and a Mustang texture that fades up slowly on the
           right. */}
-      <header className="w-full bg-canvas pt-40 pb-20 lg:pt-32 lg:pb-8">
+      <header className="w-full bg-canvas pt-40 pb-20 lg:pt-44 lg:pb-28">
         <div className="mx-auto w-full shell-max shell-px">
           <div className="grid gap-14 lg:grid-cols-12 lg:items-start lg:gap-16">
             <div className="lg:col-span-6">
@@ -58,7 +58,7 @@ export default function ContactPage() {
                 {/* The three-yak caravan strip from the client's contact sample
                     (transparent PNG supplied by the client). */}
                 <Image
-                  src="/images/art/newwwwcontact.webp"
+                  src="/images/newwww+contact.png"
                   alt=""
                   width={2063}
                   height={762}
