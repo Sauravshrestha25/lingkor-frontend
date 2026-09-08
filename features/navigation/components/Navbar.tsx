@@ -311,8 +311,7 @@ export default function Navbar() {
                 setAccent(null);
                 setOpen(false);
               }}
-              style={{ color: open ? (accent ?? undefined) : undefined }}
-              className="text-label border border-current/40 px-5 py-2.5 uppercase transition-colors duration-500 ease-brand hover:border-space hover:bg-space hover:text-ink"
+              className="text-label inline-block border border-ink/25 bg-space px-6 py-3 uppercase text-ink transition-colors duration-500 ease-brand hover:bg-space/80"
             >
               Enquire
             </Link>

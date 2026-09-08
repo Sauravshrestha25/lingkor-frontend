@@ -34,24 +34,12 @@ export function SpacesSection() {
         gestureActive = false;
         queuedDirection = null;
         observer.disable();
-        // Lenis gets the wheel back *before* the jump, or it is still stopped when the
-        // page lands and the visitor is left on a page that will not scroll.
         resumeLenis();
-        // Move just beyond the pinned range so the same trigger does not immediately
-        // capture the gesture again at either boundary.
-        //
-        // ⚠️ Through Lenis, never `window.scrollTo`. Lenis holds its own scroll
-        // position and re-applies it every frame, so a native jump is undone on the
-        // next tick — the page lurched out of the section and was dragged straight
-        // back in, which is exactly what "stuck" looked like.
         jumpTo(direction > 0 ? pinTrigger.end + 2 : pinTrigger.start - 2);
       };
 
       const goTo = (next: number, direction: 1 | -1) => {
         if (animating) {
-          // Keep one deliberate follow-up gesture instead of throwing it away. This
-          // matters most on the final panel, where a discarded input felt like the
-          // section had become stuck.
           queuedDirection = direction;
           return;
         }
@@ -64,23 +52,12 @@ export function SpacesSection() {
         gsap.to(target, {
           clipPath:
             direction > 0 ? "inset(0% 0% 100% 0%)" : "inset(0% 0% 0% 0%)",
-          // 1.9s was most of the reason this felt like work: a panel took nearly two
-          // seconds, and nothing could be asked of it until that finished.
           duration: 1.05,
           ease: "power4.inOut",
           overwrite: true,
           onComplete: () => {
             current = next;
             animating = false;
-            // Release the gesture lock here as well as on `onStop`.
-            //
-            // It used to be released *only* when Observer reported that movement had
-            // stopped (0.18s after the last event). Nobody scrolls that way: keep the
-            // wheel or trackpad moving and `onStop` never fires, so every gesture
-            // after the first was dropped and the section only advanced if you came
-            // to a complete halt and started again — once per panel. Freeing it when
-            // the wipe lands means a sustained scroll advances at the animation's own
-            // cadence, and a single flick still moves exactly one panel.
             gestureActive = false;
 
             if (queuedDirection !== null) {
@@ -93,8 +70,6 @@ export function SpacesSection() {
       };
 
       const handleGesture = (direction: 1 | -1) => {
-        // A trackpad emits many wheel events for one physical movement. Accept only
-        // the first until Observer reports that movement has stopped.
         if (gestureActive) return;
         gestureActive = true;
         goTo(current + direction, direction);
@@ -102,8 +77,6 @@ export function SpacesSection() {
 
       const observer = Observer.create({
         type: "wheel,touch,pointer",
-        // Normalise a downward wheel gesture with an upward finger swipe: both
-        // advance to the next panel.
         wheelSpeed: -1,
         preventDefault: true,
         allowClicks: true,
@@ -123,19 +96,9 @@ export function SpacesSection() {
       const pinTrigger = ScrollTrigger.create({
         trigger: section,
         start: "top top",
-        // This is a safety runway for wheel/trackpad momentum, not animation
-        // progress. Observer still advances exactly one complete panel per gesture;
-        // no panel property is tied to this distance and there is no scrub.
         end: `+=${panels.length * 100}%`,
         pin,
         anticipatePin: 0,
-        // Entering from either end: park just inside the pinned range, take the
-        // wheel off Lenis, and let Observer drive the panels.
-        //
-        // `pauseLenis` is the other half of the fix. `preventDefault` on the Observer
-        // stops the *browser* scrolling, but Lenis scrolls from JavaScript and never
-        // sees a cancelled event — so both were driving the page at once and the pin
-        // ran away while the panels were still advancing.
         onEnter: (self) => {
           jumpTo(self.start + 1);
           pauseLenis();
@@ -146,9 +109,6 @@ export function SpacesSection() {
           pauseLenis();
           observer.enable();
         },
-        // Any other way out of the pin — an anchor jump, a resize, a refresh — must
-        // also give the wheel back. A Lenis left stopped is a page that cannot be
-        // scrolled at all, so every exit resumes it, not just the gesture path.
         onLeave: () => {
           observer.disable();
           resumeLenis();
@@ -161,8 +121,6 @@ export function SpacesSection() {
     }, section);
 
     return () => {
-      // Unmounting mid-section would otherwise strand Lenis in its stopped state and
-      // leave the entire site unscrollable until a reload.
       resumeLenis();
       ctx.revert();
     };
@@ -193,7 +151,12 @@ export function SpacesSection() {
                 data-space-background
                 className="absolute inset-0"
                 style={{
-                  backgroundColor: `color-mix(in srgb, ${space.field} 14%, var(--color-canvas))`,
+                  backgroundColor:
+                    space.id === "netsang"
+                      ? "var(--color-netsang)"
+                      : space.id === "namkha"
+                        ? "var(--color-namkha2)"
+                        : `color-mix(in srgb, ${space.field} 14%, var(--color-canvas))`,
                 }}
               />
 

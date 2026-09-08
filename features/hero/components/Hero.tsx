@@ -287,17 +287,6 @@ export default function Hero() {
       el.style.setProperty("-webkit-mask-size", String(only.maskSize));
     };
 
-    const hidePrompt = () => {
-      const el = prompt();
-      if (el)
-        gsap.to(el, {
-          opacity: 0,
-          pointerEvents: "none",
-          duration: 0.4,
-          ease: "power2.out",
-        });
-    };
-
     // FLIP the flat mark from where it sits to the navbar's own logo slot.
     const flyToNavbar = () => {
       const el = flightEl();
@@ -421,19 +410,9 @@ export default function Hero() {
         PROMPT_IN_AT,
       )
       // Phase 2 — Boudhanath settles, then the big WHITE mark writes itself on from
-      // the pinnacle downward over the sharp, undimmed frame (no blur, no dim).
+      // the pinnacle downward over the sharp, undimmed frame (no blur, no dim). The
+      // sound prompt + Skip stay up through the whole film (see the fade near the end).
       .set(q(".hero-mask"), { opacity: 1 }, glyphAt)
-      .call(hidePrompt, [], glyphAt)
-      .to(
-        q(".hero-skip"),
-        {
-          opacity: 0,
-          pointerEvents: "none",
-          duration: 0.4,
-          ease: "power2.out",
-        },
-        glyphAt,
-      )
       .call(
         () => {
           if (soundRef.current) playResonantBell();
@@ -537,8 +516,18 @@ export default function Hero() {
         { scale: 1, duration: 0.35, ease: "power2.inOut" },
         flightAt - 0.7,
       )
-      // Phase 3 — the mark flies up to the navbar; the resting content comes up over
-      // the wall behind it.
+      // Phase 3 — the sound prompt + Skip retire, the mark flies up to the navbar,
+      // and the resting content comes up over the wall behind it.
+      .to(
+        [q(".hero-prompt"), q(".hero-skip")],
+        {
+          opacity: 0,
+          pointerEvents: "none",
+          duration: 0.5,
+          ease: "power2.out",
+        },
+        flightAt,
+      )
       .call(flyToNavbar, [], flightAt)
       // Release the below-the-fold reveals only as the resting hero actually starts
       // fading up — firing this mid-flight ran the char/line reveals behind a still
@@ -817,10 +806,10 @@ export default function Hero() {
       {/* Quiet "sound on" prompt over the film — starts muted. */}
       <button
         type="button"
-        className="hero-prompt absolute bottom-[max(2rem,env(safe-area-inset-bottom))] left-5 z-30 flex cursor-pointer items-center gap-2.5 rounded-full border border-space/30 bg-netsang py-2 pl-2 pr-4 text-ink opacity-0 backdrop-blur-md transition-colors hover:bg-[color-mix(in_srgb,var(--color-netsang)_82%,var(--color-ink))] sm:left-8"
+        className="hero-prompt absolute bottom-[max(2rem,env(safe-area-inset-bottom))] left-5 z-30 flex h-11 cursor-pointer items-center gap-2.5 border border-space/30 bg-netsang pl-1.5 pr-4 text-ink opacity-0 backdrop-blur-md transition-colors hover:bg-[color-mix(in_srgb,var(--color-netsang)_82%,var(--color-ink))] sm:left-8"
         aria-label="Play with sound"
       >
-        <span className="grid size-8 place-items-center rounded-full bg-space/15">
+        <span className="grid size-8 place-items-center bg-space/15">
           <VolumeX className="hero-prompt-off size-4" aria-hidden />
           <Volume2
             className="hero-prompt-on col-start-1 row-start-1 hidden size-4"
@@ -835,7 +824,7 @@ export default function Hero() {
       {/* Skip the cinematic. */}
       <button
         type="button"
-        className="hero-skip absolute bottom-[max(2rem,env(safe-area-inset-bottom))] right-5 z-30 cursor-pointer rounded-full border border-space/30 bg-netsang px-5 py-2.5 text-label uppercase text-ink opacity-0 backdrop-blur-md transition-colors hover:bg-[color-mix(in_srgb,var(--color-netsang)_82%,var(--color-ink))] sm:right-8"
+        className="hero-skip absolute bottom-[max(2rem,env(safe-area-inset-bottom))] right-5 z-30 flex h-11 cursor-pointer items-center border border-space/30 bg-netsang px-5 text-label uppercase text-ink opacity-0 backdrop-blur-md transition-colors hover:bg-[color-mix(in_srgb,var(--color-netsang)_82%,var(--color-ink))] sm:right-8"
       >
         Skip
       </button>
@@ -878,7 +867,7 @@ export default function Hero() {
         <Rise delay={520} className="mt-12">
           <Button asChild hoverScale={1.01} tapScale={0.99}>
             <a
-              href="#enquire"
+              href="/about"
               className="text-label text-ink inline-block border border-space/50 px-8 py-4 uppercase transition-colors duration-500 ease-brand bg-space hover:bg-space/80 hover:text-ink"
             >
               Enquire about a stay
