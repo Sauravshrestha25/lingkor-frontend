@@ -8,7 +8,7 @@ export function EnquireSection() {
       {/* ── Enquire ─────────────────────────────────────────────────────── */}
       <section
         id="enquire"
-        className="home-knot-gutters relative w-full overflow-hidden bg-midnight text-space section-y"
+        className="home-knot-gutters relative -mt-px w-full overflow-hidden bg-midnight text-space section-y"
       >
         {/* <Image
           src="/images/art/fiore-rose.webp"

@@ -228,7 +228,7 @@ export default function KoraCircle() {
   const current = HOURS[active];
 
   return (
-    <section id="boudha" ref={sectionRef} className="w-full   ">
+    <section id="boudha" ref={sectionRef} className="w-full bg-midnight">
       <div
         ref={skyRef}
         className="home-knot-gutters flex min-h-svh w-full items-center py-16 lg:py-0"

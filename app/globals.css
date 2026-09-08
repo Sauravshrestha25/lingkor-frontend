@@ -634,3 +634,11 @@ body::-webkit-scrollbar {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* The kora section (#boudha) is pinned by ScrollTrigger, which wraps it in a
+   `.pin-spacer` whose extra padding area is transparent — so the light page ground
+   showed through as a bright hairline where the dark kora meets the dark Enquire
+   section. Paint that spacer dark to close the seam. */
+.pin-spacer:has(> #boudha) {
+  background-color: var(--color-midnight);
+}
