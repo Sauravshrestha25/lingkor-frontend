@@ -6,21 +6,17 @@ import { useRouter } from "next/navigation";
 import { playBell } from "@/lib/bell";
 import { usePageTransition } from "../context/TransitionContext";
 
-const SLIDE_MS = 620;
+const SLIDE_MS = 900; // must match the .pt-enter / .pt-leave animation duration in globals.css
 const HOLD_MS = 120;
 
 function wait(ms: number) {
   return new Promise<void>((resolve) => window.setTimeout(resolve, ms));
 }
 
-type Phase = "idle" | "before" | "entering" | "covered" | "leaving";
-
-const phaseTransform: Record<Exclude<Phase, "idle">, string> = {
-  before: "translate3d(0, -100%, 0)",
-  entering: "translate3d(0, 0, 0)",
-  covered: "translate3d(0, 0, 0)",
-  leaving: "translate3d(0, -100%, 0)",
-};
+// enter  — curtain slides DOWN from above into full cover (.pt-enter)
+// covered — parked over the viewport while the route swaps
+// leave  — curtain slides UP off the top (.pt-leave)
+type Phase = "idle" | "enter" | "covered" | "leave";
 
 export function WhiteLogoPageTransition() {
   const { isTransitioning, targetPath, markTransitionDone } =
@@ -37,21 +33,17 @@ export function WhiteLogoPageTransition() {
     const originalOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
 
-    setPhase("before");
-
-    const phaseFrame = window.requestAnimationFrame(() => {
-      setPhase("entering");
-    });
+    setPhase("enter");
 
     (async () => {
-      await wait(SLIDE_MS + 16);
+      await wait(SLIDE_MS);
       if (cancelled) return;
       setPhase("covered");
       playBell(2);
       router.push(targetPath);
       await wait(HOLD_MS);
       if (cancelled) return;
-      setPhase("leaving");
+      setPhase("leave");
       await wait(SLIDE_MS);
       if (cancelled) return;
       document.body.style.overflow = originalOverflow;
@@ -62,7 +54,6 @@ export function WhiteLogoPageTransition() {
 
     return () => {
       cancelled = true;
-      window.cancelAnimationFrame(phaseFrame);
       runningRef.current = false;
       document.body.style.overflow = originalOverflow;
     };
@@ -70,14 +61,18 @@ export function WhiteLogoPageTransition() {
 
   if (phase === "idle") return null;
 
+  const anim =
+    phase === "enter" ? "pt-enter" : phase === "leave" ? "pt-leave" : "";
+
   return (
     <div
-      className="fixed inset-0 z-[90] grid place-items-center bg-white transition-transform duration-[620ms] ease-[cubic-bezier(0.76,0,0.24,1)] will-change-transform"
-      style={{ transform: phaseTransform[phase] }}
+      className={`fixed inset-0 z-[90] grid place-items-center bg-netsang will-change-transform ${anim}`}
+      // "covered" carries no animation class, so pin it in place explicitly.
+      style={phase === "covered" ? { transform: "translate3d(0,0,0)" } : undefined}
       aria-hidden
     >
       <Image
-        src="/Logo/logo.svg"
+        src="/Logo/logo-brick.svg"
         alt=""
         width={760}
         height={254}

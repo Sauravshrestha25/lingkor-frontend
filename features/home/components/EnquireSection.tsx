@@ -1,4 +1,3 @@
-import Image from "next/image";
 import EnquireForm from "@/features/enquiry/components/EnquireForm";
 import { Rise, SplitLines } from "@/components/anim";
 import { Label } from "@/components/ui";

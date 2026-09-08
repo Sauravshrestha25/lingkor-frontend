@@ -44,7 +44,7 @@ export function RoomCard({
         />
       </div>
 
-      <div className="mt-6 flex items-baseline justify-between border-t border-ink/15 pt-5">
+      <div className="mt-6 flex items-baseline justify-between pt-2">
         <div>
           <Heading className="font-display text-sub">{room.name}</Heading>
           <Label className="mt-6 block font-sub opacity-80">{room.note}</Label>

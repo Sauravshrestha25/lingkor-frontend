@@ -208,7 +208,7 @@ export function SpacesSection() {
                   <p className="text-body mt-7 max-w-[38ch]">{space.line}</p>
 
                   <div className="mt-8 flex justify-start">
-                    <Button asChild hoverScale={1.03} tapScale={0.97}>
+                    <Button asChild hoverScale={1.01} tapScale={0.99}>
                       <Link
                         href="#enquire"
                         data-notrim

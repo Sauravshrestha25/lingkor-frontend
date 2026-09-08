@@ -59,6 +59,7 @@
   --color-ring: #539b8f;
   --color-netsang: #f7f0e1;
   --color-namkha: #ffffff;
+  --color-namkha2: #f2f0e9;
 
   /*
    * Three type roles. There is no fourth.
@@ -520,6 +521,33 @@ body::-webkit-scrollbar {
 }
 .hero-cue {
   animation: hero-cue 2.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+/* Page transition curtain. Keyframed, not a mount-time CSS transition: an animation
+   plays reliably on the first frame the node exists, so the curtain always slides
+   DOWN from above into cover (and later UP out) instead of snapping on already
+   covering. */
+@keyframes pt-slide-down {
+  from {
+    transform: translate3d(0, -100%, 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+@keyframes pt-slide-up {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(0, -100%, 0);
+  }
+}
+.pt-enter {
+  animation: pt-slide-down 900ms cubic-bezier(0.76, 0, 0.24, 1) forwards;
+}
+.pt-leave {
+  animation: pt-slide-up 900ms cubic-bezier(0.76, 0, 0.24, 1) forwards;
 }
 
 /*

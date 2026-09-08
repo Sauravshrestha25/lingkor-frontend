@@ -9,6 +9,7 @@ import { NavOverlay } from "./NavOverlay";
 import { Button } from "@/components/shared/button";
 import { getLenis } from "@/lib/lenis";
 import { isIntroActive, subscribeIntroActive } from "@/features/preloader/gate";
+import { SoundToggle } from "@/features/preloader/components/SoundToggle";
 
 export default function Navbar() {
   const [past, setPast] = useState(false);
@@ -299,10 +300,11 @@ export default function Navbar() {
           </Link>
 
           <div
-            className={`hidden items-center justify-end transition-opacity duration-500 sm:flex ${
+            className={`hidden items-center justify-end gap-6 transition-opacity duration-500 sm:flex ${
               heroPlaying ? "pointer-events-none opacity-0" : "opacity-100"
             }`}
           >
+            <SoundToggle />
             <Link
               href="/contact"
               onClick={() => {
@@ -310,7 +312,7 @@ export default function Navbar() {
                 setOpen(false);
               }}
               style={{ color: open ? (accent ?? undefined) : undefined }}
-              className="text-label uppercase underline decoration-1 underline-offset-[6px] transition-[text-decoration-color,color] duration-500 hover:decoration-transparent"
+              className="text-label border border-current/40 px-5 py-2.5 uppercase transition-colors duration-500 ease-brand hover:border-space hover:bg-space hover:text-ink"
             >
               Enquire
             </Link>

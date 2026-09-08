@@ -68,7 +68,7 @@ export default function KoraCircle() {
     const mm = gsap.matchMedia();
 
     mm.add(
-      { ok: "(min-width: 1024px) and (prefers-reduced-motion: no-preference)" },
+      { ok: "(prefers-reduced-motion: no-preference)" },
       (ctx) => {
         if (!ctx.conditions?.ok) return;
         let lastHour = 0;
@@ -189,8 +189,7 @@ export default function KoraCircle() {
 
     mm.add(
       {
-        pinned:
-          "(min-width: 1024px) and (prefers-reduced-motion: no-preference)",
+        pinned: "(prefers-reduced-motion: no-preference)",
       },
       (ctx) => {
         const pinned = Boolean(ctx.conditions?.pinned);
@@ -232,7 +231,7 @@ export default function KoraCircle() {
     <section id="boudha" ref={sectionRef} className="w-full   ">
       <div
         ref={skyRef}
-        className="home-knot-gutters flex w-full items-center py-32 lg:min-h-svh lg:py-0"
+        className="home-knot-gutters flex min-h-svh w-full items-center py-16 lg:py-0"
         style={
           {
             backgroundColor: HOURS[0].sky,
@@ -260,10 +259,7 @@ export default function KoraCircle() {
               />
 
               <Label className="mt-10 block text-center opacity-40">
-                <span className="lg:hidden">Four moments on the circuit</span>
-                <span className="hidden lg:inline">
-                  Scroll the day · touch a station to ring it
-                </span>
+                Scroll the day · touch a station to ring it
               </Label>
             </div>
 
@@ -280,7 +276,7 @@ export default function KoraCircle() {
                 its base. It is called a kora. Ours is called Lingkor.
               </p>
 
-              <div className="mt-14 hidden lg:block">
+              <div className="mt-14">
                 <div className="flex items-baseline gap-6">
                   <Label className="opacity-50">{current.time}</Label>
                   <span className="font-display text-[clamp(1.75rem,2.6vw,2.5rem)] leading-none">
@@ -291,20 +287,6 @@ export default function KoraCircle() {
                   {current.line}
                 </p>
               </div>
-
-              <ul className="mt-12 space-y-8 lg:hidden">
-                {HOURS.map((h) => (
-                  <li key={h.time}>
-                    <div className="flex items-baseline gap-5">
-                      <Label className="opacity-50">{h.time}</Label>
-                      <span className="font-display text-[1.75rem] leading-none">
-                        {h.label}
-                      </span>
-                    </div>
-                    <p className="text-body mt-3 opacity-70">{h.line}</p>
-                  </li>
-                ))}
-              </ul>
             </div>
           </div>
         </div>

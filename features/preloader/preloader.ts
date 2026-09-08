@@ -51,10 +51,10 @@ export const FAILSAFE_MS = 45000; // last resort: never leave the navbar logo hi
 // ~25s total, by request — the musician is scoring to this length, and every frame
 // should have room to be looked at. The visitor is never trapped in it: any scroll,
 // wheel or touch-drag fast-forwards it to the resting hero (see Hero.tsx).
-export const HOLD = 3.2; // each Mustang frame
+export const HOLD = 2.8; // each Mustang frame
 // Boudha's beats. They add up to BOUDHA_HOLD.
 export const SHARP_BEAT = 2.5; // Boudha alone, sharp
-export const REVEAL_BEAT = 4.0; // blur comes up while the mark writes itself on
+export const REVEAL_BEAT = 3.5; // the big mark writes itself on, spire → down
 /**
  * The blur runs on its own, much shorter curve inside REVEAL_BEAT.
  *
@@ -64,9 +64,9 @@ export const REVEAL_BEAT = 4.0; // blur comes up while the mark writes itself on
  */
 export const BLUR_IN = 1.2;
 export const WRITE_LEAD = 0.4; // blur gets this head start before the pen moves
-export const FILL_BEAT = 2.5; // glyph dissolves to solid
+export const FILL_BEAT = 1.6; // glyph dissolves to solid / cross-fades between states
 export const BOUDHA_HOLD = SHARP_BEAT + REVEAL_BEAT + FILL_BEAT;
-export const FADE = 2.2; // cross-dissolve length — must stay under HOLD so frames keep moving
+export const FADE = 2.0; // cross-dissolve length — must stay under HOLD so frames keep moving
 
 // The SVG is both the mask and the stroked outline, so the two share one geometry —
 // the PNG has different padding and would not line up with the drawn paths.
@@ -96,23 +96,37 @@ export const LOGO_RATIO = 1491 / 846; // artwork viewBox aspect, for the flight 
 
 /**
  * `vw`  — width as a share of the viewport width; `max` caps it in px on wide screens.
- * `xF`  — mask-position X as a fraction (0.5 = dead centre). Pulled left of centre on
- *         desktop so the glyph (at x0.565 of the artwork) lands on the stupa axis.
- * `yF`  — mask-position Y as a fraction; tuned so the zigzag rides the gold spire and
- *         the ring closes on the harmika.
+ * `xF`  — mask-position X as a fraction (0.5 = dead centre).
+ * `yF`  — mask-position Y as a fraction.
  *
- * Portrait viewports crop `boudhanath_new` hard to the sides, so the stupa fills far
- * more of the frame — the wordmark has to be much wider (and roughly centred) to keep
- * the glyph on the spire.
+ * Sized so the wordmark's glyph emblem sits *inside* the stupa's gold spire — its
+ * inner mark fits within the spire's width (height is looser). That means a small
+ * wordmark: the emblem is only ~1/4 of the artwork width, so the whole mark has to
+ * be roughly emblem-fits-spire × 4.
+ *
+ * Landscape: `boudhanath_new` covers to full viewport width, so the spire's on-screen
+ * width scales with `vw` — one desktop tuple holds across widths.
+ * Portrait: the frame covers to viewport *height* and crops the sides, so the spire's
+ * on-screen width tracks viewport height, not width. `vw` here is only an
+ * approximation — retune this tuple against a real phone if the emblem drifts off the
+ * spire.
  */
 export type LogoNums = { vw: number; max: number; xF: number; yF: number };
-export const LOGO_DESKTOP: LogoNums = { vw: 73, max: 1250, xF: 0.335, yF: 0.105 };
-// Portrait: nothing is cropped vertically, so the stupa sits lower and the frame
-// only shows a narrow centre band. Whole wordmark kept on-screen (glyph ends up
-// smaller than the real spire). Tune these four against a real phone / Chrome
-// responsive mode if the glyph drifts off the spire.
-export const LOGO_MOBILE: LogoNums = { vw: 96, max: 560, xF: 0.12, yF: 0.18 };
-export const MOBILE_MAX_W = 640; // <= this viewport width uses LOGO_MOBILE
+export const LOGO_DESKTOP: LogoNums = {
+  vw: 24,
+  max: 1250,
+  xF: 0.485,
+  yF: 0.32,
+};
+export const LOGO_MOBILE: LogoNums = { vw: 64, max: 560, xF: 0.42, yF: 0.4 };
+export const MOBILE_MAX_W = 1024; // <= this viewport width uses LOGO_MOBILE (phones + tablet portrait)
+
+/**
+ * The BIG wordmark the film writes on — script draped across the dome, the spire
+ * glyph sitting on the real gold spire (client reference). Nudge `xF` / `yF` against
+ * a real viewport so the glyph lands on the spire.
+ */
+export const LOGO_BIG: LogoNums = { vw: 44, max: 1400, xF: 0.45, yF: 0.3 };
 
 export const pickLogo = (viewportW: number): LogoNums =>
   viewportW <= MOBILE_MAX_W ? { ...LOGO_MOBILE } : { ...LOGO_DESKTOP };
@@ -127,8 +141,6 @@ export const logoY = (p: LogoNums) => `${p.yF * 100}%`;
  * `LOGO_W` above; the ratio is what matters here.
  */
 export const LOGO_INTRINSIC = { width: 1200, height: 400 };
-
-
 
 /**
  * Two mask layers, intersected.
@@ -152,10 +164,7 @@ export const LOGO_INTRINSIC = { width: 1200, height: 400 };
 const WIPE = "linear-gradient(to bottom, #000 0 48%, transparent 52% 100%)";
 export const WIPE_HIDDEN = "100%";
 
-export const wipeMaskFor = (
-  p: LogoNums,
-  y: string,
-): React.CSSProperties => ({
+export const wipeMaskFor = (p: LogoNums, y: string): React.CSSProperties => ({
   WebkitMaskImage: `url(${LOGO_SRC}), ${WIPE}`,
   maskImage: `url(${LOGO_SRC}), ${WIPE}`,
   WebkitMaskRepeat: "no-repeat, no-repeat",

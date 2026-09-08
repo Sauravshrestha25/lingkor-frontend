@@ -4,7 +4,6 @@ import localfont from "next/font/local";
 import { Lato } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/features/navigation/components/Navbar";
-import { SoundToggle } from "@/features/preloader/components/SoundToggle";
 import SmoothScroll from "@/components/SmoothScroll";
 import WebxSignature from "@/components/WebxSignature";
 import {
@@ -53,7 +52,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <TransitionProvider>
           <WebxSignature />
           <SmoothScroll />
-          <SoundToggle />
           {/* <PageTransitionOverlay /> */}
           <WhiteLogoPageTransition />
           <Navbar />

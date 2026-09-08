@@ -31,8 +31,11 @@ let siteFadeId: number | null = null;
 let siteDucked = false;
 let loopFading = false;
 
+// Site sound is silent until the visitor opts in, so the default is muted — only an
+// explicit prior "on" ("0" in storage) starts it unmuted. Was `=== "1"`, which made
+// a first-time visitor's toggle read "on" while nothing was playing.
 if (typeof window !== "undefined") {
-  muted = window.localStorage.getItem(STORAGE_KEY) === "1";
+  muted = window.localStorage.getItem(STORAGE_KEY) !== "0";
 }
 
 const listeners = new Set<() => void>();
@@ -47,7 +50,7 @@ export function isSiteSoundMuted() {
 }
 
 export function isSiteSoundMutedOnServer() {
-  return false;
+  return true;
 }
 
 /**
