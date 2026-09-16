@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Footer from "@/features/navigation/components/Footer";
+import { Button } from "@/components/shared/button";
 import EnquireForm from "@/features/enquiry/components/EnquireForm";
 import { Rise, SplitChars } from "@/components/anim";
 import { Label } from "@/components/ui";
@@ -40,10 +41,16 @@ export default function ContactPage() {
           headline in their words, the yak-caravan line drawing used delicately
           beside a short note, and a Mustang texture that fades up slowly on the
           right. */}
-      <header className="w-full bg-canvas pt-40 pb-20 lg:pt-44 lg:pb-28">
+      <header className="w-full bg-[#f7f0e1] pt-40 pb-20 lg:pt-44 lg:pb-28">
         <div className="mx-auto w-full shell-max shell-px">
           <div className="grid gap-14 lg:grid-cols-12 lg:items-start lg:gap-16">
             <div className="lg:col-span-6">
+              <Rise>
+                <Button type="button" className="text-label uppercase">
+                  Contact
+                </Button>
+              </Rise>
+
               <SplitChars
                 lines={[
                   "Send us a message.",
@@ -87,7 +94,7 @@ export default function ContactPage() {
         </div>
       </header>
 
-      <Footer />
+      <Footer bgColor="#f7f0e1" />
     </main>
   );
 }

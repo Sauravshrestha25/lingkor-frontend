@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/shared/button";
 import { Label } from "@/components/ui";
 
-const TO = "phuntsokg8808@gmail.com";
+const TO = "boudhalingkor@gmail.com";
 
 /*
  * `leading-[1.25]`, not the body line-height, and a small asymmetric pad.
@@ -22,8 +22,10 @@ const fieldBase =
 
 export default function EnquireForm({
   tone = "light",
+  roomName,
 }: {
   tone?: "light" | "dark";
+  roomName?: string;
 }) {
   const [sent, setSent] = useState(false);
   const field = `${fieldBase} ${
@@ -44,6 +46,7 @@ export default function EnquireForm({
     const body = [
       `Name: ${name}`,
       `Email: ${email}`,
+      roomName && `Room: ${roomName}`,
       dates && `Dates: ${dates}`,
       guests && `Guests: ${guests}`,
       "",
@@ -53,7 +56,7 @@ export default function EnquireForm({
       .join("\n");
 
     const mailto = `mailto:${TO}?subject=${encodeURIComponent(
-      "Enquiry — Lingkor Boudha",
+      roomName ? `${roomName} enquiry — Lingkor Boudha` : "Enquiry — Lingkor Boudha",
     )}&body=${encodeURIComponent(body)}`;
 
     window.location.href = mailto;
@@ -61,7 +64,7 @@ export default function EnquireForm({
   }
 
   return (
-    <form onSubmit={onSubmit} className="w-full max-w-152">
+    <form onSubmit={onSubmit} className={`w-full max-w-152 ${tone === "dark" ? "text-space" : "text-ink"}`}>
       <div className="grid grid-cols-1 gap-x-8 gap-y-8 sm:grid-cols-2">
         <label className="block">
           <Label className="opacity-50">Name</Label>
@@ -102,6 +105,7 @@ export default function EnquireForm({
           <Label className="opacity-50">Message</Label>
           <textarea
             name="message"
+            defaultValue={roomName ? `I would like to enquire about the ${roomName}.` : undefined}
             rows={4}
             placeholder="Tell us anything else — which room caught your eye, how you found us."
             className={`${field} mt-3 resize-none`}
@@ -111,14 +115,13 @@ export default function EnquireForm({
 
       <Button
         type="submit"
-        className={`text-label mt-10 cursor-pointer border px-10 py-3 uppercase transition-colors duration-300 ${
-          tone === "dark"
-            ? "border-space bg-space/80 text-midnight hover:bg-space/80"
-            : "border-ink bg-ink text-space hover:bg-ink/80 hover:text-canvas"
-        }`}
+        className="text-label mt-10 cursor-pointer uppercase"
       >
-        Send enquiry
+        Prepare email enquiry
       </Button>
+      <p className="mt-4 text-sm opacity-65" role="status">
+        {sent ? "Your email app has been opened. Send the draft there to complete your enquiry." : "Opens your email app with your enquiry ready to send."}
+      </p>
     </form>
   );
 }

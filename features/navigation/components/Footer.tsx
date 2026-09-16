@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { SparklesCore } from "@/components/SparklesCore";
@@ -9,15 +10,36 @@ import { CONTACT, NAV, SPACES } from "@/lib/site";
  * The close: the caravan drawing running the full width above the wordmark, then the
  * site's own map, then the fine print.
  *
- * The homepage closes in midnight. Interior routes use the inverse white treatment.
+ * Knot borders can continue into the light homepage footer as well as dark footers.
  */
-export default function Footer({ dark = false }: { dark?: boolean }) {
-  const ground = dark ? "bg-midnight text-space" : "bg-canvas text-ink";
+export default function Footer({
+  dark = false,
+  bordered = dark,
+  background = "canvas",
+  bgColor,
+}: {
+  dark?: boolean;
+  bordered?: boolean;
+  background?: "canvas" | "surface";
+  /** Raw color override for the ground, e.g. a space's field colour. Wins over `background`. */
+  bgColor?: string;
+}) {
+  const ground = dark
+    ? "bg-midnight text-space"
+    : bgColor
+      ? "text-ink"
+      : background === "surface"
+        ? "bg-surface text-ink"
+        : "bg-canvas text-ink";
   const rule = dark ? "border-space/20" : "border-ink/20";
 
   return (
     <footer
-      className={`relative w-full overflow-hidden pt-24 pb-10 ${ground} ${dark ? "home-knot-gutters" : ""}`}
+      className={`relative w-full overflow-hidden pt-10 pb-10 ${ground} ${bordered ? "home-knot-gutters" : ""}`}
+      style={{
+        ...(bgColor ? { backgroundColor: bgColor } : {}),
+        ...(bordered ? { "--knot-top": "2.5rem" } : {}),
+      } as CSSProperties}
     >
       <div className="relative z-10 mx-auto w-full shell-max shell-px">
         {/* The line the whole site is built on, drawn once at the end. */}
@@ -31,7 +53,11 @@ export default function Footer({ dark = false }: { dark?: boolean }) {
 
         <Rise
           delay={120}
-          className={`mt-20 grid grid-cols-2 gap-x-8 gap-y-14 border-t pt-16 md:grid-cols-4 ${rule}`}
+          className={`grid grid-cols-2 gap-x-8 gap-y-14  pt-16 md:grid-cols-4 ${rule} ${
+            bordered
+              ? "mx-[calc(var(--shell-gutter)-var(--shell-pad))] px-[calc(var(--shell-pad)-var(--shell-gutter))]"
+              : ""
+          }`}
         >
           <div className="col-span-2 md:col-span-1">
             <Label className="">Lingkor</Label>
@@ -47,7 +73,7 @@ export default function Footer({ dark = false }: { dark?: boolean }) {
               {SPACES.map((s) => (
                 <li key={s.slug}>
                   <Link
-                    href={`/spaces/${s.slug}`}
+                    href={`/spaces#${s.slug}`}
                     className="font-body text-md opacity-75 transition-opacity duration-300 hover:opacity-100"
                   >
                     {s.name}
