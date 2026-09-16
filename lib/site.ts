@@ -34,9 +34,7 @@ export type Space = {
    */
   body: string[];
   /**
-   * Optional. Mustang Inn and Lingkor Boutique have no render, and the client was
-   * explicitly unsure whether they should be shown at all — "just mentioned and
-   * discovered later when travellers come". Absent imagery is the faithful answer.
+   * Optional — not every space has a render.
    */
   image?: string;
   /**
@@ -276,25 +274,11 @@ const COLOURLESS: Space[] = [
     field: "var(--color-space)",
     displayOnField: "ink",
     colourless: true,
-  },
-  {
-    slug: "lingkor-boutique",
-    name: "Lingkor Boutique",
-    role: "The shop",
-    element: "",
-    hue: "No colour assigned",
-    line: "Weaving, wool and the crafts of Lo — the goods that came down this road in the first place.",
-    body: [
-      "The trade that made this route ran on salt going south and wool coming back north. The shop is the modern end of that exchange.",
-      "Weaving, wool and craft from Lo and the valleys below it.",
-    ],
-    field: "var(--color-space)",
-    displayOnField: "ink",
-    colourless: true,
+    image: "/images/spaces/mustang-inn.jpg",
   },
 ];
 
-/** All seven areas the client listed — the five elements, then the two without. */
+/** The six areas shown — the five elements, then the Mustang Inn. */
 export const AREAS: Space[] = [...SPACES, ...COLOURLESS];
 
 /**

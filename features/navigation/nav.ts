@@ -3,14 +3,8 @@ import { AREAS, NAV as SITE_NAV } from "@/lib/site";
 /**
  * The menu lists the five element spaces only.
  *
- * The client's brief names seven areas (REQUIREMENTS.md §3), and Mustang Inn and the
- * Lingkor Boutique are still in `AREAS` — they keep their pages at
- * `/spaces/mustang-inn` and `/spaces/lingkor-boutique`, and anything that links to
- * them still works. They are out of the *menu* only.
- *
- * That is also the reading the brief supports: "Not sure if those should be shown in
- * pictures or just mentioned and discovered later when travellers come." Neither has a
- * render, so both would sit in the menu as names with no preview image beside them.
+ * The Mustang Inn is still in `AREAS` and shown on `/spaces`, just out of the
+ * *menu* — the menu is for the five coloured elements, not the welcome room.
  */
 export const SPACES = AREAS.filter((s) => !s.colourless).map((s, i) => ({
   n: String(i + 1).padStart(2, "0"),

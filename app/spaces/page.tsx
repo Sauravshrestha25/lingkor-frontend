@@ -7,16 +7,16 @@ import { AREAS, blendsWithGround } from "@/lib/site";
 import { LineArt, Photo } from "@/components/media/Photo";
 
 export const metadata: Metadata = {
-  title: "The seven spaces — Lingkor",
+  title: "The six spaces — Lingkor",
   description:
-    "Netsang, Menthang, Ghegu, Luri and Namkha — five Tibetan elements — plus the Mustang Inn and the Lingkor Boutique.",
+    "Netsang, Menthang, Ghegu, Luri and Namkha — five Tibetan elements — plus the Mustang Inn.",
 };
 
 export default function SpacesPage() {
   return (
     <main className="w-full">
       <PageHeader
-        label="The seven spaces"
+        label="The six spaces"
         lines={["Five elements,", "and two more"]}
         intro="The hotel is laid out as a circuit. Five rooms carry one Tibetan element each — its colour, its name, and the piece of Mustang it is named for. Two more carry no colour at all."
         align="center"
@@ -81,7 +81,7 @@ export default function SpacesPage() {
                   <div className="flex items-baseline justify-between">
                     <Label className="opacity-70">{space.role}</Label>
                     <Label className="opacity-70">
-                      {String(i + 1).padStart(2, "0")} / 07
+                      {String(i + 1).padStart(2, "0")} / {String(AREAS.length).padStart(2, "0")}
                     </Label>
                   </div>
                 </Rise>
