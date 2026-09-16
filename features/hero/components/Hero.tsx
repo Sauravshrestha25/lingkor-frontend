@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  useLayoutEffect,
-  useRef,
-  useState,
-  useSyncExternalStore,
-} from "react";
+import { useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
 import Image from "next/image";
 import { ChevronDown, ChevronsRight, Volume2, VolumeX } from "lucide-react";
 import { gsap, reduced } from "@/lib/gsap";
@@ -203,11 +198,12 @@ export default function Hero() {
       const W = section.clientWidth;
       const H = section.clientHeight;
       const w = Math.min(W * (W < 640 ? 0.68 : 0.38), H * 0.7);
+      const finalWidth = w * 1.1025 * 1.1;
       return {
-        width: w,
-        height: w / LOGO_RATIO,
-        left: W * 0.485 - w / 2,
-        top: H * 0.17,
+        width: finalWidth,
+        height: (w / LOGO_RATIO) * 1.1,
+        left: W * 0.485 - finalWidth / 2,
+        top: H * 0.17 - (w / LOGO_RATIO) * 0.1,
       };
     };
     let resting = false;
@@ -629,8 +625,8 @@ export default function Hero() {
           src={LOGO_SRC}
           alt=""
           fill
-          sizes="80vw"
-          className="object-contain"
+          sizes="100vw"
+          className="object-fill"
         />
       </div>
 
@@ -667,7 +663,10 @@ export default function Hero() {
         aria-label="Play with sound"
       >
         <span className="grid size-5 place-items-center">
-          <VolumeX className="hero-prompt-off col-start-1 row-start-1 size-4" aria-hidden />
+          <VolumeX
+            className="hero-prompt-off col-start-1 row-start-1 size-4"
+            aria-hidden
+          />
           <Volume2
             className="hero-prompt-on col-start-1 row-start-1 hidden size-4"
             aria-hidden
