@@ -2,7 +2,6 @@
 
 import { useDragRail } from "@/lib/useDragRail";
 import { ROOMS } from "../data/rooms";
-import { Button } from "@/components/shared/button";
 import { Label } from "@/components/ui";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { RoomCard } from "./RoomCard";
@@ -45,7 +44,7 @@ export default function RoomsRail() {
           {String(focus + 1).padStart(2, "0")} / {ROOMS.length}
         </Label>
         <div className="flex gap-8">
-          <Button
+          <button
             type="button"
             onClick={scrollPrev}
             disabled={!canScrollPrev}
@@ -53,8 +52,8 @@ export default function RoomsRail() {
             className="text-label cursor-pointer border border-black/80 px-2 py-2 uppercase opacity-50 transition-opacity duration-300 hover:opacity-100 disabled:cursor-default disabled:opacity-25"
           >
             <ChevronLeft />
-          </Button>
-          <Button
+          </button>
+          <button
             type="button"
             onClick={scrollNext}
             disabled={!canScrollNext}
@@ -62,7 +61,7 @@ export default function RoomsRail() {
             className="text-label cursor-pointer border border-black/80 px-2 py-2 uppercase opacity-50 transition-opacity duration-300 hover:opacity-100 disabled:cursor-default disabled:opacity-25"
           >
             <ChevronRight />
-          </Button>
+          </button>
         </div>
       </div>
     </div>

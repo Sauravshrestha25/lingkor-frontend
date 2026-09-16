@@ -1,13 +1,8 @@
 import { Astroid } from "lucide-react";
+import Link from "next/link";
 import { Photo } from "@/components/media/Photo";
-import { Label } from "@/components/ui";
-
-type Room = {
-  id: string;
-  name: string;
-  note: string;
-  size: string;
-};
+import type { Room } from "../data/rooms";
+import { Button } from "@/components/shared/button";
 
 export function RoomCard({
   room,
@@ -25,7 +20,7 @@ export function RoomCard({
   const Heading = headingLevel;
 
   return (
-    <article className={`group ${className}`}>
+    <article id={room.id} className={`group ${className}`}>
       {/* Same frame the spaces cards carry, so a room and a space read as two
           views of one house rather than two components. */}
       <div className="relative outline-1 outline-solid outline-amber-300 outline-offset-[10px]">
@@ -44,12 +39,14 @@ export function RoomCard({
         />
       </div>
 
-      <div className="mt-6 flex items-baseline justify-between pt-2">
-        <div>
-          <Heading className="font-display text-sub">{room.name}</Heading>
-          <Label className="mt-6 block font-sub opacity-80">{room.note}</Label>
-        </div>
-        <Label className="shrink-0">{room.size}</Label>
+      <div className="mt-6 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 pt-2">
+        <Heading className="font-display text-sub">{room.name}</Heading>
+        <Button asChild><Link
+          href={`/rooms/${room.slug}`}
+          className="text-label uppercase"
+        >
+          View Details
+        </Link></Button>
       </div>
     </article>
   );
