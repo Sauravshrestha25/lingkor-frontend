@@ -49,10 +49,10 @@ export const FAILSAFE_MS = 45000; // last resort: never leave the navbar logo hi
 // ~25s total, by request — the musician is scoring to this length, and every frame
 // should have room to be looked at. The visitor is never trapped in it: any scroll,
 // wheel or touch-drag fast-forwards it to the resting hero (see Hero.tsx).
-export const HOLD = 2.8; // each Mustang frame
+export const HOLD = 2.6; // each Mustang frame
 // Boudha's beats. They add up to BOUDHA_HOLD.
-export const SHARP_BEAT = 2.5; // Boudha alone, sharp
-export const REVEAL_BEAT = 3.5; // the big mark writes itself on, spire → down
+export const SHARP_BEAT = 2.3; // Boudha alone, sharp
+export const REVEAL_BEAT = 3.2; // the big mark writes itself on, spire → down
 /**
  * The blur runs on its own, much shorter curve inside REVEAL_BEAT.
  *
@@ -62,7 +62,7 @@ export const REVEAL_BEAT = 3.5; // the big mark writes itself on, spire → down
  */
 export const BLUR_IN = 1.2;
 export const WRITE_LEAD = 0.4; // blur gets this head start before the pen moves
-export const FILL_BEAT = 1.6; // glyph dissolves to solid / cross-fades between states
+export const FILL_BEAT = 1.3; // glyph dissolves to solid / cross-fades between states
 export const BOUDHA_HOLD = SHARP_BEAT + REVEAL_BEAT + FILL_BEAT;
 export const FADE = 2.0; // cross-dissolve length — must stay under HOLD so frames keep moving
 

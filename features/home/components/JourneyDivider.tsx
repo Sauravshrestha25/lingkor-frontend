@@ -20,12 +20,6 @@ export function JourneyDivider() {
             text={JOURNEY}
             className="text-body  mt-6 max-w-[58ch]"
           />
-
-          <Rise delay={200} className="mt-16">
-            <p className="font-display text-sub">
-              Lingkor is where that road rests.
-            </p>
-          </Rise>
         </div>
       </div>
       <div className="pointer-events-none absolute bottom-10 left-[calc(var(--shell-gutter)*2)] right-[calc(var(--shell-gutter)*2)] z-0">

@@ -176,8 +176,14 @@ export function KoraRing({
                 onStrike(i);
               }
             }}
-            className="cursor-pointer focus:outline-none"
+            className="brand-ring-control cursor-pointer focus:outline-none"
           >
+            <g aria-hidden="true" fill="none">
+              <circle cx={x - 20} cy={y} r="2.5" fill="currentColor" />
+              <circle cx={x + 20} cy={y} r="2.5" fill="currentColor" />
+              <path className="brand-ring-line" pathLength="1" d={`M${x - 20} ${y} A20 20 0 0 1 ${x + 20} ${y}`} />
+              <path className="brand-ring-line" pathLength="1" d={`M${x + 20} ${y} A20 20 0 0 1 ${x - 20} ${y}`} />
+            </g>
             {/* Generous invisible target — the visible dot is 3px. */}
             <circle cx={x} cy={y} r="24" fill="transparent" />
 

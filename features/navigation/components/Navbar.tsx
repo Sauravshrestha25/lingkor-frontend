@@ -9,20 +9,15 @@ import { NavOverlay } from "./NavOverlay";
 import { Button } from "@/components/shared/button";
 import { getLenis } from "@/lib/lenis";
 import { isIntroActive, subscribeIntroActive } from "@/features/preloader/gate";
-import { SoundToggle } from "@/features/preloader/components/SoundToggle";
+import {
+  getSpacesNav,
+  getSpacesNavServer,
+  subscribeSpacesNav,
+} from "@/features/home/spacesNav";
 
 export default function Navbar() {
   const [past, setPast] = useState(false);
   const [open, setOpen] = useState(false);
-  /*
-   * The colour of whichever space is under the pointer inside the menu.
-   *
-   * It lives up here because the header and the overlay are DOM *siblings* — there is
-   * no shared ancestor to hang a CSS variable on that isn't <body>. Lifting the one
-   * value is cheaper and far more traceable than writing to documentElement from a
-   * child and hoping nothing else reads it.
-   */
-  const [accent, setAccent] = useState<string | null>(null);
   const headerRef = useRef<HTMLElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
 
@@ -59,17 +54,49 @@ export default function Navbar() {
   );
   const heroPlaying = introActive && !past;
 
+  // The pinned homepage spaces circuit is its own full-bleed colour per panel; while
+  // it owns the frame the bar goes transparent and just swaps its own text/logo
+  // colour to match, panel by panel, instead of the usual scroll-based rule below.
+  const spacesNav = useSyncExternalStore(
+    subscribeSpacesNav,
+    getSpacesNav,
+    getSpacesNavServer,
+  );
+
   const [routeAtOpen, setRouteAtOpen] = useState(pathname);
   if (routeAtOpen !== pathname) {
     setRouteAtOpen(pathname);
     setOpen(false);
   }
 
-  // Like the reference, the bar is a quiet white constant. It gets out of the way
-  // going down and comes back the moment the visitor reverses direction.
+  // On the homepage only: the bar stays off-screen for the entire hero section — the
+  // ~30s cinematic and its resting state alike — and slides in once the visitor
+  // scrolls past it into the next section. It hides again on scrolling back up into
+  // the hero. Every other route keeps the bar always on screen (see `onScroll`
+  // below, which leaves `pastHero` at its initial `true` there).
+  const [pastHero, setPastHero] = useState(true);
+  const pathnameRef = useRef(pathname);
   useEffect(() => {
-    let last = window.scrollY;
-    let hidden = false;
+    pathnameRef.current = pathname;
+  }, [pathname]);
+
+  useEffect(() => {
+    const syncPastHero = () => {
+      if (pathname !== "/") {
+        setPastHero(true);
+        return;
+      }
+      const hero = document.getElementById("top");
+      setPastHero(hero ? hero.getBoundingClientRect().bottom <= 0 : true);
+    };
+    syncPastHero();
+  }, [pathname]);
+
+  const hideForHero = pathname === "/" && !pastHero;
+
+  // The bar is otherwise a persistent fixture — always on screen, never hidden on
+  // scroll direction. It only ever changes transparent-vs-solid, tracked here.
+  useEffect(() => {
     const onScroll = (scrollY?: number) => {
       const y = scrollY ?? window.scrollY;
       // 1px, not 12. The bar is transparent *only* while the page is genuinely at
@@ -77,34 +104,10 @@ export default function Navbar() {
       // solid, because the moment the hero starts sliding underneath it there is
       // photograph behind the labels rather than sky.
       setPast(y > 1);
-      const el = headerRef.current;
-      // A no-movement echo, not a scroll. `lenis.stop()`/`.start()` — the pinned
-      // spaces circuit calls both on every panel gesture — each end in `reset()` then
-      // `emit()`, which fires a 'scroll' event carrying the position it was already
-      // at. That lands here as `y === last`, and `hide = y > last && ...` reads any
-      // non-decrease as "scrolling up": the bar popped visible the instant you
-      // entered the circuit, then could not hide again until you left it, because no
-      // further scroll events fire while the page is pinned. Bailing out on an exact
-      // repeat is what keeps the bar in whatever state it was actually left in.
-      if (y === last) return;
-      if (el && !open) {
-        const hide = y > last && y > 80;
-        // Only on a change of state. This used to run on every scroll event — with
-        // Lenis emitting one per frame that is a fresh tween sixty times a second,
-        // each rewriting the header's inline style, which also kept interrupting the
-        // background transition so it never reached its target and sat frozen at a
-        // part-way blend.
-        if (hide !== hidden) {
-          hidden = hide;
-          gsap.to(el, {
-            yPercent: hide ? -100 : 0,
-            duration: 0.5,
-            ease: "power3.out",
-            overwrite: true,
-          });
-        }
+      if (pathnameRef.current === "/") {
+        const hero = document.getElementById("top");
+        setPastHero(hero ? hero.getBoundingClientRect().bottom <= 0 : true);
       }
-      last = y;
     };
 
     /*
@@ -137,7 +140,7 @@ export default function Navbar() {
         window.removeEventListener("scroll", onNativeScroll);
       }
     };
-  }, [open]);
+  }, []);
 
   // Overlay: panel wipes down, then the names rise in sequence.
   //
@@ -201,8 +204,16 @@ export default function Navbar() {
   // The page must not scroll behind an open fullscreen menu.
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (open && event.key === "Escape") {
+        setOpen(false);
+        headerRef.current?.querySelector<HTMLButtonElement>("[aria-controls='site-menu']")?.focus();
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
     return () => {
       document.body.style.overflow = "";
+      window.removeEventListener("keydown", onKeyDown);
     };
   }, [open]);
 
@@ -220,18 +231,22 @@ export default function Navbar() {
           binary state, and a fade only ever showed a half-opaque bar over the
           photograph while it made its mind up. The shadow keeps its own transition.
         */
-        className={`fixed inset-x-0 top-0 z-50 ${
+        className={`fixed inset-x-0 top-0 z-50 transition-transform duration-500 ease-brand ${
+          hideForHero ? "-translate-y-full" : "translate-y-0"
+        } ${
           open
-            ? "bg-transparent text-ink"
-            : past
-              ? "bg-canvas text-ink"
-              : `bg-transparent ${darkTop ? "text-space" : "text-ink"}`
-        } ${past && !open ? "shadow-[0_1px_0_rgba(28,26,23,0.1)]" : ""}`}
+            ? "bg-[#f7f0e1] text-ink"
+            : spacesNav.active
+              ? `bg-transparent ${spacesNav.dark ? "text-space" : "text-ink"}`
+              : past
+                ? "bg-[#f7f0e1] text-ink"
+                : `bg-transparent ${darkTop ? "text-space" : "text-ink"}`
+        } ${past && !open && !spacesNav.active ? "shadow-[0_1px_0_rgba(28,26,23,0.1)]" : ""}`}
       >
         {/* Three columns with the logo in the middle one, not a flex row with the
             logo first: the mark stays optically centred in the viewport no matter
             how wide the labels either side get. */}
-        <nav className="mx-auto flex h-16 w-full items-center justify-between shell-max shell-px sm:grid sm:grid-cols-[1fr_auto_1fr]">
+        <nav className="mx-auto flex h-20 w-full items-center justify-between shell-max shell-px sm:grid sm:h-22 sm:grid-cols-[1fr_auto_1fr]">
           <div
             className={`order-2 flex items-center transition-opacity duration-500 sm:order-none ${
               heroPlaying ? "pointer-events-none opacity-0" : "opacity-100"
@@ -239,28 +254,13 @@ export default function Navbar() {
           >
             <Button
               type="button"
-              onClick={() => {
-                setAccent(null);
-                setOpen((v) => !v);
-              }}
+              onClick={() => setOpen((v) => !v)}
               aria-expanded={open}
+              aria-controls="site-menu"
               aria-label={open ? "Close menu" : "Open menu"}
-              style={{ color: open ? (accent ?? undefined) : undefined }}
               className="text-label flex cursor-pointer items-center gap-3 uppercase transition-colors duration-500"
             >
-              <span className="relative block h-3 w-6">
-                <span
-                  className={`absolute left-0 block h-px w-6 bg-current transition-all duration-400 ${
-                    open ? "top-1.5 rotate-45" : "top-0"
-                  }`}
-                />
-                <span
-                  className={`absolute left-0 block h-px w-6 bg-current transition-all duration-400 ${
-                    open ? "top-1.5 -rotate-45" : "top-3"
-                  }`}
-                />
-              </span>
-              <span className="text-trim hidden sm:inline">
+              <span className="text-trim">
                 {open ? "Close" : "Menu"}
               </span>
             </Button>
@@ -287,7 +287,7 @@ export default function Navbar() {
                 the brand colour. */}
             <Image
               src={
-                !past && !open && darkTop
+                !open && (spacesNav.active ? spacesNav.dark : !past && darkTop)
                   ? "/Logo/logo-white.svg"
                   : "/Logo/logo-brick.svg"
               }
@@ -295,7 +295,7 @@ export default function Navbar() {
               width={200}
               height={120}
               priority
-              className="nav-logo h-11 w-auto object-contain sm:h-12"
+              className="nav-logo h-16 w-auto object-contain sm:h-18"
             />
           </Link>
 
@@ -304,17 +304,13 @@ export default function Navbar() {
               heroPlaying ? "pointer-events-none opacity-0" : "opacity-100"
             }`}
           >
-            <SoundToggle />
-            <Link
+            <Button asChild><Link
               href="/contact"
-              onClick={() => {
-                setAccent(null);
-                setOpen(false);
-              }}
-              className="text-label inline-block border border-ink/25 bg-space px-6 py-3 uppercase text-ink transition-colors duration-500 ease-brand hover:bg-space/80"
+              onClick={() => setOpen(false)}
+              className="text-label uppercase"
             >
               Enquire
-            </Link>
+            </Link></Button>
           </div>
         </nav>
       </header>
@@ -323,11 +319,7 @@ export default function Navbar() {
         overlayRef={overlayRef}
         open={open}
         pathname={pathname}
-        setOpen={(next) => {
-          if (!next) setAccent(null);
-          setOpen(next);
-        }}
-        onAccent={setAccent}
+        setOpen={setOpen}
       />
     </>
   );

@@ -7,22 +7,19 @@ import {
   useSyncExternalStore,
 } from "react";
 import Image from "next/image";
-import { Volume2, VolumeX } from "lucide-react";
+import { ChevronDown, ChevronsRight, Volume2, VolumeX } from "lucide-react";
 import { gsap, reduced } from "@/lib/gsap";
 
-import { SplitChars, Rise } from "@/components/anim";
 import { Button } from "@/components/shared/button";
 import { BOUDHA } from "@/lib/photo";
 import { claimIntro, finishIntro } from "@/features/preloader/gate";
 import { setBellMuted, unlockBell, playResonantBell } from "@/lib/bell";
 import {
   enterSilently,
-  fadeOutPreloaderSound,
   isSiteSoundMuted,
   prewarmIntroSound,
   setSiteSoundMuted,
   startPreloaderSound,
-  transitionToSiteSound,
 } from "@/features/preloader/audio";
 import {
   FADE,
@@ -78,15 +75,12 @@ const readStepMode = () =>
   new URLSearchParams(window.location.search).has("step");
 const stepModeServer = () => false;
 
-const SITE_MUSIC_AFTER_BELL_MS = 600; // brief gap before the site loop takes over
-const REST_HOLD = 1.0; // solid mark holds before it flies
-const HOLD_1 = 0.6; // clean big wordmark holds after the write-on
-const BLUR_ONLY = 2.0; // background blurs in; the mark stays solid + still
-const WINDOW_FADE = 1.5; // solid mark → window (photo through the letterforms)
+const REST_HOLD = 2.5; // shrunk mark holds before the resting state fades in
+const HOLD_1 = 0.4; // clean big wordmark holds after the write-on
+const BLUR_ONLY = 1.6; // background blurs in; the mark stays solid + still
 const SHRINK = 2.5; // then the window shrinks + drops
-const SHRUNK_HOLD = 1.0; // shrunk window holds before the signboard fill
-const FLIGHT = 1.6; // mark travels to the navbar slot
-const REST_FADE = 2.0; // resting content comes up
+const SHRUNK_HOLD = 0.7; // shrunk window holds before the signboard fill
+const REST_FADE = 1.5; // resting content comes up
 const SKIP_IN_AT = 0.9; // when the skip button fades in
 const PROMPT_IN_AT = 1.6; // when the sound prompt fades in
 
@@ -100,14 +94,9 @@ const STEP_NAMES = [
   "Mustang 4",
   "Boudhanath",
   "Big wordmark (drawn on)",
-  "Blur (mark solid)",
-  "Window (transparent)",
-  "Shrink + drop",
-  "BG → signboard, svg fills",
-  "Set beat (pre-flight)",
-  "Mid-flight",
-  "Landed / bg → home",
-  "Resting hero",
+  "Blur + shrink (filled)",
+  "BG → signboard (final state)",
+  "Resting hero: text + cue",
 ];
 
 export default function Hero() {
@@ -206,6 +195,38 @@ export default function Hero() {
       });
     };
 
+    // Where the mark rests permanently once the film reaches its final state — same
+    // placement math the write-on's shrink step uses, shared here so the "jump
+    // straight to rest" and "skip mid-film" paths can put it there directly too.
+    const SHRINK_SCALE = 0.6;
+    const SHRINK_DOWN = 17; // percentage points down from the big placement
+    const SHRINK_RIGHT = 3; // percentage points right from the big placement
+    const shrunkPlace = {
+      vw: place.vw * SHRINK_SCALE,
+      max: place.max * SHRINK_SCALE,
+      xF: place.xF + SHRINK_RIGHT / 100,
+      yF: place.yF + SHRINK_DOWN / 100,
+    };
+    const layoutFlightRest = () => {
+      const el = flightEl();
+      if (!el) return;
+      const W = window.innerWidth;
+      const H = window.innerHeight;
+      const w = Math.min((shrunkPlace.vw / 100) * W, shrunkPlace.max);
+      const h = w / LOGO_RATIO;
+      gsap.set(el, {
+        width: w,
+        height: h,
+        left: shrunkPlace.xF * (W - w),
+        top: shrunkPlace.yF * (H - h),
+        x: 0,
+        y: 0,
+        scale: 1,
+        rotation: 0,
+        opacity: 1,
+      });
+    };
+
     const setStart = () => {
       gsap.set(q(".hero-page"), { opacity: 0 });
       gsap.set(q(".hero-page")[0], { opacity: 1 });
@@ -220,10 +241,9 @@ export default function Hero() {
         ],
         { opacity: 0 },
       );
-      gsap.set(
-        [q(".hero-rest"), q(".hero-scrim"), q(".hero-prompt"), q(".hero-skip")],
-        { opacity: 0 },
-      );
+      gsap.set([q(".hero-rest"), q(".hero-prompt"), q(".hero-skip")], {
+        opacity: 0,
+      });
       applyStartMask();
       layoutFlight();
     };
@@ -231,17 +251,17 @@ export default function Hero() {
     const jumpToRest = () => {
       gsap.set(q(".hero-page"), { opacity: 0 });
       gsap.set(q(".hero-page").at(-1) ?? q(".hero-page")[0], { opacity: 1 });
-      gsap.set(
-        [q(".hero-blur"), q(".hero-mask"), q(".hero-flight"), q(".hero-sign")],
-        {
-          opacity: 0,
-        },
-      );
+      gsap.set([q(".hero-blur"), q(".hero-mask")], {
+        opacity: 0,
+      });
+      // The mark rests in place, permanently, as the logo.
+      layoutFlightRest();
       gsap.set([q(".hero-prompt"), q(".hero-skip")], {
         opacity: 0,
         pointerEvents: "none",
       });
-      gsap.set([q(".hero-ground"), q(".hero-scrim"), q(".hero-rest")], {
+      // Rests on the signboard, not the Boudha ground. No overlay wash on it.
+      gsap.set([q(".hero-sign"), q(".hero-rest")], {
         opacity: 1,
       });
       sessionStorage.setItem(SESSION_KEY, "1");
@@ -287,30 +307,11 @@ export default function Hero() {
       el.style.setProperty("-webkit-mask-size", String(only.maskSize));
     };
 
-    // FLIP the flat mark from where it sits to the navbar's own logo slot.
-    const flyToNavbar = () => {
-      const el = flightEl();
-      if (!el) return;
-      const nav = document.querySelector(".nav-logo") as HTMLElement | null;
-      const from = el.getBoundingClientRect();
-      const to = nav?.getBoundingClientRect();
-      const target = to
-        ? {
-            x: to.left + to.width / 2 - (from.left + from.width / 2),
-            y: to.top + to.height / 2 - (from.top + from.height / 2),
-            scale: to.width / from.width,
-          }
-        : { x: 0, y: -window.innerHeight * 0.42, scale: 0.16 };
-      gsap.to(el, { ...target, duration: FLIGHT, ease: "power2.inOut" });
-    };
-
     const settle = () => {
       sessionStorage.setItem(SESSION_KEY, "1");
-      if (soundRef.current) {
-        fadeOutPreloaderSound();
-        transitionToSiteSound(SITE_MUSIC_AFTER_BELL_MS);
-      }
-      const ground = q(".hero-ground")[0];
+      // The film now rests on the signboard, not the Boudha ground — it carries the
+      // same slow ambient breathing zoom the ground used to.
+      const ground = q(".hero-sign")[0];
       if (ground) {
         gsap.to(ground, {
           scale: 1.08,
@@ -342,53 +343,27 @@ export default function Hero() {
     const glyphAt = boudhaAt + SHARP_BEAT;
     const solidAt = glyphAt + REVEAL_BEAT;
     const bigCleanAt = solidAt + FILL_BEAT; // big wordmark solid + clean over sharp Boudha
-    const blurAt = bigCleanAt + HOLD_1; // short hold, then the blur-only beat starts
-    const windowAt = blurAt + BLUR_ONLY; // 2s blur done; solid mark → window
-    const shrinkAt = windowAt + WINDOW_FADE; // window done; THEN it shrinks + drops
-    const fillAt = shrinkAt + SHRINK + SHRUNK_HOLD; // bg → signboard, window → solid fill
-    const flightAt = fillAt + FILL_BEAT + REST_HOLD;
+    const blurShrinkAt = bigCleanAt + HOLD_1; // short hold, then blur + shrink together
+    const fillAt = blurShrinkAt + BLUR_ONLY + SHRUNK_HOLD; // bg → signboard (mark stays filled)
+    const restAt = fillAt + FILL_BEAT + REST_HOLD; // final resting state begins here
 
-    // Step 8: the wordmark window shrinks and moves down + right, anchored on its own
-    // mask-position point.
-    const MASK_SMALL = 0.6;
-    const MASK_DOWN = 17; // percentage points added to the mask-position Y
-    const MASK_RIGHT = 3; // percentage points added to the mask-position X
-    const maskShrink = { k: 1, x: place.xF * 100, y: place.yF * 100 };
-    const paintShrink = () => {
-      const el = maskEl();
-      if (!el) return;
-      const size = `min(${place.vw * maskShrink.k}vw, ${place.max * maskShrink.k}px)`;
-      const pos = `${maskShrink.x}% ${maskShrink.y}%`;
-      el.style.maskSize = size;
-      el.style.setProperty("-webkit-mask-size", size);
-      el.style.maskPosition = pos;
-      el.style.setProperty("-webkit-mask-position", pos);
-    };
-
-    // Step 9: the flat white mark takes over from the window at exactly the shrunk
-    // window's size and position.
-    const shrunkPlace = {
-      vw: place.vw * MASK_SMALL,
-      max: place.max * MASK_SMALL,
-      xF: place.xF + MASK_RIGHT / 100,
-      yF: place.yF + MASK_DOWN / 100,
-    };
-    const layoutFlightShrunk = () => {
+    // Step 7: the mark shrinks + drops to its resting size (see `shrunkPlace` /
+    // `layoutFlightRest` above) while staying a solid white fill the whole time — no
+    // transparent window stage.
+    const shrinkFlight = () => {
       const el = flightEl();
       if (!el) return;
       const W = window.innerWidth;
       const H = window.innerHeight;
       const w = Math.min((shrunkPlace.vw / 100) * W, shrunkPlace.max);
       const h = w / LOGO_RATIO;
-      gsap.set(el, {
+      gsap.to(el, {
         width: w,
         height: h,
         left: shrunkPlace.xF * (W - w),
         top: shrunkPlace.yF * (H - h),
-        x: 0,
-        y: 0,
-        scale: 1,
-        rotation: 0,
+        duration: SHRINK,
+        ease: "power2.inOut",
       });
     };
 
@@ -444,47 +419,17 @@ export default function Hero() {
         { opacity: 0, duration: FILL_BEAT, ease: "power2.inOut" },
         solidAt + FILL_BEAT * 0.45,
       )
-      // Step 7 — after a 1s hold, the background blurs in over 2s. The mark stays a
-      // solid white fill, big and still.
+      // Step 7 — after a short hold, the background blurs in AND the mark shrinks +
+      // drops to its resting size, together. It stays a solid white fill throughout.
       .fromTo(
         q(".hero-blur"),
         { opacity: 0 },
         { opacity: 1, duration: BLUR_ONLY, ease: "power2.inOut" },
-        blurAt,
+        blurShrinkAt,
       )
-      // Step 8 — the solid mark first turns into a window (its Boudha-photo layer
-      // fades in so the sharp frame shows through the letterforms)...
-      .to(
-        q(".hero-flight"),
-        { opacity: 0, duration: WINDOW_FADE, ease: "power2.inOut" },
-        windowAt,
-      )
-      .to(
-        q(".hero-mask"),
-        { opacity: 1, duration: WINDOW_FADE, ease: "power2.inOut" },
-        windowAt,
-      )
-      .to(
-        q(".hero-mask-photo"),
-        { opacity: 1, duration: WINDOW_FADE, ease: "power2.inOut" },
-        windowAt,
-      )
-      // Step 9 — ...then the window shrinks + drops.
-      .to(
-        maskShrink,
-        {
-          k: MASK_SMALL,
-          x: place.xF * 100 + MASK_RIGHT,
-          y: place.yF * 100 + MASK_DOWN,
-          duration: SHRINK,
-          ease: "power2.inOut",
-          onUpdate: paintShrink,
-        },
-        shrinkAt,
-      )
-      // Step 9 — background fades to the signboard wall and the window becomes a
-      // solid white mark, at this same shrunk size.
-      .call(layoutFlightShrunk, [], fillAt)
+      .call(shrinkFlight, [], blurShrinkAt)
+      // Step 8 — background fades to the signboard wall; the mark is already filled
+      // and shrunk, so it just sits there while the wall arrives and the blur lifts.
       .to(
         q(".hero-sign"),
         { opacity: 1, duration: FILL_BEAT, ease: "power2.inOut" },
@@ -495,29 +440,9 @@ export default function Hero() {
         { opacity: 0, duration: FILL_BEAT, ease: "power2.inOut" },
         fillAt,
       )
-      .to(
-        q(".hero-mask"),
-        { opacity: 0, duration: FILL_BEAT * 0.7, ease: "power2.inOut" },
-        fillAt,
-      )
-      .to(
-        q(".hero-flight"),
-        { opacity: 1, duration: FILL_BEAT, ease: "power2.inOut" },
-        fillAt,
-      )
-      // A small "set" beat before it lifts.
-      .to(
-        q(".hero-flight"),
-        { scale: 1.02, duration: 0.2, ease: "power2.out" },
-        flightAt - 0.9,
-      )
-      .to(
-        q(".hero-flight"),
-        { scale: 1, duration: 0.35, ease: "power2.inOut" },
-        flightAt - 0.7,
-      )
-      // Phase 3 — the sound prompt + Skip retire, the mark flies up to the navbar,
-      // and the resting content comes up over the wall behind it.
+      // Phase 3 — this IS the final state: the mark stays put, on the signboard, no
+      // overlay wash over it. The sound prompt + Skip retire, and "Rest in the
+      // Spirit of Mustang" + the scroll cue fade in.
       .to(
         [q(".hero-prompt"), q(".hero-skip")],
         {
@@ -526,34 +451,13 @@ export default function Hero() {
           duration: 0.5,
           ease: "power2.out",
         },
-        flightAt,
+        restAt,
       )
-      .call(flyToNavbar, [], flightAt)
-      // Release the below-the-fold reveals only as the resting hero actually starts
-      // fading up — firing this mid-flight ran the char/line reveals behind a still
-      // opacity-0 container, so they were already finished when it appeared ("skipped").
-      .call(finishIntro, [], flightAt + FLIGHT + 0.3)
-      .to(
-        q(".hero-flight"),
-        { opacity: 0, duration: 0.4, ease: "power1.out" },
-        flightAt + FLIGHT - 0.1,
-      )
-      .to(
-        [q(".hero-ground"), q(".hero-scrim")],
-        { opacity: 1, duration: REST_FADE * 1.4, ease: "power2.inOut" },
-        flightAt + FLIGHT - 0.9,
-      )
-      // Long, soft cross-fade off the signboard into the resting homepage — starts
-      // while the mark is still in flight so there is no hard cut.
-      .to(
-        q(".hero-sign"),
-        { opacity: 0, duration: REST_FADE * 1.6, ease: "power2.inOut" },
-        flightAt + FLIGHT - 0.9,
-      )
+      .call(finishIntro, [], restAt + 0.3)
       .to(
         q(".hero-rest"),
         { opacity: 1, duration: REST_FADE, ease: "power2.out" },
-        flightAt + FLIGHT + 0.6,
+        restAt + 0.5,
       );
 
     // Authoring: freeze at every scene / animation boundary. The Prev/Next buttons
@@ -567,14 +471,9 @@ export default function Hero() {
         3 * HOLD + FADE, // Mustang 4
         boudhaAt + FADE, // Boudhanath sharp
         bigCleanAt, // BIG wordmark drawn on, filled white, over sharp Boudha
-        windowAt, // background blurred; mark still a solid white fill
-        shrinkAt, // mark is now a transparent window (photo through the letterforms)
-        shrinkAt + SHRINK, // window shrunk + dropped over the blur
-        fillAt + FILL_BEAT, // bg → signboard, window → solid white fill at shrunk size
-        flightAt - 0.4, // set beat, pre-lift
-        flightAt + FLIGHT * 0.55, // mid-flight
-        flightAt + FLIGHT + REST_FADE * 0.6, // landed, bg crossfading to home
-        tl.duration() - 0.05, // resting hero
+        blurShrinkAt + Math.max(BLUR_ONLY, SHRINK), // blurred + shrunk, still filled
+        fillAt + FILL_BEAT, // bg → signboard, mark stays filled at its shrunk size — final state
+        tl.duration() - 0.05, // resting hero: text + scroll cue in
       ].map((t) => Math.max(0, t));
       stopsRef.current = stops;
       tl.pause(stops[0]);
@@ -593,11 +492,9 @@ export default function Hero() {
       setSiteSoundMuted(nextMuted);
       setBellMuted(nextMuted);
       const el = prompt();
-      const label = el?.querySelector(".hero-prompt-label");
-      if (label) label.textContent = nextMuted ? "Play with sound" : "Sound on";
       el?.setAttribute(
         "aria-label",
-        nextMuted ? "Play with sound" : "Sound on",
+        nextMuted ? "Play with sound" : "Mute sound",
       );
       el?.querySelector(".hero-prompt-off")?.classList.toggle(
         "hidden",
@@ -621,17 +518,11 @@ export default function Hero() {
       ff = [];
       tlRef.current?.kill();
 
-      const leaving = [
-        ...q(".hero-page"),
-        q(".hero-blur"),
-        q(".hero-mask"),
-        q(".hero-flight"),
-        q(".hero-sign"),
-      ];
+      const leaving = [...q(".hero-page"), q(".hero-blur"), q(".hero-mask")];
       gsap.killTweensOf([
         ...leaving,
-        q(".hero-ground"),
-        q(".hero-scrim"),
+        q(".hero-flight"),
+        q(".hero-sign"),
         q(".hero-rest"),
         q(".hero-prompt"),
         q(".hero-skip"),
@@ -644,7 +535,12 @@ export default function Hero() {
         ease: "power2.out",
       });
       gsap.to(leaving, { opacity: 0, duration: dur, ease: "power2.inOut" });
-      gsap.to([q(".hero-ground"), q(".hero-scrim")], {
+      // The mark snaps straight to its permanent resting place as the logo, no
+      // matter which beat it was skipped from.
+      layoutFlightRest();
+      // Rests on the signboard — whatever fade it was mid-way through just continues
+      // to full, rather than fading out and back in.
+      gsap.to(q(".hero-sign"), {
         opacity: 1,
         duration: dur,
         ease: "power2.inOut",
@@ -658,11 +554,7 @@ export default function Hero() {
 
       finishIntro();
       sessionStorage.setItem(SESSION_KEY, "1");
-      if (soundRef.current) {
-        fadeOutPreloaderSound();
-        transitionToSiteSound(SITE_MUSIC_AFTER_BELL_MS);
-      }
-      const ground = q(".hero-ground")[0];
+      const ground = q(".hero-sign")[0];
       if (ground) {
         gsap.to(ground, {
           scale: 1.08,
@@ -707,7 +599,7 @@ export default function Hero() {
     <section
       id="top"
       ref={sectionRef}
-      className="relative h-svh w-full overflow-hidden bg-ink"
+      className="relative h-svh w-full overflow-hidden bg-ink text-space"
     >
       {/* The frame stack — full-bleed, dissolving in DOM order. */}
       <div className="absolute inset-0" aria-hidden>
@@ -797,100 +689,72 @@ export default function Hero() {
         />
       </div>
 
-      {/* Legibility wash for the resting state. */}
-      <div
-        className="hero-scrim pointer-events-none absolute inset-0 bg-linear-to-t from-ink/55 via-ink/45 to-ink/45 opacity-0"
-        aria-hidden
-      />
-
       {/* Quiet "sound on" prompt over the film — starts muted. */}
       <button
         type="button"
-        className="hero-prompt absolute bottom-[max(2rem,env(safe-area-inset-bottom))] left-5 z-30 flex h-11 cursor-pointer items-center gap-2.5 border border-space/30 bg-netsang pl-1.5 pr-4 text-ink opacity-0 backdrop-blur-md transition-colors hover:bg-[color-mix(in_srgb,var(--color-netsang)_82%,var(--color-ink))] sm:left-8"
+        className="hero-prompt absolute bottom-[max(2rem,env(safe-area-inset-bottom))] left-5 z-30 flex size-11 cursor-pointer items-center justify-center border border-space/30 bg-netsang text-ink opacity-0 backdrop-blur-md transition-colors hover:bg-[color-mix(in_srgb,var(--color-netsang)_82%,var(--color-ink))] sm:left-8"
         aria-label="Play with sound"
       >
-        <span className="grid size-8 place-items-center bg-space/15">
-          <VolumeX className="hero-prompt-off size-4" aria-hidden />
+        <span className="grid size-5 place-items-center">
+          <VolumeX className="hero-prompt-off col-start-1 row-start-1 size-4" aria-hidden />
           <Volume2
             className="hero-prompt-on col-start-1 row-start-1 hidden size-4"
             aria-hidden
           />
-        </span>
-        <span className="hero-prompt-label text-label uppercase">
-          Play with sound
         </span>
       </button>
 
       {/* Skip the cinematic. */}
       <button
         type="button"
-        className="hero-skip absolute bottom-[max(2rem,env(safe-area-inset-bottom))] right-5 z-30 flex h-11 cursor-pointer items-center border border-space/30 bg-netsang px-5 text-label uppercase text-ink opacity-0 backdrop-blur-md transition-colors hover:bg-[color-mix(in_srgb,var(--color-netsang)_82%,var(--color-ink))] sm:right-8"
+        aria-label="Skip intro"
+        className="hero-skip absolute bottom-[max(2rem,env(safe-area-inset-bottom))] right-5 z-30 flex size-11 cursor-pointer items-center justify-center border border-space/30 bg-netsang text-ink opacity-0 backdrop-blur-md transition-colors hover:bg-[color-mix(in_srgb,var(--color-netsang)_82%,var(--color-ink))] sm:right-8"
       >
-        Skip
+        <ChevronsRight className="size-5" aria-hidden="true" />
       </button>
 
       {/* `/?step` authoring control — walk the cinematic one beat at a time. */}
       {stepMode && (
         <div className="fixed bottom-4 left-1/2 z-[999] flex -translate-x-1/2 items-stretch gap-1.5 font-mono text-xs uppercase tracking-widest">
-          <button
+          <Button
             type="button"
             onClick={() => stepGo(-1)}
             className="cursor-pointer rounded bg-black px-3 py-2 text-white"
           >
             ◂ Prev
-          </button>
+          </Button>
           <span className="grid place-items-center rounded bg-black/70 px-3 py-2 text-white">
             {`${stepI + 1}/${STEP_NAMES.length} · ${STEP_NAMES[stepI]}`}
           </span>
-          <button
+          <Button
             type="button"
             onClick={() => stepGo(1)}
             className="cursor-pointer rounded bg-black px-3 py-2 text-white"
           >
             Next ▸
-          </button>
+          </Button>
         </div>
       )}
 
-      {/* Resting hero. */}
-      <div className="hero-rest absolute inset-0 flex flex-col items-center justify-center space-y-3 px-6 text-center text-space opacity-0">
-        <Rise>
-          <p className="font-sub text-xl uppercase pb-8">Mustang to Boudha</p>
-        </Rise>
-
-        <SplitChars
-          lines={["Rest in the Spirit", "of Mustang"]}
-          delay={120}
-          className="font-display mt-8 text-[clamp(2.75rem,7.5vw,7rem)] uppercase leading-[0.95]"
-        />
-
-        <Rise delay={520} className="mt-12">
-          <Button asChild hoverScale={1.01} tapScale={0.99}>
-            <a
-              href="/about"
-              className="text-label text-ink inline-block border border-space/50 px-8 py-4 uppercase transition-colors duration-500 ease-brand bg-space hover:bg-space/80 hover:text-ink"
-            >
-              Enquire about a stay
-            </a>
-          </Button>
-        </Rise>
+      {/* "Rest in the Spirit of Mustang" — the shrunk mark itself (.hero-flight)
+          stays put on the signboard as the logo; this is just the line below it,
+          near the bottom. */}
+      <div className="hero-rest absolute inset-x-0 bottom-24 px-6 text-center text-space opacity-0">
+        <p className="font-display text-[clamp(1.5rem,3vw,2.25rem)] tracking-[0.02em]">
+          Rest in the Spirit of Mustang
+        </p>
       </div>
 
       {/* Scroll cue — part of the resting state. */}
       <a
         href="#about"
         aria-label="Scroll to the next section"
-        className="hero-rest group absolute bottom-[max(2rem,env(safe-area-inset-bottom))] left-1/2 flex -translate-x-1/2 flex-col items-center gap-3 text-space opacity-0"
+        className="hero-rest group absolute bottom-[max(2rem,env(safe-area-inset-bottom))] left-1/2 -translate-x-1/2 text-space opacity-0"
       >
-        <span className="font-sub text-xl uppercase transition-opacity duration-300 group-hover:opacity-100">
-          Scroll
-        </span>
-        <span
+        <ChevronDown
           aria-hidden="true"
-          className="relative block h-12 w-px overflow-hidden bg-space/25"
-        >
-          <span className="hero-cue absolute inset-x-0 top-0 block h-4 bg-space/90" />
-        </span>
+          className="size-5 animate-bounce opacity-70 transition-opacity duration-300 group-hover:opacity-100"
+        />
       </a>
     </section>
   );
