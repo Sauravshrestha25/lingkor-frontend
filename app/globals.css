@@ -727,3 +727,18 @@ body::-webkit-scrollbar {
 .pin-spacer:has(> #boudha) {
   background-color: var(--color-midnight);
 }
+
+/* Local Tibetan lettering for the final hero composition. */
+@font-face {
+  font-family: "Hero Tibetan";
+  src: url("/fonts/YagpoTibetanUni-x3jnj.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+.hero-tibetan {
+  font-family: "Hero Tibetan", serif;
+  font-size: clamp(1.5rem, 3.2vw, 3.5rem);
+  line-height: 1;
+}

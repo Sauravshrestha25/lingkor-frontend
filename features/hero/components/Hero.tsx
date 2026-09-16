@@ -57,7 +57,7 @@ import {
  * the real gold spire of the stupa in the Boudha frame, then it writes itself on
  * from that pinnacle downward ("as if it is built on top of it"), goes solid white,
  * and flies up into the navbar's own logo slot — which is where the intro hands off.
- * The hero then rests on the same Boudhanath frame the film ended on.
+ * The hero then rests on the supplied wall image with the Tibetan name and tagline.
  *
  * Frames, mask geometry and every duration live in `features/preloader/preloader.ts`.
  */
@@ -198,27 +198,25 @@ export default function Hero() {
     // Where the mark rests permanently once the film reaches its final state — same
     // placement math the write-on's shrink step uses, shared here so the "jump
     // straight to rest" and "skip mid-film" paths can put it there directly too.
-    const SHRINK_SCALE = 0.6;
-    const SHRINK_DOWN = 17; // percentage points down from the big placement
-    const SHRINK_RIGHT = 3; // percentage points right from the big placement
-    const shrunkPlace = {
-      vw: place.vw * SHRINK_SCALE,
-      max: place.max * SHRINK_SCALE,
-      xF: place.xF + SHRINK_RIGHT / 100,
-      yF: place.yF + SHRINK_DOWN / 100,
+    // Match the supplied 1180 × 660 composition; keep the mark readable on phones.
+    const restingLogoBounds = () => {
+      const W = section.clientWidth;
+      const H = section.clientHeight;
+      const w = Math.min(W * (W < 640 ? 0.68 : 0.38), H * 0.7);
+      return {
+        width: w,
+        height: w / LOGO_RATIO,
+        left: W * 0.485 - w / 2,
+        top: H * 0.17,
+      };
     };
+    let resting = false;
     const layoutFlightRest = () => {
       const el = flightEl();
       if (!el) return;
-      const W = window.innerWidth;
-      const H = window.innerHeight;
-      const w = Math.min((shrunkPlace.vw / 100) * W, shrunkPlace.max);
-      const h = w / LOGO_RATIO;
+      resting = true;
       gsap.set(el, {
-        width: w,
-        height: h,
-        left: shrunkPlace.xF * (W - w),
-        top: shrunkPlace.yF * (H - h),
+        ...restingLogoBounds(),
         x: 0,
         y: 0,
         scale: 1,
@@ -270,11 +268,16 @@ export default function Hero() {
 
     if (!stepMode && (reduced() || seenRef.current)) {
       jumpToRest();
-      return;
+      window.addEventListener("resize", layoutFlightRest);
+      return () => window.removeEventListener("resize", layoutFlightRest);
     }
 
     setStart();
-    window.addEventListener("resize", layoutFlight);
+    const onResize = () => {
+      if (resting) layoutFlightRest();
+      else layoutFlight();
+    };
+    window.addEventListener("resize", onResize);
 
     // Count this play the moment it starts, so ANY reload from here on lands on the
     // resting hero. Deferred to an animation frame, not set inline: StrictMode's
@@ -309,18 +312,6 @@ export default function Hero() {
 
     const settle = () => {
       sessionStorage.setItem(SESSION_KEY, "1");
-      // The film now rests on the signboard, not the Boudha ground — it carries the
-      // same slow ambient breathing zoom the ground used to.
-      const ground = q(".hero-sign")[0];
-      if (ground) {
-        gsap.to(ground, {
-          scale: 1.08,
-          duration: 24,
-          ease: "sine.inOut",
-          repeat: -1,
-          yoyo: true,
-        });
-      }
     };
 
     const tl = gsap.timeline({ onComplete: settle });
@@ -347,21 +338,13 @@ export default function Hero() {
     const fillAt = blurShrinkAt + BLUR_ONLY + SHRUNK_HOLD; // bg → signboard (mark stays filled)
     const restAt = fillAt + FILL_BEAT + REST_HOLD; // final resting state begins here
 
-    // Step 7: the mark shrinks + drops to its resting size (see `shrunkPlace` /
-    // `layoutFlightRest` above) while staying a solid white fill the whole time — no
-    // transparent window stage.
+    // Step 7: the solid mark moves into the reference composition.
     const shrinkFlight = () => {
       const el = flightEl();
       if (!el) return;
-      const W = window.innerWidth;
-      const H = window.innerHeight;
-      const w = Math.min((shrunkPlace.vw / 100) * W, shrunkPlace.max);
-      const h = w / LOGO_RATIO;
+      resting = true;
       gsap.to(el, {
-        width: w,
-        height: h,
-        left: shrunkPlace.xF * (W - w),
-        top: shrunkPlace.yF * (H - h),
+        ...restingLogoBounds(),
         duration: SHRINK,
         ease: "power2.inOut",
       });
@@ -554,16 +537,6 @@ export default function Hero() {
 
       finishIntro();
       sessionStorage.setItem(SESSION_KEY, "1");
-      const ground = q(".hero-sign")[0];
-      if (ground) {
-        gsap.to(ground, {
-          scale: 1.08,
-          duration: 24,
-          ease: "sine.inOut",
-          repeat: -1,
-          yoyo: true,
-        });
-      }
     };
 
     // NB: no `touchmove` — a tap on the sound prompt carries a few px of finger
@@ -588,7 +561,7 @@ export default function Hero() {
     return () => {
       cancelAnimationFrame(stampId);
       ff.forEach((off) => off());
-      window.removeEventListener("resize", layoutFlight);
+      window.removeEventListener("resize", onResize);
       promptEl?.removeEventListener("click", enableSound);
       skipEl?.removeEventListener("click", onSkip);
       tlRef.current?.kill();
@@ -661,12 +634,10 @@ export default function Hero() {
         />
       </div>
 
-      {/* The branded signboard wall. Fades up as the mark fills to solid — swapping
-          the whole background photo — then fades back out to the resting Boudhanath
-          frame as the mark flies to the navbar. */}
+      {/* The supplied wall texture behind the final brand composition. */}
       <div className="hero-sign absolute inset-0 opacity-0" aria-hidden>
         <Image
-          src="/images/signboard-bg.jpg"
+          src="/hero_final_image"
           alt=""
           fill
           sizes="100vw"
@@ -736,11 +707,12 @@ export default function Hero() {
         </div>
       )}
 
-      {/* "Rest in the Spirit of Mustang" — the shrunk mark itself (.hero-flight)
-          stays put on the signboard as the logo; this is just the line below it,
-          near the bottom. */}
-      <div className="hero-rest absolute inset-x-0 bottom-24 px-6 text-center text-space opacity-0">
-        <p className="font-display text-[clamp(1.5rem,3vw,2.25rem)] tracking-[0.02em]">
+      {/* Tibetan name and tagline follow the reference image's proportions. */}
+      <div className="hero-rest hero-tibetan pointer-events-none absolute inset-x-0 top-[56%] text-center text-white opacity-0">
+        <p lang="bo">གླིང་སྐོར།</p>
+      </div>
+      <div className="hero-rest absolute inset-x-0 top-[80%] px-6 text-center text-white opacity-0">
+        <p className="font-display text-[clamp(1.25rem,3.55vw,4rem)] font-normal leading-[1.2] tracking-[0.06em]">
           Rest in the Spirit of Mustang
         </p>
       </div>
