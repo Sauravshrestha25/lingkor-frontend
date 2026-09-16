@@ -81,12 +81,6 @@ export default function AboutPage() {
                   <p className="text-body max-w-[58ch]">{para}</p>
                 </Rise>
               ))}
-
-              <Rise delay={300} className="pt-6">
-                <p className="font-display text-[clamp(1.75rem,3.4vw,2.75rem)] leading-tight">
-                  Lingkor is where that road rests.
-                </p>
-              </Rise>
             </div>
           </div>
         </div>
