@@ -7,6 +7,11 @@ import { Button } from "@/components/shared/button";
 import { gsap, Observer, reduced, ScrollTrigger } from "@/lib/gsap";
 import { SPACES } from "@/features/spaces/data/spaces";
 import { jumpTo, pauseLenis, resumeLenis } from "@/lib/lenis";
+import { setSpacesNav } from "@/features/home/spacesNav";
+
+// Netsang and Namkha are pale grounds and read best with ink text; every other space
+// is its own full, saturated field colour, which needs light (white) text/navbar.
+const isPaleGround = (id: string) => id === "netsang" || id === "namkha";
 
 /** A pinned circuit that advances one complete panel per wheel or swipe gesture. */
 export function SpacesSection() {
@@ -59,6 +64,7 @@ export function SpacesSection() {
             current = next;
             animating = false;
             gestureActive = false;
+            setSpacesNav({ active: true, dark: !isPaleGround(SPACES[current].id) });
 
             if (queuedDirection !== null) {
               const queued = queuedDirection;
@@ -103,25 +109,30 @@ export function SpacesSection() {
           jumpTo(self.start + 1);
           pauseLenis();
           observer.enable();
+          setSpacesNav({ active: true, dark: !isPaleGround(SPACES[current].id) });
         },
         onEnterBack: (self) => {
           jumpTo(self.end - 1);
           pauseLenis();
           observer.enable();
+          setSpacesNav({ active: true, dark: !isPaleGround(SPACES[current].id) });
         },
         onLeave: () => {
           observer.disable();
           resumeLenis();
+          setSpacesNav({ active: false, dark: false });
         },
         onLeaveBack: () => {
           observer.disable();
           resumeLenis();
+          setSpacesNav({ active: false, dark: false });
         },
       });
     }, section);
 
     return () => {
       resumeLenis();
+      setSpacesNav({ active: false, dark: false });
       ctx.revert();
     };
   }, []);
@@ -133,8 +144,9 @@ export function SpacesSection() {
         className="relative home-knot-gutters  home-knot-gutters-over h-svh min-h-160 overflow-hidden"
       >
         {SPACES.map((space, index) => {
-          const textColor =
-            space.id === "namkha" ? "var(--color-ink)" : space.field;
+          const textColor = isPaleGround(space.id)
+            ? "var(--color-ink)"
+            : "var(--color-namkha)";
 
           return (
             <article
@@ -156,7 +168,7 @@ export function SpacesSection() {
                       ? "var(--color-netsang)"
                       : space.id === "namkha"
                         ? "var(--color-namkha2)"
-                        : `color-mix(in srgb, ${space.field} 14%, var(--color-canvas))`,
+                        : space.field,
                 }}
               />
 
@@ -165,7 +177,7 @@ export function SpacesSection() {
                   <p className="mt-8 text-label uppercase opacity-70">
                     {space.role} · {space.element}
                   </p>
-                  <h2 className="mt-4 font-display text-[clamp(3rem,7vw,7rem)] leading-[0.9]">
+                  <h2 className="mt-4 font-display text-[clamp(1.75rem,3.5vw,3.5rem)] leading-[0.9]">
                     {space.name}
                   </h2>
                   <p className="text-body mt-7 max-w-[38ch]">{space.line}</p>
@@ -173,22 +185,11 @@ export function SpacesSection() {
                   <div className="mt-8 flex justify-start">
                     <Button asChild hoverScale={1.01} tapScale={0.99}>
                       <Link
-                        href="#enquire"
+                        href={`/spaces#${space.id}`}
                         data-notrim
-                        className="text-label font-body inline-flex min-h-14 items-center justify-center border px-5 py-4 text-md leading-none uppercase transition-opacity duration-300 hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-4"
-                        style={{
-                          backgroundColor: space.field,
-                          borderColor:
-                            space.id === "namkha"
-                              ? "var(--color-ink)"
-                              : space.field,
-                          color:
-                            space.displayOnField === "white"
-                              ? "var(--color-space)"
-                              : "var(--color-ink)",
-                        }}
+                        className="text-label font-body min-h-14 uppercase"
                       >
-                        <span className="translate-y-[0.36em]">Book now</span>
+                        <span className="text-trim">View Details</span>
                       </Link>
                     </Button>
                   </div>

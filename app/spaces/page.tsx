@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import PageHeader from "@/components/PageHeader";
 import Footer from "@/features/navigation/components/Footer";
 import { Rise } from "@/components/anim";
@@ -20,6 +19,7 @@ export default function SpacesPage() {
         label="The seven spaces"
         lines={["Five elements,", "and two more"]}
         intro="The hotel is laid out as a circuit. Five rooms carry one Tibetan element each — its colour, its name, and the piece of Mustang it is named for. Two more carry no colour at all."
+        align="center"
       />
 
       {/* Full-bleed bands, one per element. No two colours share a viewport, which is
@@ -104,14 +104,6 @@ export default function SpacesPage() {
                   </Label>
                 </Rise>
 
-                <Rise delay={340}>
-                  <Link
-                    href={`/spaces/${space.slug}`}
-                    className="text-label mt-10 inline-block uppercase underline decoration-1 underline-offset-[6px] transition-[text-decoration-color] duration-300 hover:decoration-transparent"
-                  >
-                    More about {space.name}
-                  </Link>
-                </Rise>
               </div>
             </section>
           );

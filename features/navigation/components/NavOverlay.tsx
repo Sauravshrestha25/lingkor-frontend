@@ -1,11 +1,12 @@
 "use client";
 
-import { useRef, useState, type ReactNode, type RefObject } from "react";
+import { useRef, type ReactNode, type RefObject } from "react";
 import Link from "next/link";
-import NextImage from "next/image";
-import { NAV, SPACES } from "../nav";
-import { POSTS } from "@/lib/journal";
-import { BOUDHA } from "@/lib/photo";
+import Image from "next/image";
+import { ArrowUpRight } from "lucide-react";
+import { CONTACT } from "@/lib/site";
+import { Button } from "@/components/shared/button";
+import { NAV } from "../nav";
 import {
   ExternalLinkIcon,
   type ExternalLinkIconHandle,
@@ -65,132 +66,85 @@ export function NavOverlay({
   open,
   pathname,
   setOpen,
-  onAccent,
 }: {
   overlayRef: RefObject<HTMLDivElement | null>;
   open: boolean;
   pathname: string;
   setOpen: (open: boolean) => void;
-  onAccent: (accent: string | null) => void;
 }) {
-  const [hovered, setHovered] = useState<number | null>(null);
-
-  const space = hovered === null ? null : SPACES[hovered];
-  const live = space?.tintable ? space.field : null;
-
-  function enter(i: number) {
-    setHovered(i);
-    const s = SPACES[i];
-    onAccent(s.tintable ? s.field : null);
-  }
-  function leave() {
-    setHovered(null);
-    onAccent(null);
-  }
-
-  const secondary: { label: string; href: string; count?: number }[] = [
+  // Mustang, Boudha and About are hidden from the menu for now — the pages still
+  // exist, just not linked to.
+  const primary: { label: string; href: string }[] = [
     { label: "Home", href: "/" },
+    { label: "Spaces", href: "/spaces" },
     { label: "Rooms", href: "/rooms" },
-    { label: "Journal", href: "/journal", count: POSTS.length },
-    { label: "Mustang", href: "/mustang" },
-    { label: "Boudha", href: "/boudha" },
-    { label: "About", href: "/about" },
+  ];
+
+  // Journal is hidden from the menu for now too — page still exists, unlinked.
+  const secondary: { label: string; href: string; count?: number }[] = [
     ...NAV.filter((n) => n.href === "/contact"),
   ];
 
   return (
     <div
       ref={overlayRef}
-      className="fixed inset-0 z-40 overflow-y-auto text-ink"
+      id="site-menu"
+      data-lenis-prevent
+      inert={!open}
+      className="fixed inset-0 z-40 overflow-y-auto overscroll-contain text-ink"
       style={{
         clipPath: "inset(0 0 100% 0)",
-        backgroundColor: live
-          ? `color-mix(in srgb, ${live} 10%, var(--color-canvas))`
-          : "var(--color-canvas)",
-        transition: "background-color 600ms cubic-bezier(0.22, 1, 0.36, 1)",
+        backgroundColor: "var(--color-canvas)",
       }}
       aria-hidden={!open}
     >
-      <div className="relative z-20 mx-auto flex min-h-full w-full shell-max flex-col shell-px pt-20 pb-[calc(4.5rem+env(safe-area-inset-bottom))] sm:pb-6 lg:pt-24 lg:pb-8">
-        {/* Centered image — switches to hovered space photo */}
-        <div className="hidden justify-center sm:flex">
-          <div className="relative h-20 w-32 overflow-hidden lg:h-60 lg:w-120">
-            {/* Base: Netsang (first space) when nothing hovered */}
-            <NextImage
-              src={SPACES[0].img ?? BOUDHA}
-              alt={SPACES[0].label}
-              fill
-              sizes="360px"
-              className={`object-cover transition-opacity duration-400 ${hovered !== null ? "opacity-0" : "opacity-100"}`}
-            />
-            {/* Per-space images */}
-            {SPACES.map((s, i) =>
-              s.img ? (
-                <NextImage
-                  key={s.href}
-                  src={s.img}
-                  alt={s.label}
-                  fill
-                  sizes="360px"
-                  className={`object-cover transition-opacity duration-400 ${hovered === i ? "opacity-100" : "opacity-0"}`}
-                />
-              ) : null,
-            )}
-          </div>
-        </div>
-
-        {/* 5 spaces — 3 + 2, centered */}
-        <nav
-          className="flex min-h-0 flex-1 flex-col items-center justify-center gap-y-0 "
-          onPointerLeave={leave}
-        >
-          {[SPACES.slice(0, 3), SPACES.slice(3)].map((row, ri) => (
-            <ol
-              key={ri}
-              className="flex flex-wrap items-baseline justify-center gap-x-[0.45em] font-display text-[clamp(1.75rem,7vw,3.25rem)] leading-[1.08]  sm:flex-nowrap sm:gap-x-[0.5em] sm:text-[clamp(2rem,4.6vw,3.5rem)] sm:leading-[1.15]"
-            >
-              {row.map((s) => {
-                const i = SPACES.indexOf(s);
-                const active = pathname.startsWith(s.href);
-                const dimmed = hovered !== null && hovered !== i;
-                return (
-                  <li key={s.href} data-notrim className="overflow-hidden ">
-                    <Link
-                      href={s.href}
-                      onClick={() => setOpen(false)}
-                      onPointerEnter={() => enter(i)}
-                      onFocus={() => enter(i)}
-                      onBlur={leave}
-                      tabIndex={open ? 0 : -1}
-                      aria-current={active ? "page" : undefined}
-                      className="inline-flex items-start transition-opacity duration-500"
-                      style={{ opacity: dimmed ? 0.25 : 1 }}
-                    >
-                      <span
-                        data-menu-item
-                        className="inline-flex flex-col items-start transition-colors duration-500"
-                        style={{
-                          color: hovered === i && live ? live : undefined,
-                        }}
-                      >
-                        <span className="text-[0.19em] leading-none tracking-[0.18em] whitespace-nowrap uppercase opacity-60 mb-[0.4em]">
-                          {s.role}
-                        </span>
-                        {s.label}
-                      </span>
-                    </Link>
-                  </li>
-                );
-              })}
-            </ol>
-          ))}
+      <div className="relative z-20 mx-auto flex min-h-full w-full shell-max flex-col shell-px pt-24 pb-[calc(1.5rem+env(safe-area-inset-bottom))] sm:pt-28">
+        <div className="grid flex-1 gap-10 border-t border-ink/15 py-7 md:grid-cols-[1.15fr_1fr] md:gap-16 md:py-9 lg:gap-24">
+        <nav aria-label="Main navigation" className="flex flex-col justify-center">
+          <p data-menu-item className="text-label mb-6 uppercase text-ink/55">Explore Lingkor</p>
+          <ol className="flex flex-col">
+            {primary.map((p, index) => {
+              const active = p.href === "/" ? pathname === "/" : pathname === p.href || pathname.startsWith(`${p.href}/`);
+              return (
+                <li key={p.href} data-notrim className="border-b border-ink/10">
+                  <Link
+                    href={p.href}
+                    onClick={() => setOpen(false)}
+                    tabIndex={open ? 0 : -1}
+                    aria-current={active ? "page" : undefined}
+                    className={`group flex items-center gap-5 py-3 outline-offset-4 transition-colors duration-300 hover:text-brick focus-visible:text-brick ${active ? "text-brick" : "text-ink"}`}
+                  >
+                    <span data-menu-item className="flex w-full items-center gap-5">
+                      <span className="w-5 text-[0.625rem] font-body tabular-nums tracking-widest opacity-50">{String(index + 1).padStart(2, "0")}</span>
+                      <span className="font-display text-[clamp(2rem,4vw,3.5rem)] leading-none transition-transform duration-300 group-hover:translate-x-2 group-focus-visible:translate-x-2">{p.label}</span>
+                      <ArrowUpRight aria-hidden="true" strokeWidth={1} className={`ml-auto size-5 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:opacity-100 ${active ? "opacity-100" : "-translate-x-2 opacity-0"}`} />
+                    </span>
+                  </Link>
+                </li>
+              );
+            })}
+          </ol>
         </nav>
+
+        <aside data-menu-item className="flex flex-col justify-center md:border-l md:border-ink/15 md:pl-12 lg:pl-16">
+          <div className="relative hidden h-[clamp(12rem,32vh,24rem)] overflow-hidden md:block">
+            <Image src="/images/spaces/exterior-1280.webp" alt="Lingkor, Boudha — the building exterior" fill sizes="(min-width: 768px) 40vw, 1px" className="object-cover" />
+          </div>
+          <p className="text-label uppercase text-ink/55 md:mt-6">Rooted in Mustang. At home in Boudha.</p>
+          <p className="mt-4 max-w-[18ch] font-display text-[clamp(1.75rem,2.6vw,2.5rem)] leading-tight">A place to arrive.<br />A little longer to stay.</p>
+          <Button asChild><Link href="/contact" onClick={() => setOpen(false)} tabIndex={open ? 0 : -1} className="group mt-6 inline-flex min-h-12 items-center justify-between gap-8 self-start text-label uppercase text-brick">
+            <span className="text-trim">Enquire about a stay</span>
+            <ArrowUpRight aria-hidden="true" className="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+          </Link></Button>
+        </aside>
+        </div>
 
         {/* Bottom — justify-between: Elsewhere (left) / Where (right) */}
         <div
-          className="flex flex-col items-stretch gap-6 border-t pt-5 pr-16 transition-colors duration-500 sm:flex-row sm:items-end sm:justify-between sm:gap-8 sm:pr-0"
+          data-menu-item
+          className="flex flex-col items-stretch gap-5 border-t pt-6 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-8"
           style={{
-            borderColor: live ?? "color-mix(in srgb, #1c1a17 15%, transparent)",
+            borderColor: "color-mix(in srgb, #1c1a17 15%, transparent)",
           }}
         >
           <div>
@@ -220,6 +174,8 @@ export function NavOverlay({
               ))}
             </ul>
           </div>
+
+          <a href={CONTACT.phoneHref} tabIndex={open ? 0 : -1} className="text-label tracking-wider text-ink/65 transition-colors hover:text-brick">{CONTACT.phone}</a>
 
           <div className="text-left sm:text-right">
             {/* <p className="text-label uppercase opacity-45 mb-3">Where</p> */}

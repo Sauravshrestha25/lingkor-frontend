@@ -322,17 +322,7 @@ export function spaceBySlug(slug: string) {
   return AREAS.find((s) => s.slug === slug);
 }
 
-// TODO: real names, sizes and rates — none supplied. See CONTENT.md.
-export const ROOMS = [
-  { id: "room-01", name: "Valley Twin", note: "Two beds, valley side", size: "Two guests" },
-  { id: "room-02", name: "Lamp Room", note: "Copper lamps, painted headboard", size: "Two guests" },
-  { id: "room-03", name: "Corner Room", note: "Two aspects, morning light", size: "Two guests" },
-  { id: "room-04", name: "Lo Suite", note: "Living room and bedroom", size: "Two to three" },
-  { id: "room-05", name: "Window Suite", note: "Long window seat", size: "Two to three" },
-  { id: "room-06", name: "Top Suite", note: "Top floor, quietest", size: "Two to three" },
-  { id: "room-07", name: "Terrace Superior", note: "Terrace, stupa side", size: "Two guests" },
-  { id: "room-08", name: "Garden Superior", note: "Facing the garden", size: "Two guests" },
-];
+export { ROOMS } from "@/features/rooms/data/rooms";
 
 /**
  * Secondary navigation.
@@ -347,7 +337,6 @@ export const ROOMS = [
  */
 export const NAV = [
   { label: "Rooms", href: "/rooms" },
-  { label: "Journal", href: "/journal" },
   { label: "Contact", href: "/contact" },
 ];
 
@@ -355,7 +344,7 @@ export const CONTACT = {
   // TODO: street address and a dedicated hotel line/address — none supplied.
   // These trace to one person's business card. See CONTENT.md.
   address: "Boudha, Kathmandu, Nepal",
-  phone: "+977 9861413633",
-  phoneHref: "tel:+9779861413633",
-  email: "phuntsokg8808@gmail.com",
+  phone: "+977 9851413633",
+  phoneHref: "tel:+9779851413633",
+  email: "boudhalingkor@gmail.com",
 };

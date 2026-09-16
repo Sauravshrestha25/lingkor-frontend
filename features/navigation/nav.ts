@@ -17,7 +17,7 @@ export const SPACES = AREAS.filter((s) => !s.colourless).map((s, i) => ({
   label: s.name,
   role: s.role,
   element: s.element,
-  href: `/spaces/${s.slug}`,
+  href: `/spaces#${s.slug}`,
   // Full-size source: next/image picks the width from `sizes`, so hand-picking the
   // -1280 variant here would only fight it — and most sources have no such variant.
   img: s.image,
