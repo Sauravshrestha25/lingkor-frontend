@@ -637,7 +637,7 @@ export default function Hero() {
       {/* The supplied wall texture behind the final brand composition. */}
       <div className="hero-sign absolute inset-0 opacity-0" aria-hidden>
         <Image
-          src="/hero_final_image"
+          src="/hero-final-image.jpg"
           alt=""
           fill
           sizes="100vw"
