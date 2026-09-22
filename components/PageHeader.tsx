@@ -36,7 +36,7 @@ export default function PageHeader({
         className={`mx-auto w-full shell-max shell-px ${centered ? "flex flex-col items-center text-center" : ""}`}
       >
         <Rise>
-          <Label className="opacity-60">{label}</Label>
+          <Label className="opacity-85">{label}</Label>
         </Rise>
 
         <SplitChars
@@ -51,7 +51,7 @@ export default function PageHeader({
 
         {intro && (
           <Rise delay={260} className="mt-12">
-            <p className={`text-body opacity-80 ${centered ? "max-w-[44ch]" : "max-w-[52ch]"}`}>{intro}</p>
+            <p className={`text-body opacity-90 ${centered ? "max-w-[44ch]" : "max-w-[52ch]"}`}>{intro}</p>
           </Rise>
         )}
       </div>

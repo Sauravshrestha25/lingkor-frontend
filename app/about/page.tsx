@@ -47,7 +47,7 @@ export default function AboutPage() {
           <div className="grid grid-cols-1 gap-14 lg:grid-cols-12">
             <div className="lg:col-span-3">
               <Rise>
-                <Label className="opacity-60">The name</Label>
+                <Label className="opacity-85">The name</Label>
               </Rise>
             </div>
             <div className="lg:col-span-8 lg:col-start-5">
@@ -66,7 +66,7 @@ export default function AboutPage() {
           <div className="grid grid-cols-1 gap-14 lg:grid-cols-12">
             <div className="lg:col-span-3">
               <Rise>
-                <Label className="opacity-60">The road</Label>
+                <Label className="opacity-85">The road</Label>
               </Rise>
               <LineArt
                 name="caravan"
@@ -90,13 +90,13 @@ export default function AboutPage() {
       <section className="w-full bg-canvas pb-28 lg:pb-40">
         <div className="mx-auto w-full shell-max shell-px">
           <Rise>
-            <Label className="opacity-60">Two more rooms</Label>
+            <Label className="opacity-85">Two more rooms</Label>
           </Rise>
           <div className="mt-12 grid grid-cols-1 gap-12 border-t border-ink/15 pt-12 lg:grid-cols-2 lg:gap-20">
             <Rise>
               <h2 className="font-display text-section">Mustang Inn</h2>
-              <Label className="mt-4 block opacity-50">The welcome room</Label>
-              <p className="text-body mt-6 max-w-[40ch] opacity-80">
+              <Label className="mt-4 block opacity-80">The welcome room</Label>
+              <p className="text-body mt-6 max-w-[40ch] opacity-90">
                 In the front building, in traditional Mustangi style: butter tea
                 and chang for anyone just off the road, the way the caravans
                 were met.
@@ -104,8 +104,8 @@ export default function AboutPage() {
             </Rise>
             <Rise delay={140}>
               <h2 className="font-display text-section">Lingkor Boutique</h2>
-              <Label className="mt-4 block opacity-50">The shop</Label>
-              <p className="text-body mt-6 max-w-[40ch] opacity-80">
+              <Label className="mt-4 block opacity-80">The shop</Label>
+              <p className="text-body mt-6 max-w-[40ch] opacity-90">
                 Weaving, wool and the crafts of Lo — the goods that came down
                 this road in the first place.
               </p>

@@ -72,7 +72,7 @@ export default function ContactPage() {
                   sizes="384px"
                   className="h-auto w-72 lg:w-96"
                 />
-                <p className="text-body mt-14 max-w-[34rem] opacity-70">
+                <p className="text-body mt-14 max-w-[34rem] opacity-90">
                   Tell us when you would like to come and for how long. We
                   answer every messages ourselves
                 </p>

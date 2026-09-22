@@ -41,7 +41,7 @@ export default function RoomsPage() {
           {/* TODO: rates, exact sizes and bed configurations — none supplied.
               See CONTENT.md. */}
           <Rise delay={200} className="mt-24 border-t border-ink/15 pt-12">
-            <p className="text-body max-w-[46ch] opacity-70">
+            <p className="text-body max-w-[46ch] opacity-90">
               Rates depend on the season and the length of the stay. Write to us
               with your dates and we will send them.
             </p>

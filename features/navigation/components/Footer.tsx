@@ -61,7 +61,7 @@ export default function Footer({
         >
           <div className="col-span-2 md:col-span-1">
             <Label className="">Lingkor</Label>
-            <p className="text-md font-body mt-6 max-w-[30ch] opacity-75">
+            <p className="text-md font-body mt-6 max-w-[30ch] opacity-100">
               A caravan&rsquo;s last stop, still standing. Mustang&rsquo;s five
               elements, a short walk from the stupa.
             </p>
@@ -74,10 +74,10 @@ export default function Footer({
                 <li key={s.slug}>
                   <Link
                     href={`/spaces#${s.slug}`}
-                    className="font-body text-md opacity-75 transition-opacity duration-300 hover:opacity-100"
+                    className="font-body text-md opacity-100 transition-opacity duration-300 hover:opacity-100"
                   >
                     {s.name}
-                    <span className="text-xs font-body ml-2 opacity-65">
+                    <span className="text-xs font-body ml-2 opacity-90">
                       {s.role}
                     </span>
                   </Link>
@@ -93,7 +93,7 @@ export default function Footer({
                 <li key={p.href}>
                   <Link
                     href={p.href}
-                    className="font-body text-md opacity-75 transition-opacity duration-300 hover:opacity-100"
+                    className="font-body text-md opacity-100 transition-opacity duration-300 hover:opacity-100"
                   >
                     {p.label}
                   </Link>
@@ -106,13 +106,13 @@ export default function Footer({
             <Label className="">Find us</Label>
             {/* TODO: street address — none supplied. See CONTENT.md. */}
             <address className="font-body text-md mt-6 space-y-6 not-italic">
-              <p className="opacity-50 hover:opacity-100">{CONTACT.address}</p>
-              <p className="opacity-50 hover:opacity-100">
+              <p className="opacity-100">{CONTACT.address}</p>
+              <p className="opacity-100">
                 <a href={CONTACT.phoneHref} className="hover:opacity-100">
                   {CONTACT.phone}
                 </a>
               </p>
-              <p className="opacity-50 hover:opacity-100">
+              <p className="opacity-100">
                 <a
                   href={`mailto:${CONTACT.email}`}
                   className="underline decoration-1 underline-offset-[6px]"
@@ -137,7 +137,7 @@ export default function Footer({
         <div
           className={`mt-8 flex flex-col gap-4 border-t text-xs font-body tracking-wide pt-8 sm:flex-row sm:items-center sm:justify-between ${rule}`}
         >
-          <Label className="opacity-65">
+          <Label className="opacity-100">
             © {new Date().getFullYear()} Lingkor · Boudha, Kathmandu
           </Label>
 

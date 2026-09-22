@@ -174,7 +174,7 @@ export function SpacesSection() {
 
               <div className="relative mx-auto grid h-full w-full grid-cols-1 content-center gap-8 py-20 shell-max shell-px md:grid-cols-12 md:items-center md:gap-10 lg:gap-16">
                 <div className="md:col-span-5">
-                  <p className="mt-8 text-label uppercase opacity-70">
+                  <p className="mt-8 text-label uppercase opacity-90">
                     {space.role} · {space.element}
                   </p>
                   <h2 className="mt-4 font-display text-[clamp(1.75rem,3.5vw,3.5rem)] leading-[0.9]">

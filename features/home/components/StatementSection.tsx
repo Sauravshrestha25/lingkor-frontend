@@ -73,7 +73,7 @@ export function StatementSection() {
             <p className="font-display mt-5 text-[clamp(1.375rem,2vw,2rem)] leading-tight">
               Nothing here is scheduled.
             </p>
-            <p className="text-body mt-5 opacity-75">
+            <p className="text-body mt-5 opacity-90">
               The kora is there at five in the morning and again at seven in the
               evening. Everything else waits until you want it.
             </p>
@@ -91,11 +91,11 @@ export function StatementSection() {
             <p className="font-display mt-5 text-[clamp(1.375rem,2vw,2rem)] leading-tight">
               Five rooms, five elements.
             </p>
-            <p className="text-body mt-5 opacity-75">
+            <p className="text-body mt-5 opacity-90">
               Earth, water, wind, fire and space. Each one carries a colour, a
               name, and the piece of Mustang it was named for.
             </p>
-            <p className="text-body mt-4 opacity-75">
+            <p className="text-body mt-4 opacity-90">
               Walk them in order and you have walked a circuit — which is what
               the word Lingkor means.
             </p>
@@ -111,8 +111,8 @@ export function StatementSection() {
             />
 
             <div className="mt-6 lg:w-[45.4%]">
-              <Label className="opacity-45">Netsang · Fine dining</Label>
-              <p className="text-body mt-3 max-w-[46ch] opacity-75">
+              <Label className="opacity-75">Netsang · Fine dining</Label>
+              <p className="text-body mt-3 max-w-[46ch] opacity-90">
                 The long table, and food that arrives because it is time to eat.
               </p>
             </div>

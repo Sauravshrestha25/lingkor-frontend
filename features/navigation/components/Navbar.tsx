@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import { gsap, reduced } from "@/lib/gsap";
 import { NavOverlay } from "./NavOverlay";
 import { Button } from "@/components/shared/button";
+import { ExternalLinkIcon } from "@/components/shared/ExternalLinkIcon";
 import { getLenis } from "@/lib/lenis";
 import { isIntroActive, subscribeIntroActive } from "@/features/preloader/gate";
 import {
@@ -307,9 +308,10 @@ export default function Navbar() {
             <Button asChild><Link
               href="/contact"
               onClick={() => setOpen(false)}
-              className="text-label uppercase"
+              className="group text-label inline-flex items-center gap-1.5 uppercase"
             >
               Enquire
+              <ExternalLinkIcon size={11} className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
             </Link></Button>
           </div>
         </nav>

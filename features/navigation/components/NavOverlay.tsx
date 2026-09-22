@@ -100,43 +100,87 @@ export function NavOverlay({
     >
       <div className="relative z-20 mx-auto flex min-h-full w-full shell-max flex-col shell-px pt-24 pb-[calc(1.5rem+env(safe-area-inset-bottom))] sm:pt-28">
         <div className="grid flex-1 gap-10 border-t border-ink/15 py-7 md:grid-cols-[1.15fr_1fr] md:gap-16 md:py-9 lg:gap-24">
-        <nav aria-label="Main navigation" className="flex flex-col justify-center">
-          <p data-menu-item className="text-label mb-6 uppercase text-ink/55">Explore Lingkor</p>
-          <ol className="flex flex-col">
-            {primary.map((p, index) => {
-              const active = p.href === "/" ? pathname === "/" : pathname === p.href || pathname.startsWith(`${p.href}/`);
-              return (
-                <li key={p.href} data-notrim className="border-b border-ink/10">
-                  <Link
-                    href={p.href}
-                    onClick={() => setOpen(false)}
-                    tabIndex={open ? 0 : -1}
-                    aria-current={active ? "page" : undefined}
-                    className={`group flex items-center gap-5 py-3 outline-offset-4 transition-colors duration-300 hover:text-brick focus-visible:text-brick ${active ? "text-brick" : "text-ink"}`}
+          <nav
+            aria-label="Main navigation"
+            className="flex flex-col justify-center"
+          >
+            <p data-menu-item className="text-label mb-6 uppercase text-ink/80">
+              Explore Lingkor
+            </p>
+            <ol className="flex flex-col">
+              {primary.map((p, index) => {
+                const active =
+                  p.href === "/"
+                    ? pathname === "/"
+                    : pathname === p.href || pathname.startsWith(`${p.href}/`);
+                return (
+                  <li
+                    key={p.href}
+                    data-notrim
+                    className="border-b border-ink/10"
                   >
-                    <span data-menu-item className="flex w-full items-center gap-5">
-                      <span className="w-5 text-[0.625rem] font-body tabular-nums tracking-widest opacity-50">{String(index + 1).padStart(2, "0")}</span>
-                      <span className="font-display text-[clamp(2rem,4vw,3.5rem)] leading-none transition-transform duration-300 group-hover:translate-x-2 group-focus-visible:translate-x-2">{p.label}</span>
-                      <ArrowUpRight aria-hidden="true" strokeWidth={1} className={`ml-auto size-5 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:opacity-100 ${active ? "opacity-100" : "-translate-x-2 opacity-0"}`} />
-                    </span>
-                  </Link>
-                </li>
-              );
-            })}
-          </ol>
-        </nav>
+                    <Link
+                      href={p.href}
+                      onClick={() => setOpen(false)}
+                      tabIndex={open ? 0 : -1}
+                      aria-current={active ? "page" : undefined}
+                      className={`group flex items-center gap-5 py-3 outline-offset-4 transition-colors duration-300 hover:text-brick focus-visible:text-brick ${active ? "text-brick" : "text-ink"}`}
+                    >
+                      <span
+                        data-menu-item
+                        className="flex w-full items-center gap-5"
+                      >
+                        <span className="w-5 text-[0.625rem] font-body tabular-nums tracking-widest opacity-80">
+                          {String(index + 1).padStart(2, "0")}
+                        </span>
+                        <span className="font-display text-[clamp(2rem,4vw,3.5rem)] leading-none transition-transform duration-300 group-hover:translate-x-2 group-focus-visible:translate-x-2">
+                          {p.label}
+                        </span>
+                        <ArrowUpRight
+                          aria-hidden="true"
+                          strokeWidth={1}
+                          className={`ml-auto size-5 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:opacity-100 ${active ? "opacity-100" : "-translate-x-2 opacity-0"}`}
+                        />
+                      </span>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ol>
+          </nav>
 
-        <aside data-menu-item className="flex flex-col justify-center md:border-l md:border-ink/15 md:pl-12 lg:pl-16">
-          <div className="relative hidden h-[clamp(12rem,32vh,24rem)] overflow-hidden md:block">
-            <Image src="/images/spaces/exterior-1280.webp" alt="Lingkor, Boudha — the building exterior" fill sizes="(min-width: 768px) 40vw, 1px" className="object-cover" />
-          </div>
-          <p className="text-label uppercase text-ink/55 md:mt-6">Rooted in Mustang. At home in Boudha.</p>
-          <p className="mt-4 max-w-[18ch] font-display text-[clamp(1.75rem,2.6vw,2.5rem)] leading-tight">A place to arrive.<br />A little longer to stay.</p>
-          <Button asChild><Link href="/contact" onClick={() => setOpen(false)} tabIndex={open ? 0 : -1} className="group mt-6 inline-flex min-h-12 items-center justify-between gap-8 self-start text-label uppercase text-brick">
-            <span className="text-trim">Enquire about a stay</span>
-            <ArrowUpRight aria-hidden="true" className="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-          </Link></Button>
-        </aside>
+          <aside
+            data-menu-item
+            className="flex flex-col justify-center md:border-l md:border-ink/15 md:pl-12 lg:pl-16"
+          >
+            <div className="relative hidden h-[clamp(12rem,32vh,24rem)] overflow-hidden md:block">
+              <Image
+                src="/images/spaces/exterior-1280.webp"
+                alt="Lingkor, Boudha — the building exterior"
+                fill
+                sizes="(min-width: 768px) 40vw, 1px"
+                className="object-cover"
+              />
+            </div>
+            <p className="text-label uppercase text-ink/80 md:mt-6">
+              Rooted in Mustang. At home in Boudha.
+            </p>
+            <p className="mt-4 max-w-[18ch] font-display text-[clamp(1.75rem,2.6vw,2.5rem)] leading-tight">
+              A place to arrive.
+              <br />A little longer to stay.
+            </p>
+            <Button asChild>
+              <Link
+                href="/contact"
+                onClick={() => setOpen(false)}
+                tabIndex={open ? 0 : -1}
+                className="group mt-6 inline-flex min-h-12 items-center justify-between gap-8 self-start text-label uppercase text-brick"
+              >
+                <span className="text-trim">Enquire about a stay</span>
+                {/* <ArrowUpRight aria-hidden="true" className="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" /> */}
+              </Link>
+            </Button>
+          </aside>
         </div>
 
         {/* Bottom — justify-between: Elsewhere (left) / Where (right) */}
@@ -152,30 +196,38 @@ export function NavOverlay({
             <ul className="grid grid-cols-2 gap-x-5 gap-y-2 sm:flex sm:flex-wrap">
               {secondary.map((p) => (
                 <li key={p.href}>
-                  <OverlayExternalLink
-                    href={p.href}
-                    onClick={() => setOpen(false)}
-                    tabIndex={open ? 0 : -1}
-                    className={`group text-label inline-flex items-center gap-1.5 uppercase transition-opacity duration-300 hover:opacity-100 ${
-                      pathname === p.href ? "opacity-100" : "opacity-60"
-                    }`}
-                  >
-                    {p.label}
-                    {p.count !== undefined && (
-                      <sup
-                        aria-hidden="true"
-                        className="ml-0.5 text-[0.7em] leading-none tabular-nums opacity-60"
-                      >
-                        {String(p.count).padStart(2, "0")}
-                      </sup>
-                    )}
-                  </OverlayExternalLink>
+                  <Button asChild>
+                    <Link
+                      href={p.href}
+                      onClick={() => setOpen(false)}
+                      tabIndex={open ? 0 : -1}
+                      className={`text-label uppercase transition-opacity duration-300 hover:opacity-100 ${
+                        pathname === p.href ? "opacity-100" : "opacity-85"
+                      }`}
+                    >
+                      {p.label}
+                      {p.count !== undefined && (
+                        <sup
+                          aria-hidden="true"
+                          className="ml-0.5 text-[0.7em] leading-none tabular-nums opacity-85"
+                        >
+                          {String(p.count).padStart(2, "0")}
+                        </sup>
+                      )}
+                    </Link>
+                  </Button>
                 </li>
               ))}
             </ul>
           </div>
 
-          <a href={CONTACT.phoneHref} tabIndex={open ? 0 : -1} className="text-label tracking-wider text-ink/65 transition-colors hover:text-brick">{CONTACT.phone}</a>
+          <a
+            href={CONTACT.phoneHref}
+            tabIndex={open ? 0 : -1}
+            className="text-label tracking-wider text-ink/85 transition-colors hover:text-brick"
+          >
+            {CONTACT.phone}
+          </a>
 
           <div className="text-left sm:text-right">
             {/* <p className="text-label uppercase opacity-45 mb-3">Where</p> */}

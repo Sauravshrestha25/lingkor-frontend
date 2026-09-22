@@ -74,9 +74,9 @@ export default function MustangPage() {
                 <Rise as="div" key={f.term} delay={i * 90}>
                   <div className="border-t border-space/20 py-5">
                     <dt>
-                      <Label className="opacity-40">{f.term}</Label>
+                      <Label className="opacity-70">{f.term}</Label>
                     </dt>
-                    <dd className="text-body mt-2 opacity-80">{f.detail}</dd>
+                    <dd className="text-body mt-2 opacity-90">{f.detail}</dd>
                   </div>
                 </Rise>
               ))}
@@ -88,7 +88,7 @@ export default function MustangPage() {
             unlike the homepage where the brief asks us to withhold. */}
         <section className="mx-auto w-full shell-max shell-px pb-32 lg:pb-44">
           <Rise>
-            <Label className="opacity-50">On the road</Label>
+            <Label className="opacity-80">On the road</Label>
           </Rise>
 
           <div className="mt-14 grid grid-cols-1 gap-x-8 gap-y-16 sm:grid-cols-2">
@@ -107,9 +107,9 @@ export default function MustangPage() {
                       <h2 className="font-display text-sub">
                         {p.name}
                       </h2>
-                      <Label className="shrink-0 opacity-40">{p.note}</Label>
+                      <Label className="shrink-0 opacity-70">{p.note}</Label>
                     </div>
-                    <p className="text-body mt-4 opacity-70">{p.line}</p>
+                    <p className="text-body mt-4 opacity-90">{p.line}</p>
                   </div>
                 </article>
               </Rise>

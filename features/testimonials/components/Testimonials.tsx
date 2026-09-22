@@ -50,7 +50,7 @@ export default function Testimonials({ voices }: { voices: Voice[] }) {
 
       <div className="mt-12 flex w-full items-center justify-between shell-px">
         <div className="flex items-center gap-5">
-          <Label className="opacity-65">
+          <Label className="opacity-85">
             {String(focus + 1).padStart(2, "0")} /{" "}
             {String(voices.length).padStart(2, "0")}
           </Label>
@@ -66,13 +66,13 @@ export default function Testimonials({ voices }: { voices: Voice[] }) {
         </div>
 
         <div className="flex items-center gap-8">
-          <Label className="hidden opacity-50 sm:block">Drag</Label>
+          <Label className="hidden opacity-80 sm:block">Drag</Label>
           <Button
             type="button"
             onClick={scrollPrev}
             disabled={!canScrollPrev}
             aria-label="Previous"
-            className="text-label cursor-pointer uppercase opacity-65 transition-opacity duration-300 hover:opacity-100 disabled:cursor-default disabled:opacity-25"
+            className="text-label cursor-pointer uppercase opacity-90 transition-opacity duration-300 hover:opacity-100 disabled:cursor-default disabled:opacity-25"
           >
             Prev
           </Button>
@@ -81,7 +81,7 @@ export default function Testimonials({ voices }: { voices: Voice[] }) {
             onClick={scrollNext}
             disabled={!canScrollNext}
             aria-label="Next"
-            className="text-label cursor-pointer uppercase opacity-65 transition-opacity duration-300 hover:opacity-100 disabled:cursor-default disabled:opacity-25"
+            className="text-label cursor-pointer uppercase opacity-90 transition-opacity duration-300 hover:opacity-100 disabled:cursor-default disabled:opacity-25"
           >
             Next
           </Button>

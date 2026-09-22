@@ -82,7 +82,7 @@ export function AboutSection() {
             Boudhanath that circle forms twice a day around the dome, and the
             hotel stands inside it.
           </p>
-          <p className="text-body mt-6 opacity-75">
+          <p className="text-body mt-6 opacity-90">
             The building is Mustang brought south: its colours, its rooms and
             its name all come from the country the caravans came down from.
           </p>

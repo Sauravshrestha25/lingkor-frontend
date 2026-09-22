@@ -39,8 +39,8 @@ export default function JournalPage() {
                 />
                 <div className="mt-8 grid grid-cols-1 gap-6 border-t border-ink/15 pt-8 lg:grid-cols-12">
                   <div className="lg:col-span-3">
-                    <Label className="opacity-50">{lead.kicker}</Label>
-                    <Label className="mt-3 block opacity-40">
+                    <Label className="opacity-80">{lead.kicker}</Label>
+                    <Label className="mt-3 block opacity-70">
                       {formatDate(lead.date)} · {lead.readingTime}
                     </Label>
                   </div>
@@ -48,7 +48,7 @@ export default function JournalPage() {
                     <h2 className="font-display text-section transition-transform duration-700 ease-out group-hover:translate-x-2">
                       {lead.title}
                     </h2>
-                    <p className="text-body mt-6 max-w-[56ch] opacity-75">
+                    <p className="text-body mt-6 max-w-[56ch] opacity-90">
                       {lead.excerpt}
                     </p>
                   </div>
@@ -69,13 +69,13 @@ export default function JournalPage() {
                     strength={8}
                   />
                   <div className="mt-6 border-t border-ink/15 pt-5">
-                    <Label className="opacity-50">
+                    <Label className="opacity-80">
                       {post.kicker} · {formatDate(post.date)}
                     </Label>
                     <h2 className="font-display mt-4 text-sub transition-transform duration-700 ease-out group-hover:translate-x-2">
                       {post.title}
                     </h2>
-                    <p className="text-body mt-4 opacity-70">{post.excerpt}</p>
+                    <p className="text-body mt-4 opacity-90">{post.excerpt}</p>
                   </div>
                 </Link>
               </Rise>

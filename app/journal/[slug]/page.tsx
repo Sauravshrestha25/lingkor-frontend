@@ -33,7 +33,7 @@ export default async function PostPage({ params }: Params) {
       <header className="w-full bg-canvas pt-40 pb-16 lg:pt-52 lg:pb-20">
         <div className="mx-auto w-full shell-max shell-px">
           <Rise>
-            <Label className="opacity-60">
+            <Label className="opacity-85">
               {post.kicker} · {formatDate(post.date)} · {post.readingTime}
             </Label>
           </Rise>
@@ -71,7 +71,7 @@ export default async function PostPage({ params }: Params) {
       <section className="w-full bg-sand py-20 lg:py-28">
         <div className="mx-auto w-full shell-max shell-px">
           <Rise>
-            <Label className="opacity-50">Read next</Label>
+            <Label className="opacity-80">Read next</Label>
             <Link
               href={`/journal/${next.slug}`}
               className="group mt-6 flex flex-col gap-3 sm:flex-row sm:items-baseline sm:justify-between sm:gap-8"
@@ -79,7 +79,7 @@ export default async function PostPage({ params }: Params) {
               <span className="font-display text-[clamp(2rem,4.5vw,3.5rem)] leading-none transition-transform duration-700 ease-out group-hover:translate-x-3">
                 {next.title}
               </span>
-              <span className="text-label shrink-0 uppercase opacity-50">
+              <span className="text-label shrink-0 uppercase opacity-80">
                 {next.kicker}
               </span>
             </Link>

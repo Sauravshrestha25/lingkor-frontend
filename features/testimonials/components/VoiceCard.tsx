@@ -51,12 +51,12 @@ export function VoiceCard({ voice }: { voice: Voice }) {
               {voice.name}
             </p>
             {voice.room && (
-              <Label className="shrink-0 text-[clamp(0.5rem, 0.9rem, 1rem)] opacity-70">
+              <Label className="shrink-0 text-[clamp(0.5rem, 0.9rem, 1rem)] opacity-90">
                 {voice.room}
               </Label>
             )}
           </div>
-          <Label className="mt-2 block opacity-60">{voice.from}</Label>
+          <Label className="mt-2 block opacity-85">{voice.from}</Label>
         </figcaption>
       </div>
     </figure>

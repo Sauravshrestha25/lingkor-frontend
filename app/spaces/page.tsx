@@ -79,8 +79,8 @@ export default function SpacesPage() {
               >
                 <Rise>
                   <div className="flex items-baseline justify-between">
-                    <Label className="opacity-70">{space.role}</Label>
-                    <Label className="opacity-70">
+                    <Label className="opacity-90">{space.role}</Label>
+                    <Label className="opacity-90">
                       {String(i + 1).padStart(2, "0")} / {String(AREAS.length).padStart(2, "0")}
                     </Label>
                   </div>
@@ -97,7 +97,7 @@ export default function SpacesPage() {
                 </Rise>
 
                 <Rise delay={260}>
-                  <Label className="mt-10 block opacity-60">
+                  <Label className="mt-10 block opacity-85">
                     {space.element
                       ? `${space.element} · ${space.hue}`
                       : space.hue}

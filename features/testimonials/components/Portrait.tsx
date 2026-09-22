@@ -49,7 +49,7 @@ export function Portrait({ voice }: { voice: Voice }) {
       <span className="font-display relative select-none text-[clamp(2rem,3.4vw,3rem)] leading-none opacity-90">
         {mark}
       </span>
-      <Label className="absolute bottom-3 left-0 right-0 text-center opacity-50">
+      <Label className="absolute bottom-3 left-0 right-0 text-center opacity-80">
         Portrait to come
       </Label>
     </div>

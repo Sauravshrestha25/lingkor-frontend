@@ -93,8 +93,8 @@ export default function SpacesCarousel({ spaces }: { spaces: Space[] }) {
                     </StarFrame>
 
                     <div className="relative mt-7 flex items-baseline justify-between">
-                      <Label className="opacity-70">{space.role}</Label>
-                      <Label className="opacity-70">
+                      <Label className="opacity-90">{space.role}</Label>
+                      <Label className="opacity-90">
                         {String(i + 1).padStart(2, "0")} /{" "}
                         {String(spaces.length).padStart(2, "0")}
                       </Label>
@@ -109,10 +109,10 @@ export default function SpacesCarousel({ spaces }: { spaces: Space[] }) {
                     </p>
 
                     <div className="relative mt-6 flex items-baseline justify-between gap-4">
-                      <Label className="opacity-60">
+                      <Label className="opacity-85">
                         {space.element} · {space.hue}
                       </Label>
-                      <Label className="shrink-0 opacity-0 transition-opacity duration-500 group-hover:opacity-70">
+                      <Label className="shrink-0 opacity-0 transition-opacity duration-500 group-hover:opacity-90">
                         Enter
                       </Label>
                     </div>
@@ -141,7 +141,7 @@ export default function SpacesCarousel({ spaces }: { spaces: Space[] }) {
             type="button"
             onClick={scrollPrev}
             disabled={!canScrollPrev}
-            className="text-label cursor-pointer uppercase opacity-50 transition-opacity duration-300 hover:opacity-100 disabled:cursor-default disabled:opacity-25"
+            className="text-label cursor-pointer uppercase opacity-90 transition-opacity duration-300 hover:opacity-100 disabled:cursor-default disabled:opacity-25"
           >
             Prev
           </Button>
@@ -149,7 +149,7 @@ export default function SpacesCarousel({ spaces }: { spaces: Space[] }) {
             type="button"
             onClick={scrollNext}
             disabled={!canScrollNext}
-            className="text-label cursor-pointer uppercase opacity-50 transition-opacity duration-300 hover:opacity-100 disabled:cursor-default disabled:opacity-25"
+            className="text-label cursor-pointer uppercase opacity-90 transition-opacity duration-300 hover:opacity-100 disabled:cursor-default disabled:opacity-25"
           >
             Next
           </Button>

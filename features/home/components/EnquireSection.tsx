@@ -33,7 +33,7 @@ export function EnquireSection() {
                 className="font-display mt-8 text-[clamp(1.75rem,1.5rem+2vw,2.75rem)] leading-[0.95]"
               />
               <Rise delay={220} className="mt-10">
-                <p className="text-body max-w-[34ch] opacity-70">
+                <p className="text-body max-w-[34ch] opacity-90">
                   Tell us when you would like to come and how long you can stay.
                   Or write us directly:
                 </p>

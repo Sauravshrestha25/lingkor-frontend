@@ -56,7 +56,7 @@ export default function BoudhaPage() {
       <section className="w-full bg-sand py-28 lg:py-40">
         <div className="mx-auto w-full shell-max shell-px">
           <Rise>
-            <Label className="opacity-60">A few steps away</Label>
+            <Label className="opacity-85">A few steps away</Label>
           </Rise>
 
           <dl className="mt-14 border-t border-ink/15">
@@ -68,7 +68,7 @@ export default function BoudhaPage() {
                       {n.name}
                     </span>
                   </dt>
-                  <dd className="text-body opacity-75">{n.line}</dd>
+                  <dd className="text-body opacity-90">{n.line}</dd>
                 </div>
               </Rise>
             ))}

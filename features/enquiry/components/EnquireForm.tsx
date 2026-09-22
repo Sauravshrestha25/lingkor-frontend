@@ -67,12 +67,12 @@ export default function EnquireForm({
     <form onSubmit={onSubmit} className={`w-full max-w-152 ${tone === "dark" ? "text-space" : "text-ink"}`}>
       <div className="grid grid-cols-1 gap-x-8 gap-y-8 sm:grid-cols-2">
         <label className="block">
-          <Label className="opacity-50">Name</Label>
+          <Label className="opacity-85">Name</Label>
           <input name="name" type="text" required className={`${field} mt-3`} />
         </label>
 
         <label className="block">
-          <Label className="opacity-50">Email</Label>
+          <Label className="opacity-85">Email</Label>
           <input
             name="email"
             type="email"
@@ -82,7 +82,7 @@ export default function EnquireForm({
         </label>
 
         <label className="block">
-          <Label className="opacity-50">Dates</Label>
+          <Label className="opacity-85">Dates</Label>
           <input
             name="dates"
             type="text"
@@ -92,7 +92,7 @@ export default function EnquireForm({
         </label>
 
         <label className="block">
-          <Label className="opacity-50">Guests</Label>
+          <Label className="opacity-85">Guests</Label>
           <input
             name="guests"
             type="text"
@@ -102,7 +102,7 @@ export default function EnquireForm({
         </label>
 
         <label className="col-span-full block">
-          <Label className="opacity-50">Message</Label>
+          <Label className="opacity-85">Message</Label>
           <textarea
             name="message"
             defaultValue={roomName ? `I would like to enquire about the ${roomName}.` : undefined}
@@ -119,7 +119,7 @@ export default function EnquireForm({
       >
         Prepare email enquiry
       </Button>
-      <p className="mt-4 text-sm opacity-65" role="status">
+      <p className="mt-4 text-sm opacity-90" role="status">
         {sent ? "Your email app has been opened. Send the draft there to complete your enquiry." : "Opens your email app with your enquiry ready to send."}
       </p>
     </form>

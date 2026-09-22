@@ -21,7 +21,7 @@ export function VoicesSection() {
           <div className="flex flex-col gap-8 items-center justify-center">
             <div className="flex flex-col items-center justify-center">
               <Rise>
-                <Label className="opacity-65">Voices</Label>
+                <Label className="opacity-85">Voices</Label>
               </Rise>
               <SplitChars
                 lines={["What the road", "leaves with people"]}

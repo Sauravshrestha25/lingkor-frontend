@@ -40,7 +40,7 @@ export default function RoomsRail() {
       </div>
 
       <div className="mt-10 flex w-full items-center justify-between knot-px">
-        <Label className="opacity-50">
+        <Label className="opacity-85">
           {String(focus + 1).padStart(2, "0")} / {ROOMS.length}
         </Label>
         <div className="flex gap-8">
@@ -49,7 +49,7 @@ export default function RoomsRail() {
             onClick={scrollPrev}
             disabled={!canScrollPrev}
             aria-label="Previous room"
-            className="text-label cursor-pointer border border-black/80 px-2 py-2 uppercase opacity-50 transition-opacity duration-300 hover:opacity-100 disabled:cursor-default disabled:opacity-25"
+            className="text-label cursor-pointer border border-black/80 px-2 py-2 uppercase opacity-90 transition-opacity duration-300 hover:opacity-100 disabled:cursor-default disabled:opacity-25"
           >
             <ChevronLeft />
           </button>
@@ -58,7 +58,7 @@ export default function RoomsRail() {
             onClick={scrollNext}
             disabled={!canScrollNext}
             aria-label="Next room"
-            className="text-label cursor-pointer border border-black/80 px-2 py-2 uppercase opacity-50 transition-opacity duration-300 hover:opacity-100 disabled:cursor-default disabled:opacity-25"
+            className="text-label cursor-pointer border border-black/80 px-2 py-2 uppercase opacity-90 transition-opacity duration-300 hover:opacity-100 disabled:cursor-default disabled:opacity-25"
           >
             <ChevronRight />
           </button>

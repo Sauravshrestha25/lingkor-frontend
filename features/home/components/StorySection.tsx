@@ -98,7 +98,7 @@ export function StorySection() {
     >
       <div className="relative z-10 mx-auto w-full shell-max shell-px">
         <div>
-          <Label className="opacity-65">The road south</Label>
+          <Label className="opacity-85">The road south</Label>
           {/*
             The measure is in `em`, so it is a multiple of *this heading's own size* and
             holds the same three-or-four words per line at every width. It was `22ch` on
@@ -152,14 +152,14 @@ export function StorySection() {
                     </div>
 
                     <div className="mt-6 flex gap-5">
-                      <Label className="shrink-0 pt-1.5 opacity-40">
+                      <Label className="shrink-0 pt-1.5 opacity-70">
                         {beat.n}
                       </Label>
                       <div>
                         <h3 className="font-display text-sub">
                           {beat.title}
                         </h3>
-                        <p className="text-body mt-3 max-w-[34ch] opacity-75">
+                        <p className="text-body mt-3 max-w-[34ch] opacity-90">
                           {beat.line}
                         </p>
                       </div>
