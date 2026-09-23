@@ -38,7 +38,7 @@ export function AboutSection() {
         >
           Lingkor will welcome you soon
         </p>
-        <p className="text-body mt-2">
+        <p className="text-body mt-4">
           a hotel, restaurant and garden in Boudha
         </p>
 
