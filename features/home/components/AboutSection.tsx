@@ -13,7 +13,7 @@ export function AboutSection() {
         <span
           role="img"
           aria-label="Lingkor"
-          className="mx-auto block h-auto w-44 aspect-[431/255]"
+          className="mx-auto block h-auto w-32 aspect-[431/255]"
           style={{
             backgroundColor: "#a15147",
             WebkitMaskImage: "url(/Logo/logo.svg)",
@@ -38,21 +38,21 @@ export function AboutSection() {
         >
           Lingkor will welcome you soon
         </p>
-        <p className="text-body mt-3">a hotel, restaurant and garden in Boudha</p>
+        <p className="text-body mt-2">a hotel, restaurant and garden in Boudha</p>
 
         <Image
           src="/images/newwww+contact.png"
           alt=""
           width={2063}
           height={762}
-          className="mx-auto mt-12 h-auto w-72 sm:w-96"
+          className="mx-auto mt-16 h-auto w-56 sm:w-64"
         />
 
-        <div className="mt-12">
+        <div className="mt-10">
           <p className="text-body opacity-90">
             For information, please contact us:
           </p>
-          <div className="mt-4 flex flex-col gap-2">
+          <div className="mt-2 flex flex-col gap-1">
             <a
               href="tel:+9779851413633"
               className="text-body transition-opacity duration-300 hover:opacity-70"
