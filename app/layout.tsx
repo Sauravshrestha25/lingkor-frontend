@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import localfont from "next/font/local";
 import { Lato } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/features/navigation/components/Navbar";
+// import Navbar from "@/features/navigation/components/Navbar";
 import SmoothScroll from "@/components/SmoothScroll";
 import WebxSignature from "@/components/WebxSignature";
 import {
@@ -54,7 +54,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <SmoothScroll />
           {/* <PageTransitionOverlay /> */}
           <WhiteLogoPageTransition />
-          <Navbar />
+          {/* <Navbar /> */}
           {children}
         </TransitionProvider>
       </body>
