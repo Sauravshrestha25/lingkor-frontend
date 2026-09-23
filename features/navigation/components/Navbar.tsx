@@ -290,7 +290,7 @@ export default function Navbar() {
               src={
                 !open && (spacesNav.active ? spacesNav.dark : !past && darkTop)
                   ? "/Logo/logo-white.svg"
-                  : "/Logo/logo-brick.svg"
+                  : "/Logo/logo-navbar.svg"
               }
               alt="Lingkor"
               width={200}

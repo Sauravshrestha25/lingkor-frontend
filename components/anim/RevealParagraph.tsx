@@ -1,13 +1,8 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { Fragment, useEffect, useRef } from "react";
 import { gsap, reduced } from "../../lib/gsap";
 
-/**
- * A long passage that inks in as it crosses the viewport — scrubbed, so the reading
- * is tied to the scroll rather than firing once. Words rather than characters: at
- * paragraph length, per-character would take longer to finish than anyone will wait.
- */
 export function RevealParagraph({
   text,
   className = "",
@@ -20,7 +15,9 @@ export function RevealParagraph({
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+
     const words = el.querySelectorAll<HTMLElement>("[data-word]");
+
     if (reduced()) {
       gsap.set(words, { opacity: 1 });
       return;
@@ -48,13 +45,18 @@ export function RevealParagraph({
     };
   }, []);
 
+  const words = text.split(" ");
+
   return (
     <p className={className}>
-      {text.split(" ").map((word, i) => (
-        <span key={i} data-word className="inline-block">
-          {word}
-          <span>&nbsp;</span>
-        </span>
+      {words.map((word, i) => (
+        <Fragment key={i}>
+          <span data-word className="inline-block">
+            {word}
+          </span>
+
+          {i < words.length - 1 && " "}
+        </Fragment>
       ))}
     </p>
   );

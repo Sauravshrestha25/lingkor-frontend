@@ -29,11 +29,11 @@ export function AboutSection() {
 
         <RevealParagraph
           text="Inspired by memories of caravans descending from Mustang towards the great Stupa of Boudha, we created a place that reconnects these two worlds — allowing you to experience the elemental simplicity and subtle spirit of this culture within a warm and homely Mustang atmosphere."
-          className="text-body mt-10 text-left"
+          className="text-body mt-10 text-justify"
         />
 
         <p
-          className="font-display mt-16 text-[clamp(1.75rem,1.3rem+2vw,2.75rem)] leading-tight"
+          className="font-display mt-16 text-[clamp(1.75rem,1.3rem+2vw,2.75rem)] leading-tight text-[#bd3119]"
           style={{ color: "#a15147" }}
         >
           Lingkor will welcome you soon
@@ -70,7 +70,10 @@ export function AboutSection() {
           </div>
         </div>
 
-        <p className="mt-10" style={{ color: "#a15147" }}>
+        <p
+          className="mt-10 text-2xl text-[#bd3119]"
+          style={{ color: "#a15147" }}
+        >
           More informations coming soon…
         </p>
       </div>
