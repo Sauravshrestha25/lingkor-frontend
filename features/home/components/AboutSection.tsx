@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { RevealParagraph } from "@/components/anim/RevealParagraph";
 
 export function AboutSection() {
@@ -31,10 +32,21 @@ export function AboutSection() {
           className="text-body mt-10"
         />
 
-        <p className="font-display mt-12 text-[clamp(1.5rem,1.1rem+1.5vw,2.25rem)] leading-tight">
-          Lingkor will welcome you soon — a hotel, restaurant and garden in
-          Boudha.
+        <p
+          className="font-display mt-16 text-[clamp(1.75rem,1.3rem+2vw,2.75rem)] leading-tight"
+          style={{ color: "#a15147" }}
+        >
+          Lingkor will welcome you soon
         </p>
+        <p className="text-body mt-3">a hotel, restaurant and garden in Boudha</p>
+
+        <Image
+          src="/images/newwww+contact.png"
+          alt=""
+          width={2063}
+          height={762}
+          className="mx-auto mt-12 h-auto w-72 sm:w-96"
+        />
 
         <div className="mt-12">
           <p className="text-body opacity-90">
@@ -56,8 +68,8 @@ export function AboutSection() {
           </div>
         </div>
 
-        <p className="text-body mt-10 opacity-90">
-          More information coming soon…
+        <p className="mt-10" style={{ color: "#a15147" }}>
+          More informations coming soon…
         </p>
       </div>
     </section>
