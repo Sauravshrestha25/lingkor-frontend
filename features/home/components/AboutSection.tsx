@@ -5,7 +5,7 @@ export function AboutSection() {
   return (
     <section
       id="about"
-      className="home-knot-gutters relative w-full overflow-hidden bg-netsang"
+      className="home-knot-gutters knot-rose relative w-full overflow-hidden bg-netsang"
     >
       <div className="relative z-10 mx-auto w-full max-w-3xl text-center shell-max shell-px py-[calc(var(--shell-gutter)+2rem)]">
         {/* next/image renders an <img>, which can't inherit currentColor into
