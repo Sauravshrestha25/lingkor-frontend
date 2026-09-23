@@ -29,7 +29,7 @@ export function AboutSection() {
 
         <RevealParagraph
           text="Inspired by memories of caravans descending from Mustang towards the great Stupa of Boudha, we created a place that reconnects these two worlds — allowing you to experience the elemental simplicity and subtle spirit of this culture within a warm and homely Mustang atmosphere."
-          className="text-body mt-10"
+          className="text-body mt-10 text-left"
         />
 
         <p
@@ -38,7 +38,9 @@ export function AboutSection() {
         >
           Lingkor will welcome you soon
         </p>
-        <p className="text-body mt-2">a hotel, restaurant and garden in Boudha</p>
+        <p className="text-body mt-2">
+          a hotel, restaurant and garden in Boudha
+        </p>
 
         <Image
           src="/images/newwww+contact.png"
@@ -48,11 +50,11 @@ export function AboutSection() {
           className="mx-auto mt-16 h-auto w-56 sm:w-64"
         />
 
-        <div className="mt-10">
+        <div className="mt-10 flex flex-col gap-2">
           <p className="text-body opacity-90">
             For information, please contact us:
           </p>
-          <div className="mt-2 flex flex-col gap-1">
+          <div className="mt-2 flex flex-col gap-4">
             <a
               href="tel:+9779851413633"
               className="text-body transition-opacity duration-300 hover:opacity-70"

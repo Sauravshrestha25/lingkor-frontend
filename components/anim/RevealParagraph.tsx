@@ -49,7 +49,7 @@ export function RevealParagraph({
   }, []);
 
   return (
-    <p ref={ref} className={className}>
+    <p className={className}>
       {text.split(" ").map((word, i) => (
         <span key={i} data-word className="inline-block">
           {word}

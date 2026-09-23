@@ -659,16 +659,18 @@ export default function Hero() {
       {/* Quiet "sound on" prompt over the film — starts muted. */}
       <button
         type="button"
-        className="hero-prompt absolute bottom-[max(2rem,env(safe-area-inset-bottom))] left-5 z-30 flex size-11 cursor-pointer items-center justify-center border border-space/30 bg-netsang text-ink opacity-0 backdrop-blur-md transition-colors hover:bg-[color-mix(in_srgb,var(--color-netsang)_82%,var(--color-ink))] sm:left-8"
+        className="hero-prompt absolute bottom-[max(0.5rem,env(safe-area-inset-bottom))] left-5 z-30 flex size-[7rem] cursor-pointer items-center justify-center text-white opacity-0 sm:left-8"
         aria-label="Play with sound"
       >
-        <span className="grid size-5 place-items-center">
+        <span className="grid size-[3rem] place-items-center">
           <VolumeX
-            className="hero-prompt-off col-start-1 row-start-1 size-4"
+            className="hero-prompt-off col-start-1 row-start-1 size-[2.5rem]"
+            strokeWidth={2.5}
             aria-hidden
           />
           <Volume2
-            className="hero-prompt-on col-start-1 row-start-1 hidden size-4"
+            className="hero-prompt-on col-start-1 row-start-1 hidden size-[2.5rem]"
+            strokeWidth={2.5}
             aria-hidden
           />
         </span>
@@ -678,9 +680,9 @@ export default function Hero() {
       <button
         type="button"
         aria-label="Skip intro"
-        className="hero-skip absolute bottom-[max(2rem,env(safe-area-inset-bottom))] right-5 z-30 flex size-11 cursor-pointer items-center justify-center border border-space/30 bg-netsang text-ink opacity-0 backdrop-blur-md transition-colors hover:bg-[color-mix(in_srgb,var(--color-netsang)_82%,var(--color-ink))] sm:right-8"
+        className="hero-skip absolute bottom-[max(0.5rem,env(safe-area-inset-bottom))] right-5 z-30 flex size-[7rem] cursor-pointer items-center justify-center text-white opacity-0 sm:right-8"
       >
-        <ChevronsRight className="size-5" aria-hidden="true" />
+        <ChevronsRight className="size-[2.5rem]" strokeWidth={2.5} aria-hidden="true" />
       </button>
 
       {/* `/?step` authoring control — walk the cinematic one beat at a time. */}
