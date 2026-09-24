@@ -32,8 +32,12 @@
   pointer-events: none;
 }
 
-.brand-button::before { left: 7px; }
-.brand-button::after { left: calc(100% - 7px); }
+.brand-button::before {
+  left: 7px;
+}
+.brand-button::after {
+  left: calc(100% - 7px);
+}
 
 .brand-button > .brand-button-outline {
   position: absolute;
@@ -52,7 +56,9 @@
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
   opacity: 0;
-  transition: stroke-dashoffset 600ms cubic-bezier(0.22, 1, 0.36, 1), opacity 150ms ease;
+  transition:
+    stroke-dashoffset 600ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 150ms ease;
 }
 
 .brand-button-content {
@@ -69,7 +75,9 @@
   flex-shrink: 0;
 }
 
-.brand-button:not(:disabled, [aria-disabled="true"]):is(:hover, :focus-visible) > .brand-button-outline path,
+.brand-button:not(:disabled, [aria-disabled="true"]):is(:hover, :focus-visible)
+  > .brand-button-outline
+  path,
 .brand-ring-control:is(:hover, :focus-visible) .brand-ring-line {
   stroke-dashoffset: 0;
   opacity: 1;

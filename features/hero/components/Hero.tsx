@@ -57,12 +57,6 @@ import {
  * Frames, mask geometry and every duration live in `features/preloader/preloader.ts`.
  */
 
-// Module scope evaluates once per document load. A hard refresh / fresh navigation
-// re-evaluates this file, so `freshLoad` is true again and the film replays; a
-// client-nav remount back to `/` reuses the module, finds it false, and honours the
-// once-per-tab `SESSION_KEY` stamp instead of replaying the ~25s cinematic.
-let freshLoad = true;
-
 // `/?step` authoring mode — read once on the client, `false` during SSR + hydration
 // so the step UI never causes a mismatch.
 const noopSubscribe = () => () => {};
@@ -117,26 +111,14 @@ export default function Hero() {
     setStepI(n);
   };
 
-  // The client wants the film on every arrival at `/` — refresh and client-nav back
-  // from another route (which remounts this component). So this is `false` unless
-  // `ONCE_PER_SESSION` is flipped on, in which case a `sessionStorage` stamp makes it
-  // play once per tab. Read once, at render, before any effect claims the intro gate.
+  // With `ONCE_PER_SESSION` on, a `sessionStorage` stamp skips the film on any later
+  // mount in this tab, refresh included. Read once, at render, before any effect
+  // claims the intro gate.
   const seenRef = useRef(
     typeof window !== "undefined" &&
       ONCE_PER_SESSION &&
-      !freshLoad &&
       window.sessionStorage.getItem(SESSION_KEY) === "1",
   );
-
-  // On a real page load, drop any prior stamp so the film runs; later SPA remounts
-  // keep this false and fall back to the stamp check above. `seenRef` above is read
-  // before this effect clears the flag, so the first mount still plays.
-  useLayoutEffect(() => {
-    if (freshLoad) {
-      window.sessionStorage.removeItem(SESSION_KEY);
-      freshLoad = false;
-    }
-  }, []);
 
   // Before paint, so the below-the-fold reveals and the floating sound toggle stay
   // held until the film ends (see `afterIntro` / `isIntroActive`). Only skipped when
