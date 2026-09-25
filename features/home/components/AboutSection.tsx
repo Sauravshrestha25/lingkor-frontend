@@ -1,12 +1,21 @@
 import Image from "next/image";
 import { RevealParagraph } from "@/components/anim/RevealParagraph";
+import { InfinitePattern } from "@/components/media/InfinitePattern";
 
 export function AboutSection() {
   return (
     <section
       id="about"
-      className="home-knot-gutters knot-rose relative w-full overflow-hidden bg-netsang"
+      className="relative isolate w-full overflow-hidden bg-netsang md:px-[9.2%]"
     >
+      {/* Strip width from the client's mockup: 118px of 1280. Both strips are the same
+          crop, not mirrored, as in the mockup. */}
+      <div className="absolute inset-y-0 left-0 hidden w-[9.2%] md:block">
+        <InfinitePattern />
+      </div>
+      <div className="absolute inset-y-0 right-0 hidden w-[9.2%] md:block">
+        <InfinitePattern />
+      </div>
       <div className="relative z-10 mx-auto w-full max-w-3xl text-center shell-max shell-px py-[calc(var(--shell-gutter)+2rem)]">
         {/* next/image renders an <img>, which can't inherit currentColor into
             the SVG's fill — masked with a background colour instead. */}

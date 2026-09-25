@@ -491,20 +491,6 @@ body {
   opacity: var(--knot-opacity);
 }
 
-/* Same knot and tiling, tinted brick: `filter` can only reach black or white,
-   so the knot becomes a mask over a solid colour instead. */
-.home-knot-gutters.knot-rose::before,
-.home-knot-gutters.knot-rose::after {
-  background-image: none;
-  background-color: #a15147;
-  filter: none;
-  opacity: 0.27;
-  mask-image: url("/images/art/knot-filled.png");
-  mask-position: center var(--knot-phase);
-  mask-repeat: repeat-y;
-  mask-size: var(--knot-size) auto;
-}
-
 .home-knot-gutters:has(> .home-knot-border-b) {
   --knot-phase: bottom;
 }
