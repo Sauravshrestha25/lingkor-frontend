@@ -64,11 +64,10 @@ const readStepMode = () =>
   new URLSearchParams(window.location.search).has("step");
 const stepModeServer = () => false;
 
-const REST_HOLD = 2.5; // shrunk mark holds before the resting state fades in
-const HOLD_1 = 0.4; // clean big wordmark holds after the write-on
-const BLUR_ONLY = 1.6; // background blurs in; the mark stays solid + still
-const SHRINK = 2.5; // then the window shrinks + drops
-const SHRUNK_HOLD = 0.7; // shrunk window holds before the signboard fill
+const REST_HOLD = 2.5; // mark holds before the resting state fades in
+const HOLD_1 = 0.08; // clean big wordmark holds after the write-on, before the blur
+const BLUR_ONLY = 1.6; // background blurs in; the mark stays solid + still, unmoved
+const SHRUNK_HOLD = 0.7; // holds before the signboard fill
 const REST_FADE = 1.5; // resting content comes up
 const SKIP_IN_AT = 0.9; // when the skip button fades in
 const PROMPT_IN_AT = 1.6; // when the sound prompt fades in
@@ -83,7 +82,7 @@ const STEP_NAMES = [
   "Mustang 4",
   "Boudhanath",
   "Big wordmark (drawn on)",
-  "Blur + shrink (filled)",
+  "Blurred, mark unmoved (filled)",
   "BG → signboard (final state)",
   "Resting hero: text + cue",
 ];
@@ -172,20 +171,19 @@ export default function Hero() {
       });
     };
 
-    // Where the mark rests permanently once the film reaches its final state — same
-    // placement math the write-on's shrink step uses, shared here so the "jump
-    // straight to rest" and "skip mid-film" paths can put it there directly too.
-    // Match the supplied 1180 × 660 composition; keep the mark readable on phones.
+    // Where the mark rests permanently once the film reaches its final state — the
+    // exact same placement as the moment it was first shown (`layoutFlight`), so it
+    // never drifts between appearing and settling. Shared here so the "jump straight
+    // to rest" and "skip mid-film" paths land on that same spot too.
     const restingLogoBounds = () => {
-      const W = section.clientWidth;
-      const H = section.clientHeight;
-      const w = Math.min(W * (W < 640 ? 0.68 : 0.38), H * 0.7);
-      const finalWidth = w * 1.1025 * 1.1;
+      const W = window.innerWidth;
+      const H = window.innerHeight;
+      const w = Math.min((place.vw / 100) * W, place.max);
       return {
-        width: finalWidth,
-        height: (w / LOGO_RATIO) * 1.1,
-        left: W * 0.485 - finalWidth / 2,
-        top: H * 0.17 - (w / LOGO_RATIO) * 0.1,
+        width: w,
+        height: w / LOGO_RATIO,
+        left: place.xF * (W - w),
+        top: place.yF * (H - (w / LOGO_RATIO)),
       };
     };
     let resting = false;
@@ -316,16 +314,10 @@ export default function Hero() {
     const fillAt = blurShrinkAt + BLUR_ONLY + SHRUNK_HOLD; // bg → signboard (mark stays filled)
     const restAt = fillAt + FILL_BEAT + REST_HOLD; // final resting state begins here
 
-    // Step 7: the solid mark moves into the reference composition.
-    const shrinkFlight = () => {
-      const el = flightEl();
-      if (!el) return;
+    // The mark never moves after `layoutFlight` places it — `resting` just tracks
+    // that it has reached its (only, permanent) position, for the resize listener.
+    const markResting = () => {
       resting = true;
-      gsap.to(el, {
-        ...restingLogoBounds(),
-        duration: SHRINK,
-        ease: "power2.inOut",
-      });
     };
 
     tl.fromTo(
@@ -380,15 +372,16 @@ export default function Hero() {
         { opacity: 0, duration: FILL_BEAT, ease: "power2.inOut" },
         solidAt + FILL_BEAT * 0.45,
       )
-      // Step 7 — after a short hold, the background blurs in AND the mark shrinks +
-      // drops to its resting size, together. It stays a solid white fill throughout.
+      // Step 7 — the background blurs in; the mark holds exactly where it first
+      // appeared, solid and still, all the way through to the final state. It never
+      // moves again after `layoutFlight` places it.
       .fromTo(
         q(".hero-blur"),
         { opacity: 0 },
         { opacity: 1, duration: BLUR_ONLY, ease: "power2.inOut" },
         blurShrinkAt,
       )
-      .call(shrinkFlight, [], blurShrinkAt)
+      .call(markResting, [], blurShrinkAt)
       // Step 8 — background fades to the signboard wall; the mark is already filled
       // and shrunk, so it just sits there while the wall arrives and the blur lifts.
       .to(
@@ -432,7 +425,7 @@ export default function Hero() {
         3 * HOLD + FADE, // Mustang 4
         boudhaAt + FADE, // Boudhanath sharp
         bigCleanAt, // BIG wordmark drawn on, filled white, over sharp Boudha
-        blurShrinkAt + Math.max(BLUR_ONLY, SHRINK), // blurred + shrunk, still filled
+        fillAt - 0.05, // blurred, mark unmoved, still filled
         fillAt + FILL_BEAT, // bg → signboard, mark stays filled at its shrunk size — final state
         tl.duration() - 0.05, // resting hero: text + scroll cue in
       ].map((t) => Math.max(0, t));

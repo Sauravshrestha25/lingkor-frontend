@@ -39,7 +39,7 @@ export const SESSION_KEY = "lb-preloaded";
  * film starts and jumps straight to the resting hero on any later mount — refresh
  * included. A new tab plays it again. Set `false` to play on every arrival at `/`.
  */
-export const ONCE_PER_SESSION = true;
+export const ONCE_PER_SESSION = false;
 export const MIN_MS = 300; // floor before the timeline starts — frame 1 is on screen for it
 export const MAX_MS = 5000; // ceiling: start anyway, even if the first frame never arrives
 export const FAILSAFE_MS = 45000; // last resort: never leave the navbar logo hidden (> full runtime)
@@ -60,7 +60,7 @@ export const REVEAL_BEAT = 3.2; // the big mark writes itself on, spire → down
  */
 export const BLUR_IN = 1.2;
 export const WRITE_LEAD = 0.4; // blur gets this head start before the pen moves
-export const FILL_BEAT = 1.3; // glyph dissolves to solid / cross-fades between states
+export const FILL_BEAT = 0.2; // glyph dissolves to solid / cross-fades between states
 export const BOUDHA_HOLD = SHARP_BEAT + REVEAL_BEAT + FILL_BEAT;
 export const FADE = 2.0; // cross-dissolve length — must stay under HOLD so frames keep moving
 
