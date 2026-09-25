@@ -68,6 +68,7 @@ const REST_HOLD = 2.5; // mark holds before the resting state fades in
 const HOLD_1 = 0.08; // clean big wordmark holds after the write-on, before the blur
 const BLUR_ONLY = 1.6; // background blurs in; the mark stays solid + still, unmoved
 const SHRUNK_HOLD = 0.7; // holds before the signboard fill
+const SIGN_FADE = 1.3; // blur lifts / signboard arrives — kept slow, independent of FILL_BEAT
 const REST_FADE = 1.5; // resting content comes up
 const SKIP_IN_AT = 0.9; // when the skip button fades in
 const PROMPT_IN_AT = 1.6; // when the sound prompt fades in
@@ -312,7 +313,7 @@ export default function Hero() {
     const bigCleanAt = solidAt + FILL_BEAT; // big wordmark solid + clean over sharp Boudha
     const blurShrinkAt = bigCleanAt + HOLD_1; // short hold, then blur + shrink together
     const fillAt = blurShrinkAt + BLUR_ONLY + SHRUNK_HOLD; // bg → signboard (mark stays filled)
-    const restAt = fillAt + FILL_BEAT + REST_HOLD; // final resting state begins here
+    const restAt = fillAt + SIGN_FADE + REST_HOLD; // final resting state begins here
 
     // The mark never moves after `layoutFlight` places it — `resting` just tracks
     // that it has reached its (only, permanent) position, for the resize listener.
@@ -386,12 +387,12 @@ export default function Hero() {
       // and shrunk, so it just sits there while the wall arrives and the blur lifts.
       .to(
         q(".hero-sign"),
-        { opacity: 1, duration: FILL_BEAT, ease: "power2.inOut" },
+        { opacity: 1, duration: SIGN_FADE, ease: "power2.inOut" },
         fillAt,
       )
       .to(
         q(".hero-blur"),
-        { opacity: 0, duration: FILL_BEAT, ease: "power2.inOut" },
+        { opacity: 0, duration: SIGN_FADE, ease: "power2.inOut" },
         fillAt,
       )
       // Phase 3 — this IS the final state: the mark stays put, on the signboard, no
@@ -426,7 +427,7 @@ export default function Hero() {
         boudhaAt + FADE, // Boudhanath sharp
         bigCleanAt, // BIG wordmark drawn on, filled white, over sharp Boudha
         fillAt - 0.05, // blurred, mark unmoved, still filled
-        fillAt + FILL_BEAT, // bg → signboard, mark stays filled at its shrunk size — final state
+        fillAt + SIGN_FADE, // bg → signboard, mark stays filled at its shrunk size — final state
         tl.duration() - 0.05, // resting hero: text + scroll cue in
       ].map((t) => Math.max(0, t));
       stopsRef.current = stops;
