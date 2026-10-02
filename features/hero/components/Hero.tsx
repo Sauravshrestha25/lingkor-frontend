@@ -64,12 +64,14 @@ const readStepMode = () =>
   new URLSearchParams(window.location.search).has("step");
 const stepModeServer = () => false;
 
-const REST_HOLD = 2.5; // mark holds before the resting state fades in
+const REST_HOLD = 0.1; // mark holds before the resting state fades in
 const HOLD_1 = 0.08; // clean big wordmark holds after the write-on, before the blur
-const BLUR_ONLY = 1.6; // background blurs in; the mark stays solid + still, unmoved
-const SHRUNK_HOLD = 0.7; // holds before the signboard fill
-const SIGN_FADE = 1.3; // blur lifts / signboard arrives — kept slow, independent of FILL_BEAT
-const REST_FADE = 1.5; // resting content comes up
+const BLUR_ONLY = 1.0; // background blurs in; the mark stays solid + still, unmoved
+const SHRUNK_HOLD = 0.2; // holds before the signboard fill
+const REST_SCALE = 0.8; // final-state mark size relative to the big write-on mark
+const EMBLEM_X = 0.55; // emblem's x within the artwork — the shrink pivots on it
+const SIGN_FADE = 1.0; // blur lifts / signboard arrives / mark shrinks
+const REST_FADE = 0.5; // resting content comes up
 const SKIP_IN_AT = 0.9; // when the skip button fades in
 const PROMPT_IN_AT = 1.6; // when the sound prompt fades in
 
@@ -172,20 +174,27 @@ export default function Hero() {
       });
     };
 
-    // Where the mark rests permanently once the film reaches its final state — the
-    // exact same placement as the moment it was first shown (`layoutFlight`), so it
-    // never drifts between appearing and settling. Shared here so the "jump straight
-    // to rest" and "skip mid-film" paths land on that same spot too.
+    // Final-state mark: the big mark scaled down in place. Top edge and the emblem's
+    // x stay fixed, so it only shrinks — it never drifts up. Shared by the timeline
+    // and the "jump to rest" / "skip mid-film" paths.
     const restingLogoBounds = () => {
       const W = window.innerWidth;
       const H = window.innerHeight;
       const w = Math.min((place.vw / 100) * W, place.max);
+      const left = place.xF * (W - w);
+      const top = place.yF * (H - w / LOGO_RATIO);
+      const w2 = w * REST_SCALE;
       return {
-        width: w,
-        height: w / LOGO_RATIO,
-        left: place.xF * (W - w),
-        top: place.yF * (H - (w / LOGO_RATIO)),
+        width: w2,
+        height: w2 / LOGO_RATIO,
+        left: left + EMBLEM_X * (w - w2),
+        top,
       };
+    };
+    // The Tibetan name sits just under the resting mark's real bottom edge.
+    const tibetanTop = () => {
+      const b = restingLogoBounds();
+      return b.top + b.height + window.innerHeight * 0.02;
     };
     let resting = false;
     const layoutFlightRest = () => {
@@ -200,6 +209,7 @@ export default function Hero() {
         rotation: 0,
         opacity: 1,
       });
+      gsap.set(q(".hero-tibetan"), { top: tibetanTop() });
     };
 
     const setStart = () => {
@@ -300,23 +310,25 @@ export default function Hero() {
     // Phase 1 — the Mustang frames, long cross-dissolves.
     q(".hero-page").forEach((page, i) => {
       if (i === 0) return;
-      tl.to(
+      // Melt: the incoming frame dissolves in soft-focus and sharpens as it lands.
+      tl.fromTo(
         page,
-        { opacity: 1, duration: FADE, ease: "power1.inOut" },
+        { opacity: 0, filter: "blur(14px)" },
+        { opacity: 1, filter: "blur(0px)", duration: FADE, ease: "sine.inOut" },
         i * HOLD,
       );
     });
 
     const boudhaAt = (PHOTOS.length - 1) * HOLD;
-    const glyphAt = boudhaAt + SHARP_BEAT;
+    // Write-on waits for Boudha's melt to land, then a short sharp beat.
+    const glyphAt = boudhaAt + Math.max(SHARP_BEAT, FADE + 0.77);
     const solidAt = glyphAt + REVEAL_BEAT;
     const bigCleanAt = solidAt + FILL_BEAT; // big wordmark solid + clean over sharp Boudha
     const blurShrinkAt = bigCleanAt + HOLD_1; // short hold, then blur + shrink together
     const fillAt = blurShrinkAt + BLUR_ONLY + SHRUNK_HOLD; // bg → signboard (mark stays filled)
     const restAt = fillAt + SIGN_FADE + REST_HOLD; // final resting state begins here
 
-    // The mark never moves after `layoutFlight` places it — `resting` just tracks
-    // that it has reached its (only, permanent) position, for the resize listener.
+    // Once the shrink lands, resizes re-place the mark at its resting bounds.
     const markResting = () => {
       resting = true;
     };
@@ -374,17 +386,29 @@ export default function Hero() {
         solidAt + FILL_BEAT * 0.45,
       )
       // Step 7 — the background blurs in; the mark holds exactly where it first
-      // appeared, solid and still, all the way through to the final state. It never
-      // moves again after `layoutFlight` places it.
+      // appeared, solid and still.
       .fromTo(
         q(".hero-blur"),
         { opacity: 0 },
         { opacity: 1, duration: BLUR_ONLY, ease: "power2.inOut" },
         blurShrinkAt,
       )
-      .call(markResting, [], blurShrinkAt)
-      // Step 8 — background fades to the signboard wall; the mark is already filled
-      // and shrunk, so it just sits there while the wall arrives and the blur lifts.
+      // Step 8 — background fades to the signboard wall while the mark shrinks in
+      // place (top edge fixed) to make room for the Tibetan name below it.
+      .to(
+        q(".hero-flight"),
+        {
+          width: () => restingLogoBounds().width,
+          height: () => restingLogoBounds().height,
+          left: () => restingLogoBounds().left,
+          top: () => restingLogoBounds().top,
+          duration: SIGN_FADE,
+          ease: "power2.inOut",
+        },
+        fillAt,
+      )
+      .set(q(".hero-tibetan"), { top: () => tibetanTop() }, fillAt)
+      .call(markResting, [], fillAt + SIGN_FADE)
       .to(
         q(".hero-sign"),
         { opacity: 1, duration: SIGN_FADE, ease: "power2.inOut" },
@@ -408,11 +432,11 @@ export default function Hero() {
         },
         restAt,
       )
-      .call(finishIntro, [], restAt + 0.3)
+      .call(finishIntro, [], restAt + 0.1)
       .to(
         q(".hero-rest"),
         { opacity: 1, duration: REST_FADE, ease: "power2.out" },
-        restAt + 0.5,
+        restAt + 0.2,
       );
 
     // Authoring: freeze at every scene / animation boundary. The Prev/Next buttons

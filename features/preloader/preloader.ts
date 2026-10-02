@@ -47,7 +47,7 @@ export const FAILSAFE_MS = 45000; // last resort: never leave the navbar logo hi
 // ~25s total, by request — the musician is scoring to this length, and every frame
 // should have room to be looked at. The visitor is never trapped in it: any scroll,
 // wheel or touch-drag fast-forwards it to the resting hero (see Hero.tsx).
-export const HOLD = 2.6; // each Mustang frame
+export const HOLD = 3.65; // each Mustang frame
 // Boudha's beats. They add up to BOUDHA_HOLD.
 export const SHARP_BEAT = 2.3; // Boudha alone, sharp
 export const REVEAL_BEAT = 2.8; // the big mark writes itself on, spire → down
@@ -62,7 +62,7 @@ export const BLUR_IN = 0.8;
 export const WRITE_LEAD = 0.4; // blur gets this head start before the pen moves
 export const FILL_BEAT = 0.2; // glyph dissolves to solid / cross-fades between states
 export const BOUDHA_HOLD = SHARP_BEAT + REVEAL_BEAT + FILL_BEAT;
-export const FADE = 2.0; // cross-dissolve length — must stay under HOLD so frames keep moving
+export const FADE = 3.55; // cross-dissolve length — must stay under HOLD so frames keep moving
 
 // The SVG is both the mask and the stroked outline, so the two share one geometry —
 // the PNG has different padding and would not line up with the drawn paths.
@@ -122,7 +122,7 @@ export const MOBILE_MAX_W = 1024; // <= this viewport width uses LOGO_MOBILE (ph
  * glyph sitting on the real gold spire (client reference). Nudge `xF` / `yF` against
  * a real viewport so the glyph lands on the spire.
  */
-export const LOGO_BIG: LogoNums = { vw: 44, max: 1400, xF: 0.45, yF: 0.3 };
+export const LOGO_BIG: LogoNums = { vw: 53, max: 1600, xF: 0.447, yF: 0.376 };
 
 export const pickLogo = (viewportW: number): LogoNums =>
   viewportW <= MOBILE_MAX_W ? { ...LOGO_MOBILE } : { ...LOGO_DESKTOP };
