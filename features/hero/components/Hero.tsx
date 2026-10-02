@@ -69,7 +69,6 @@ const REST_HOLD = 0.1; // mark holds before the resting state fades in
 const HOLD_1 = 0.08; // clean big wordmark holds after the write-on, before the blur
 const BLUR_ONLY = 1.0; // background blurs in; the mark stays solid + still, unmoved
 const SHRUNK_HOLD = 0.2; // holds before the signboard fill
-const REST_SCALE = 0.8; // final-state mark size relative to the big write-on mark
 const SIGN_FADE = 1.0; // blur lifts / signboard arrives / mark shrinks
 const REST_FADE = 0.5; // resting content comes up
 const SKIP_IN_AT = 0.9; // when the skip button fades in
@@ -176,41 +175,49 @@ export default function Hero() {
     // Final-state mark: the big mark scaled down, centred horizontally, top edge
     // fixed — so it never drifts up. Shared by the timeline
     // and the "jump to rest" / "skip mid-film" paths.
+    // Final state on the signboard, from the client's reference frame: the mark is
+    // 47.7% of the screen width, centred, its top at 12.3% of the height. Height-capped
+    // on very wide screens; portrait gets a wider mark lower down.
     const restingLogoBounds = () => {
       const W = window.innerWidth;
       const H = window.innerHeight;
-      const w = Math.min((place.vw / 100) * W, place.max);
-      const top = place.yF * (H - w / LOGO_RATIO);
-      const w2 = w * REST_SCALE;
+      const portrait = W < H;
+      const w = portrait ? 0.8 * W : Math.min(0.477 * W, 0.916 * H);
       return {
-        width: w2,
-        height: w2 / LOGO_RATIO,
-        left: (W - w2) / 2,
-        top,
+        width: w,
+        height: w / LOGO_RATIO,
+        left: (W - w) / 2,
+        top: portrait ? 0.2 * H : 0.123 * H,
       };
     };
-    // The Tibetan name sits just under the resting mark's real bottom edge.
+    // Glyph extent of a text block relative to its own box (the Tibetan font's
+    // stacked letters reach far outside its line box).
+    const glyphs = (el: HTMLElement | undefined) => {
+      if (!el) return { above: 0, below: 0 };
+      const r = document.createRange();
+      r.selectNodeContents(el);
+      const g = r.getBoundingClientRect();
+      const b = el.getBoundingClientRect();
+      return { above: b.top - g.top, below: g.bottom - b.top };
+    };
+    // Tibetan name tucked just under the mark's flourish (the artwork's ink ends
+    // at 95.4% of its box height).
     const tibetanTop = () => {
       const b = restingLogoBounds();
-      return b.top + b.height + window.innerHeight * 0.02;
+      const tib = q(".hero-tibetan")[0] as HTMLElement | undefined;
+      return b.top + b.height * 0.954 + window.innerHeight * 0.01 + glyphs(tib).above;
     };
-    // Tagline: low on landscape (80%), straight under the Tibetan name on portrait —
-    // and never closer than a small gap to it on any screen.
+    // Tagline centred at 90% of the height on landscape (reference), straight under
+    // the Tibetan name on portrait — never closer than a small gap to it.
     const taglineTop = () => {
       const H = window.innerHeight;
-      // Measured from the glyphs, not the line box: the Tibetan font's stacked
-      // letters reach well below its line height.
       const tib = q(".hero-tibetan")[0] as HTMLElement | undefined;
-      let below = 0;
-      if (tib) {
-        const r = document.createRange();
-        r.selectNodeContents(tib);
-        below = r.getBoundingClientRect().bottom - tib.getBoundingClientRect().top;
-      }
-      const tibBottom = tibetanTop() + below;
+      const tag = q(".hero-tagline")[0] as HTMLElement | undefined;
+      const tibBottom = tibetanTop() + glyphs(tib).below;
+      const tagH = tag?.offsetHeight ?? 0;
       return window.innerWidth < H
         ? tibBottom + H * 0.06
-        : Math.max(H * 0.8, tibBottom + H * 0.04);
+        : Math.max(H * 0.9 - tagH / 2, tibBottom + H * 0.03);
     };
     let resting = false;
     const layoutFlightRest = () => {
