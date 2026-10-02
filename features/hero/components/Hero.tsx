@@ -186,8 +186,8 @@ export default function Hero() {
       return {
         width: w,
         height: w / LOGO_RATIO,
-        // Slightly left of centre, as in the reference (3.5% of the width).
-        left: (W - w) / 2 - 0.035 * W,
+        // Slightly left of centre, as in the reference (3% of the width).
+        left: (W - w) / 2 - 0.03 * W,
         top: portrait ? 0.2 * H : 0.123 * H,
       };
     };
