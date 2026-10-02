@@ -6,7 +6,7 @@ export function AboutSection() {
   return (
     <section
       id="about"
-      className="relative isolate flex h-svh w-full overflow-hidden bg-netsang md:px-[9.2%]"
+      className="relative isolate flex min-h-svh w-full overflow-hidden bg-netsang md:h-svh md:px-[9.2%]"
     >
       {/* Strip width from the client's mockup: 118px of 1280. Both strips are the same
           crop, not mirrored, as in the mockup. */}
@@ -16,7 +16,7 @@ export function AboutSection() {
       <div className="absolute inset-y-0 right-0 hidden w-[9.2%] opacity-30 md:block">
         <InfinitePattern />
       </div>
-      <div className="relative z-10 mx-auto flex h-full w-full max-w-3xl flex-col items-center justify-between text-center shell-max shell-px pt-1 pb-[3svh]">
+      <div className="relative z-10 mx-auto flex min-h-svh w-full max-w-3xl flex-col items-center justify-between gap-8 text-center shell-max shell-px pt-1 pb-[3svh] md:h-full md:min-h-0 md:gap-0">
         {/* next/image renders an <img>, which can't inherit currentColor into
             the SVG's fill — masked with a background colour instead. */}
         <span
@@ -38,12 +38,12 @@ export function AboutSection() {
 
         <RevealParagraph
           text="Inspired by memories of caravans descending from Mustang towards the great Stupa of Boudha, we created a place that reconnects these two worlds — allowing you to experience the elemental simplicity and subtle spirit of this culture within a warm and homely Mustang atmosphere."
-          className="text-body text-justify"
+          className="text-body text-center md:text-justify"
         />
 
         <div>
           <p
-            className="font-display text-[clamp(1.5rem,1.1rem+1.6vw,2.5rem)] leading-tight text-[#bd3119]"
+            className="font-display text-balance text-[clamp(1.5rem,1.1rem+1.6vw,2.5rem)] leading-tight text-[#bd3119]"
             style={{ color: "#a15147" }}
           >
             Lingkor will welcome you soon
@@ -74,7 +74,7 @@ export function AboutSection() {
             </a>
             <a
               href="mailto:phuntsokg6808@gmail.com"
-              className="text-body transition-opacity duration-300 mt-2 hover:opacity-70"
+              className="text-body transition-opacity duration-300 mt-3 hover:opacity-70"
             >
               phuntsokg6808@gmail.com
             </a>
@@ -82,7 +82,7 @@ export function AboutSection() {
         </div>
 
         <p
-          className="text-2xl mb-2  text-[#bd3119]"
+          className="text-balance text-2xl mb-2 text-[#bd3119]"
           style={{ color: "#a15147" }}
         >
           More informations coming soon…

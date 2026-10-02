@@ -20,11 +20,12 @@ import {
   FADE,
   FILL_BEAT,
   HOLD,
-  LOGO_BIG,
+  bigLogoFor,
   LOGO_MASK,
   LOGO_RATIO,
   LOGO_SRC,
   logoOnlyFor,
+  logoW,
   logoX,
   logoY,
   ONCE_PER_SESSION,
@@ -69,7 +70,6 @@ const HOLD_1 = 0.08; // clean big wordmark holds after the write-on, before the 
 const BLUR_ONLY = 1.0; // background blurs in; the mark stays solid + still, unmoved
 const SHRUNK_HOLD = 0.2; // holds before the signboard fill
 const REST_SCALE = 0.8; // final-state mark size relative to the big write-on mark
-const EMBLEM_X = 0.55; // emblem's x within the artwork — the shrink pivots on it
 const SIGN_FADE = 1.0; // blur lifts / signboard arrives / mark shrinks
 const REST_FADE = 0.5; // resting content comes up
 const SKIP_IN_AT = 0.9; // when the skip button fades in
@@ -141,9 +141,8 @@ export default function Hero() {
     const flightEl = () => q(".hero-flight")[0] as HTMLElement | undefined;
     const maskEl = () => q(".hero-mask")[0] as HTMLElement | undefined;
 
-    // Portrait phones crop the Boudha frame hard, so the mark needs a different
-    // width and offset there. Picked once on mount.
-    const place = LOGO_BIG;
+    // Re-derived on resize — it depends on where the cover-scaled photo lands.
+    let place = bigLogoFor(window.innerWidth, window.innerHeight);
 
     // The write-on mask is the whole "Lingkor" wordmark, spire glyph on the gold
     // spire — unchanged. The React inline `style={LOGO_MASK}` is the desktop default.
@@ -174,20 +173,19 @@ export default function Hero() {
       });
     };
 
-    // Final-state mark: the big mark scaled down in place. Top edge and the emblem's
-    // x stay fixed, so it only shrinks — it never drifts up. Shared by the timeline
+    // Final-state mark: the big mark scaled down, centred horizontally, top edge
+    // fixed — so it never drifts up. Shared by the timeline
     // and the "jump to rest" / "skip mid-film" paths.
     const restingLogoBounds = () => {
       const W = window.innerWidth;
       const H = window.innerHeight;
       const w = Math.min((place.vw / 100) * W, place.max);
-      const left = place.xF * (W - w);
       const top = place.yF * (H - w / LOGO_RATIO);
       const w2 = w * REST_SCALE;
       return {
         width: w2,
         height: w2 / LOGO_RATIO,
-        left: left + EMBLEM_X * (w - w2),
+        left: (W - w2) / 2,
         top,
       };
     };
@@ -195,6 +193,24 @@ export default function Hero() {
     const tibetanTop = () => {
       const b = restingLogoBounds();
       return b.top + b.height + window.innerHeight * 0.02;
+    };
+    // Tagline: low on landscape (80%), straight under the Tibetan name on portrait —
+    // and never closer than a small gap to it on any screen.
+    const taglineTop = () => {
+      const H = window.innerHeight;
+      // Measured from the glyphs, not the line box: the Tibetan font's stacked
+      // letters reach well below its line height.
+      const tib = q(".hero-tibetan")[0] as HTMLElement | undefined;
+      let below = 0;
+      if (tib) {
+        const r = document.createRange();
+        r.selectNodeContents(tib);
+        below = r.getBoundingClientRect().bottom - tib.getBoundingClientRect().top;
+      }
+      const tibBottom = tibetanTop() + below;
+      return window.innerWidth < H
+        ? tibBottom + H * 0.06
+        : Math.max(H * 0.8, tibBottom + H * 0.04);
     };
     let resting = false;
     const layoutFlightRest = () => {
@@ -210,6 +226,7 @@ export default function Hero() {
         opacity: 1,
       });
       gsap.set(q(".hero-tibetan"), { top: tibetanTop() });
+      gsap.set(q(".hero-tagline"), { top: taglineTop() });
     };
 
     const setStart = () => {
@@ -261,8 +278,20 @@ export default function Hero() {
 
     setStart();
     const onResize = () => {
+      place = bigLogoFor(window.innerWidth, window.innerHeight);
       if (resting) layoutFlightRest();
       else layoutFlight();
+      // The write-on mask is sized/positioned from `place` too — re-apply it.
+      const el = maskEl();
+      if (!el) return;
+      if (wipeDropped) {
+        dropWipe();
+      } else {
+        const size = `${logoW(place)}, 100% 200%`;
+        el.style.setProperty("-webkit-mask-size", size);
+        el.style.maskSize = size;
+        paintWipe();
+      }
     };
     window.addEventListener("resize", onResize);
 
@@ -285,7 +314,9 @@ export default function Hero() {
       el.style.setProperty("-webkit-mask-position", pos);
       el.style.maskPosition = pos;
     };
+    let wipeDropped = false;
     const dropWipe = () => {
+      wipeDropped = true;
       const el = maskEl();
       if (!el) return;
       const only = logoOnlyFor(place);
@@ -408,6 +439,7 @@ export default function Hero() {
         fillAt,
       )
       .set(q(".hero-tibetan"), { top: () => tibetanTop() }, fillAt)
+      .set(q(".hero-tagline"), { top: () => taglineTop() }, fillAt)
       .call(markResting, [], fillAt + SIGN_FADE)
       .to(
         q(".hero-sign"),
@@ -712,7 +744,7 @@ export default function Hero() {
       <div className="hero-rest hero-tibetan pointer-events-none absolute inset-x-0 top-[56%] text-center text-white opacity-0">
         <p lang="bo">གླིང་སྐོར།</p>
       </div>
-      <div className="hero-rest absolute inset-x-0 top-[80%] px-6 text-center text-white opacity-0">
+      <div className="hero-rest hero-tagline absolute inset-x-0 top-[58%] px-6 text-center text-white opacity-0 landscape:top-[80%]">
         <p className="font-display text-[clamp(1.25rem,3.55vw,4rem)] font-normal leading-[1.2] tracking-[0.06em]">
           Rest in the Spirit of Mustang
         </p>

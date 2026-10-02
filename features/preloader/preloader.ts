@@ -122,7 +122,23 @@ export const MOBILE_MAX_W = 1024; // <= this viewport width uses LOGO_MOBILE (ph
  * glyph sitting on the real gold spire (client reference). Nudge `xF` / `yF` against
  * a real viewport so the glyph lands on the spire.
  */
-export const LOGO_BIG: LogoNums = { vw: 53, max: 1600, xF: 0.447, yF: 0.376 };
+// Placed in the Boudha photo's own coordinates, not the viewport's: the photo is
+// `object-cover`, so where it lands depends on the screen's aspect. Working out the
+// photo's on-screen rect first keeps the mark on the spire, at the same size relative
+// to the stupa, on every screen. Fractions are of the photo, from the client's
+// reference: mark 53% of the photo's width, its top at 16% of its height, the emblem
+// (55% across the artwork) on the spire (50.5% across the photo). Narrow screens cap
+// the mark at 92% of the viewport so it never runs off the edge.
+export const BOUDHA_ASPECT = 2400 / 1256;
+export const bigLogoFor = (W: number, H: number): LogoNums => {
+  const iw = W / H >= BOUDHA_ASPECT ? W : H * BOUDHA_ASPECT;
+  const ih = iw / BOUDHA_ASPECT;
+  const w = Math.min(0.53 * iw, 0.92 * W);
+  const h = w / LOGO_RATIO;
+  const left = (W - iw) / 2 + 0.505 * iw - 0.55 * w;
+  const top = (H - ih) / 2 + 0.16 * ih;
+  return { vw: (w / W) * 100, max: 100000, xF: left / (W - w), yF: top / (H - h) };
+};
 
 export const pickLogo = (viewportW: number): LogoNums =>
   viewportW <= MOBILE_MAX_W ? { ...LOGO_MOBILE } : { ...LOGO_DESKTOP };
