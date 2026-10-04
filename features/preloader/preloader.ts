@@ -127,15 +127,24 @@ export const MOBILE_MAX_W = 1024; // <= this viewport width uses LOGO_MOBILE (ph
 // photo's on-screen rect first keeps the mark on the spire, at the same size relative
 // to the stupa, on every screen. Fractions are of the photo, from the client's
 // reference: mark 53% of the photo's width, its top at 16% of its height, the emblem
-// (55% across the artwork) on the spire (50.5% across the photo). Narrow screens cap
-// the mark at 92% of the viewport so it never runs off the edge.
+// (55% across the artwork) on the spire (50.36% across the photo).
 export const BOUDHA_ASPECT = 2400 / 1256;
+const SPIRE_X = 0.5036; // emblem's x across the photo
+const EMBLEM_X = 0.55; // emblem's x across the logo artwork
 export const bigLogoFor = (W: number, H: number): LogoNums => {
   const iw = W / H >= BOUDHA_ASPECT ? W : H * BOUDHA_ASPECT;
   const ih = iw / BOUDHA_ASPECT;
-  const w = Math.min(0.53 * iw, 0.92 * W);
+  // Where the emblem sits, as a point on the photo — never a screen fraction.
+  const spireX = (W - iw) / 2 + SPIRE_X * iw;
+  // Narrow screens: the mark shrinks until it fits with a 2% margin either side,
+  // rather than sliding — so the emblem stays on that same point of the photo.
+  const w = Math.min(
+    0.53 * iw,
+    (spireX - 0.02 * W) / EMBLEM_X,
+    (0.98 * W - spireX) / (1 - EMBLEM_X),
+  );
   const h = w / LOGO_RATIO;
-  const left = (W - iw) / 2 + 0.505 * iw - 0.55 * w;
+  const left = spireX - EMBLEM_X * w;
   const top = (H - ih) / 2 + 0.16 * ih;
   return { vw: (w / W) * 100, max: 100000, xF: left / (W - w), yF: top / (H - h) };
 };

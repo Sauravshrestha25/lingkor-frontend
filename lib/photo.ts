@@ -11,7 +11,7 @@
  * wrong for most of the library — only 34 of the 123 webp files ever had a `-1280`
  * sibling, so the small candidate 404'd for the rest.
  */
-export const BOUDHA = "/images/boudha/boudha-intro.jpg";
+export const BOUDHA = "/images/boudha/boudha-intro-hd.jpg";
 
 /**
  * Where the cinematic lands: a cracked-plaster wall in the prayer-flag palette
