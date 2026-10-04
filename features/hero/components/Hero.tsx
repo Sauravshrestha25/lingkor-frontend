@@ -8,9 +8,10 @@ import { gsap, reduced } from "@/lib/gsap";
 import { Button } from "@/components/shared/button";
 import { BOUDHA } from "@/lib/photo";
 import { claimIntro, finishIntro } from "@/features/preloader/gate";
-import { setBellMuted, unlockBell, playResonantBell } from "@/lib/bell";
+import { setBellMuted, unlockBell } from "@/lib/bell";
 import {
   enterSilently,
+  fadeOutPreloaderSound,
   isSiteSoundMuted,
   prewarmIntroSound,
   setSiteSoundMuted,
@@ -340,6 +341,13 @@ export default function Hero() {
       sessionStorage.setItem(SESSION_KEY, "1");
     };
 
+    // The music belongs to the film only — it fades out as the curtain lifts, on
+    // every exit (natural end and skip alike).
+    const endIntro = () => {
+      finishIntro();
+      fadeOutPreloaderSound();
+    };
+
     const tl = gsap.timeline({ onComplete: settle });
     tlRef.current = tl;
     if (process.env.NODE_ENV === "development") {
@@ -393,13 +401,6 @@ export default function Hero() {
       // the pinnacle downward over the sharp, undimmed frame (no blur, no dim). The
       // sound prompt + Skip stay up through the whole film (see the fade near the end).
       .set(q(".hero-mask"), { opacity: 1 }, glyphAt)
-      .call(
-        () => {
-          if (soundRef.current) playResonantBell();
-        },
-        [],
-        glyphAt,
-      )
       .to(
         wipe,
         {
@@ -472,7 +473,7 @@ export default function Hero() {
         },
         restAt,
       )
-      .call(finishIntro, [], restAt + 0.1)
+      .call(endIntro, [], restAt + 0.1)
       .to(
         q(".hero-rest"),
         { opacity: 1, duration: REST_FADE, ease: "power2.out" },
@@ -498,14 +499,13 @@ export default function Hero() {
       tl.pause(stops[0]);
     }
 
-    // Turn sound on mid-film: build the graph, unmute, let the bell fire if its beat
-    // has not passed yet.
+    // Turn sound on mid-film: start the music and unmute.
     // Toggles: first press builds the audio graph and unmutes; every press after
     // flips mute on/off, updating the prompt's label + icon to match.
     const enableSound = () => {
       if (!soundRef.current) {
         soundRef.current = true;
-        startPreloaderSound();
+        startPreloaderSound(tl.time());
       }
       const nextMuted = !isSiteSoundMuted();
       setSiteSoundMuted(nextMuted);
@@ -571,7 +571,7 @@ export default function Hero() {
         delay: dur * 0.35,
       });
 
-      finishIntro();
+      endIntro();
       sessionStorage.setItem(SESSION_KEY, "1");
     };
 

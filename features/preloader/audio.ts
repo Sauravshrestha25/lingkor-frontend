@@ -1,7 +1,7 @@
 "use client";
 
-// One track only — the film's own music. It starts with the hero cinematic and just
-// keeps looping; there is no separate "site music" it hands off to.
+// One track only — the film's own music. It plays for the hero cinematic and fades
+// out when the film ends; the rest of the site has no music.
 const PRELOADER_MUSIC_SRC = "/music/ne_preloader_music.mp3";
 
 const PRELOADER_VOLUME = 0.34;
@@ -13,8 +13,6 @@ const STORAGE_KEY = "lb-site-sound-muted";
 let preloaderMusic: HTMLAudioElement | null = null;
 let audioEnabled = false;
 let muted = false;
-let ducked = false;
-let duckedVolume = PRELOADER_VOLUME;
 
 // Site sound is silent until the visitor opts in, so the default is muted — only an
 // explicit prior "on" ("0" in storage) starts it unmuted.
@@ -83,11 +81,13 @@ function play(audio: HTMLAudioElement | null) {
   });
 }
 
-export function startPreloaderSound() {
+/** `at` is the film's own clock, in seconds: the track is scored to the film, so
+ *  turning sound on mid-film joins the music where the film already is. */
+export function startPreloaderSound(at = 0) {
   audioEnabled = true;
   preloaderMusic ??= makeLoop(PRELOADER_MUSIC_SRC, PRELOADER_VOLUME);
   if (preloaderMusic) {
-    preloaderMusic.currentTime = 0;
+    preloaderMusic.currentTime = at;
     preloaderMusic.volume = PRELOADER_VOLUME;
   }
   play(preloaderMusic);
@@ -116,21 +116,6 @@ export function fadeOutPreloaderSound(duration = PRELOADER_FADE_OUT_MS) {
   if (!audioEnabled || !preloaderMusic) return;
   fade(preloaderMusic, 0, duration);
   window.setTimeout(() => preloaderMusic?.pause(), duration + 50);
-}
-
-/** Duck the (single, looping) track while a section wants its own sound to lead —
- *  e.g. the kora bells — then bring it back with `restoreSiteSound`. */
-export function fadeOutSiteSound(duration = 1200) {
-  if (!audioEnabled || !preloaderMusic) return;
-  ducked = true;
-  duckedVolume = preloaderMusic.volume;
-  fade(preloaderMusic, 0, duration);
-}
-
-export function restoreSiteSound(duration = 1600) {
-  if (!audioEnabled || !preloaderMusic || !ducked) return;
-  ducked = false;
-  fade(preloaderMusic, duckedVolume, duration);
 }
 
 export function stopAllIntroSound() {

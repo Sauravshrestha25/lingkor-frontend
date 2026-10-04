@@ -30,7 +30,7 @@ export function SoundToggle({ className = "" }: { className?: string }) {
     <Button
       type="button"
       onClick={() => setSiteSoundMuted(!muted)}
-      aria-label={muted ? "Turn music on" : "Turn music off"}
+      aria-label={muted ? "Turn sound on" : "Turn sound off"}
       aria-pressed={!muted}
       className={`text-label flex cursor-pointer items-center gap-2 uppercase transition-colors duration-500 ${className}`}
       hoverScale={1.01}

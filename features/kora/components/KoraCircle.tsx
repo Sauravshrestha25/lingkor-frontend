@@ -1,10 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { gsap, ScrollTrigger } from "@/lib/gsap";
+import { gsap } from "@/lib/gsap";
 import { playBell, unlockBell } from "@/lib/bell";
 import { Label } from "@/components/ui";
-import { fadeOutSiteSound, restoreSiteSound } from "@/features/preloader/audio";
 import { CIRC, HOURS } from "../kora";
 import { KoraRing } from "./KoraRing";
 
@@ -179,42 +178,6 @@ export default function KoraCircle() {
     );
 
     return () => mm.revert();
-  }, []);
-
-  useEffect(() => {
-    const section = sectionRef.current;
-    if (!section) return;
-
-    const mm = gsap.matchMedia();
-
-    mm.add(
-      {
-        pinned: "(prefers-reduced-motion: no-preference)",
-      },
-      (ctx) => {
-        const pinned = Boolean(ctx.conditions?.pinned);
-        const trigger = ScrollTrigger.create({
-          trigger: section,
-          start: pinned ? "top top" : "top 65%",
-          end: pinned ? "+=240%" : "bottom 35%",
-          invalidateOnRefresh: true,
-          onEnter: () => fadeOutSiteSound(),
-          onEnterBack: () => fadeOutSiteSound(),
-          onLeave: () => restoreSiteSound(),
-          onLeaveBack: () => restoreSiteSound(),
-        });
-
-        return () => {
-          restoreSiteSound(600);
-          trigger.kill();
-        };
-      },
-    );
-
-    return () => {
-      restoreSiteSound(600);
-      mm.revert();
-    };
   }, []);
 
   function strike(i: number) {
