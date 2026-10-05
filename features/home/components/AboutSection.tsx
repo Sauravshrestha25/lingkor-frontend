@@ -73,10 +73,10 @@ export function AboutSection() {
               Mobile &amp; WhatsApp: +977 9851413633
             </a>
             <a
-              href="mailto:phuntsokg6808@gmail.com"
+              href="mailto:boudhalingkor@gmail.com"
               className="text-body transition-opacity duration-300 mt-3 hover:opacity-70"
             >
-              phuntsokg6808@gmail.com
+              boudhalingkor@gmail.com
             </a>
           </div>
         </div>

@@ -293,7 +293,7 @@ Rebuilt with a real form (`components/EnquireForm.tsx`) alongside the direct con
 | "Tell us when you would like to come and how long you can stay. Or write us directly:" | DRAFT | Softened from the earlier "We answer every message ourselves" claim — that line now lives only in the form's own footnote (below), where it's less prominent. |
 | "Opens as an email. We answer every one ourselves." | **PLACEHOLDER** | ⚠️ Same assumption as before, now scoped to the form's submit confirmation. Confirm or soften before shipping. |
 | Form field labels (Name / Email / Dates / Guests / Message) | DRAFT | Standard hotel-enquiry fields; not tied to any client document. |
-| phuntsokg8808@gmail.com / +977 9861413633 | **CLIENT**, but check | Phuntsok Sangpo's number and address from the business card — may be a personal line rather than the hotel's. A dedicated `@lingkor…` address and a front-desk number would be better before launch. |
+| boudhalingkor@gmail.com / +977 9851413633 | **CLIENT** | Email and number both supplied by the client. |
 
 ⚠️ **The form has no backend.** Submitting builds a `mailto:` link with the fields pre-filled
 into the body and hands the visitor to their own mail client — a real, working path today, not a

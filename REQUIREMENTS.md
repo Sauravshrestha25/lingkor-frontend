@@ -20,7 +20,7 @@ the great stupa for wool, and climbed home before winter.
 
 The hotel is the caravan's resting place. The website is the beginning of that journey.
 
-Owner contact (from the business card): Phuntsok Sangpo · 9861413633 · phuntsokg8808@gmail.com
+Owner contact (from the business card): Phuntsok Sangpo · +977 9851413633 · boudhalingkor@gmail.com
 Tagline in use on signage: **"Rest in the Spirit of Mustang"**
 
 ---
